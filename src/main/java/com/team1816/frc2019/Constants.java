@@ -19,7 +19,7 @@ public class Constants {
   public static final int kDriveGamepadPort = 0;
   public static final int kButtonGamepadPort = 2;
   public static final int kMainThrottleJoystickPort = 0;
-  public static final int kMainTurnJoystickPort = 1;
+  public static final int kMainTurnJoystickPort = 0;
   public static final double kJoystickThreshold = 0.2;
 
   // Canifier
