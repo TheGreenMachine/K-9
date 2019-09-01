@@ -17,15 +17,17 @@ public class MainDriveControlBoard implements IDriveControlBoard {
 
     private final Joystick mThrottleStick;
     private final Joystick mTurnStick;
+    private final boolean mSteelSeries;
 
     private MainDriveControlBoard() {
         mThrottleStick = new Joystick(Constants.kMainThrottleJoystickPort);
         mTurnStick = new Joystick(Constants.kMainTurnJoystickPort);
+        mSteelSeries = mThrottleStick.getName().contains("SteelSeries");
     }
 
     @Override
     public double getThrottle() {
-        return mThrottleStick.getRawAxis(1);
+        return mThrottleStick.getRawAxis(mSteelSeries ? 3 : 1);
     }
 
     @Override
