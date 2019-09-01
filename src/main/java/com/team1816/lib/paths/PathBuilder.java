@@ -2,6 +2,7 @@ package com.team1816.lib.paths;
 
 import com.team1816.frc2019.Robot;
 import com.team1816.lib.auto.actions.WaitForPathMarkerAction;
+import com.team1816.lib.hardware.RobotFactory;
 import com.team254.lib.control.Path;
 import com.team254.lib.control.PathSegment;
 import com.team254.lib.geometry.Pose2d;
@@ -35,7 +36,7 @@ public class PathBuilder {
         new Line(w.get(w.size() - 2), w.get(w.size() - 1)).addToPath(p, 0);
         p.extrapolateLast();
         p.verifySpeeds();
-        if(Robot.getFactory().verbose()) System.out.println(p);
+        if(RobotFactory.Verbose()) System.out.println(p);
         return p;
     }
 

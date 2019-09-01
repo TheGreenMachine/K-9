@@ -11,11 +11,11 @@ subsystems:
     constants:
       pigeonId: 13
       pigeonOnTalon: 0
-      kP: 0
-      kI: 0
-      kD: 0
-      kF: .559598
-      iZone: 0
+      kP: .85
+      kI: 0.01
+      kD: 20
+      kF: 0.6200
+      iZone: 9
       encPPR: 4096 # CTRE mag encoder
       invertMotor: 2
       kShifterSolenoidId: 0
@@ -28,10 +28,10 @@ subsystems:
     constants:
       canId: 12
 constants:
-  wheelDiameter: 4
+  wheelDiameter: 4.15315013404
   trackWidth: 15.75
-  maxVel: 40
-  maxAccel: 200
+  maxVel: 58
+  maxAccel: 30
   sensorPhase: 0
   kLooperDt: .01
   kTrackScrubFactor: 1.0

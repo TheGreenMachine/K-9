@@ -125,6 +125,7 @@ public class Robot extends TimedRobot {
             BadLog.createTopic("Timings/Looper", "ms", mEnabledLooper::getLastLoop, "hide", "join:Timings");
             BadLog.createTopic("Timings/RobotLoop", "ms", this::getLastLoop, "hide", "join:Timings");
             logger.finishInitialization();
+            mDrive.setLogger(logger);
 
             CrashTracker.logRobotInit();
 
@@ -136,6 +137,7 @@ public class Robot extends TimedRobot {
                     mInfrastructure);
 
             mCarriageCanifer.zeroSensors();
+            mDrive.zeroSensors();
 
             mSubsystemManager.registerEnabledLoops(mEnabledLooper);
             mSubsystemManager.registerDisabledLoops(mDisabledLooper);
@@ -203,6 +205,8 @@ public class Robot extends TimedRobot {
             mInfrastructure.setIsManualControl(true); // turn on compressor when superstructure is not moving
 
             mInHangMode = false;
+
+            mDrive.zeroSensors();
 
             System.out.println("Auto init - " + mDriveByCameraInAuto);
             if (!mDriveByCameraInAuto) {
@@ -285,6 +289,7 @@ public class Robot extends TimedRobot {
                 System.out.println("Zeroing Robot!");
                 mLED.updateZeroed();
                 mCarriageCanifer.zeroSensors();
+                mDrive.zeroSensors();
             }
 
             // Update auto modes
@@ -324,8 +329,6 @@ public class Robot extends TimedRobot {
         if (mDriveByCameraInAuto || mAutoModeExecutor.isInterrupted()) {
             manualControl(/*sandstorm=*/true);
         }
-        logger.updateTopics();
-        logger.log();
     }
 
     @Override
@@ -337,8 +340,6 @@ public class Robot extends TimedRobot {
             CrashTracker.logThrowableCrash(t);
             throw t;
         }
-        logger.updateTopics();
-        logger.log();
     }
 
     public void manualControl(boolean sandstorm) {

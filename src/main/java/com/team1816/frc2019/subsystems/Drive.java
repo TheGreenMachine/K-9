@@ -1,5 +1,6 @@
 package com.team1816.frc2019.subsystems;
 
+import badlog.lib.BadLog;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -16,8 +17,10 @@ import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.control.Path;
-import com.team254.lib.control.PathFollower;
-import com.team254.lib.geometry.*;
+import com.team254.lib.geometry.Pose2d;
+import com.team254.lib.geometry.Rotation2d;
+import com.team254.lib.geometry.Translation2d;
+import com.team254.lib.geometry.Twist2d;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.ReflectingCSVWriter;
 import com.team254.lib.util.Util;
@@ -54,6 +57,7 @@ public class Drive extends Subsystem {
     private double mLastDriveCurrentSwitchTime = -1;
     private final RobotFactory mFactory = Robot.getFactory();
     private Double kTalonKd;
+    private BadLog mLogger;
 
     public synchronized static Drive getInstance() {
         if (mInstance == null) {
@@ -132,11 +136,11 @@ public class Drive extends Subsystem {
     private ReflectingCSVWriter<PeriodicIO> mCSVWriter = null;
 
     public double getHeadingDegrees() {
-        return getHeading().rotateBy(mGyroOffset).getDegrees();
+        return mPeriodicIO.gyro_heading.getDegrees();
     }
 
     public double getDesiredHeading() {
-        return mPeriodicIO.gyro_heading.getDegrees();
+        return mPeriodicIO.desired_headig.getDegrees();
     }
 
     public static class PeriodicIO {
@@ -162,6 +166,7 @@ public class Drive extends Subsystem {
         public double right_accel;
         public double left_feedforward;
         public double right_feedforward;
+        public Rotation2d desired_headig = Rotation2d.identity();
     }
 
     @Override
@@ -176,19 +181,12 @@ public class Drive extends Subsystem {
         mPeriodicIO.left_error = mLeftMaster.getClosedLoopError(0);
         mPeriodicIO.right_error = mRightMaster.getClosedLoopError(0);
 
-        double deltaLeftTicks = ((mPeriodicIO.left_position_ticks - prevLeftTicks) / 4096.0) * Math.PI;
-        if (deltaLeftTicks > 0.0) {
-            mPeriodicIO.left_distance += deltaLeftTicks * Constants.kDriveWheelDiameterInches;
-        } else {
-            mPeriodicIO.left_distance += deltaLeftTicks * Constants.kDriveWheelDiameterInches;
-        }
+        double deltaLeftTicks = ((mPeriodicIO.left_position_ticks - prevLeftTicks) / DRIVE_ENCODER_PPR) * Math.PI;
+        mPeriodicIO.left_distance += deltaLeftTicks * Constants.kDriveWheelDiameterInches;
 
-        double deltaRightTicks = ((mPeriodicIO.right_position_ticks - prevRightTicks) / 4096.0) * Math.PI;
-        if (deltaRightTicks > 0.0) {
-            mPeriodicIO.right_distance += deltaRightTicks * Constants.kDriveWheelDiameterInches;
-        } else {
-            mPeriodicIO.right_distance += deltaRightTicks * Constants.kDriveWheelDiameterInches;
-        }
+        double deltaRightTicks = ((mPeriodicIO.right_position_ticks - prevRightTicks) / DRIVE_ENCODER_PPR) * Math.PI;
+        mPeriodicIO.right_distance += deltaRightTicks * Constants.kDriveWheelDiameterInches;
+
 
         if (mCSVWriter != null) {
             mCSVWriter.add(mPeriodicIO);
@@ -229,6 +227,8 @@ public class Drive extends Subsystem {
                             break;
                         case PATH_FOLLOWING:
                             if (mPathFollower != null) {
+                                mLogger.updateTopics();
+                                mLogger.log();
                                 updatePathFollower(timestamp);
                             }
                             break;
@@ -366,6 +366,10 @@ public class Drive extends Subsystem {
         return mIsBrakeMode;
     }
 
+    public void setLogger(BadLog logger){
+        mLogger = logger;
+    }
+
     public synchronized void setBrakeMode(boolean on) {
         if (mIsBrakeMode != on) {
             mIsBrakeMode = on;
@@ -390,7 +394,7 @@ public class Drive extends Subsystem {
         mGyroOffset = heading.rotateBy(Rotation2d.fromDegrees(mPigeon.getFusedHeading()).inverse());
         System.out.println("gyro offset: " + mGyroOffset.getDegrees());
 
-        mPeriodicIO.gyro_heading = heading;
+        mPeriodicIO.desired_headig = heading;
     }
 
     public synchronized void resetEncoders() {

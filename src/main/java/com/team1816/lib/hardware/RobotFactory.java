@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 public class RobotFactory {
 
   private YamlConfig config;
-  private boolean verbose;
+  private static boolean verbose;
 
   public RobotFactory(String configName) {
     System.out.println("Loading Config for " + configName);
@@ -107,7 +107,7 @@ public class RobotFactory {
     return config.subsystems.get(subsystem);
   }
 
-  public boolean verbose() {
+  public static boolean Verbose() {
     return verbose;
   }
 }

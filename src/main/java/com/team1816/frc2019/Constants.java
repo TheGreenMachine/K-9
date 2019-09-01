@@ -33,21 +33,19 @@ public class Constants {
   public static final double kTrackAgeWeight = 10.0;
   public static final double kTrackSwitchingWeight = 100.0;
 
-  public static double kDriveVoltageRampRate = 0.0;
-
   public static final double kMinLookAhead = 12.0; // inches
   public static final double kMinLookAheadSpeed = 12.0; // inches per second
   public static final double kMaxLookAhead = 48.0; // inches
-  public static final double kMaxLookAheadSpeed = 120.0; // inches per second
+  public static final double kMaxLookAheadSpeed = Robot.getFactory().getConstant("maxVel"); // inches per second
   public static final double kDeltaLookAhead = kMaxLookAhead - kMinLookAhead;
   public static final double kDeltaLookAheadSpeed = kMaxLookAheadSpeed - kMinLookAheadSpeed;
   public static final double kInertiaSteeringGain = 0.0; // angular velocity command is multiplied by this gain * our speed in inches per sec
-  public static final double kPathFollowingProfileKp = 0.3 / 12.0;  // % throttle per inch of error
-  public static final double kPathFollowingProfileKi = 0.0;
-  public static final double kPathFollowingGoalPosTolerance = 3.0;
+  public static final double kPathFollowingProfileKp = Robot.getFactory().getConstant("drivetrain", "kP");
+  public static final double kPathFollowingProfileKi = Robot.getFactory().getConstant("drivetrain", "kI");;
+  public static final double kPathFollowingGoalPosTolerance = 1.0;
   public static final double kPathFollowingGoalVelTolerance = 12.0;
   public static final double kPathStopSteeringDistance = 12.0;
   public static double kCameraFrameRate = 30;
-  public static final double kPathFollowingMaxAccel = Robot.getFactory().getConstant("maxVel");
-  public static final double kPathFollowingMaxVel = Robot.getFactory().getConstant("maxAccel");;
+  public static final double kPathFollowingMaxAccel = Robot.getFactory().getConstant("maxAccel");
+  public static final double kPathFollowingMaxVel = Robot.getFactory().getConstant("maxVel");
 }

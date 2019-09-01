@@ -40,12 +40,14 @@ public class MainDriveControlBoard implements IDriveControlBoard {
 
     @Override
     public boolean getShoot() {
-        return mTurnStick.getRawButton(2);
+        if (mTurnStick.getButtonCount() > 2) return mTurnStick.getRawButton(2);
+        return false;
     }
 
     @Override
     public boolean getWantsLowGear() {
-        return mThrottleStick.getRawButton(2);
+        if (mThrottleStick.getButtonCount() > 2) return mThrottleStick.getRawButton(2);
+        return false;
     }
 
     public boolean getThrust() {

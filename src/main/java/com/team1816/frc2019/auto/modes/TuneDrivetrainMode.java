@@ -10,14 +10,14 @@ public class TuneDrivetrainMode extends AutoModeBase {
 
   private DrivePathAction mPath;
 
-  public TuneDrivetrainMode(){
-    mPath = new DrivePathAction(new DriveStraight(),true);
+  public TuneDrivetrainMode() {
+    mPath = new DrivePathAction(new DriveStraight(), true);
   }
 
   @Override
   protected void routine() throws AutoModeEndedException {
-      System.out.println("Tune Drivetrain path");
-    runAction(new WaitAction(.5));
+    System.out.println("Tune Drivetrain path");
+    runAction(new WaitAction(1));
     runAction(mPath);
   }
 }

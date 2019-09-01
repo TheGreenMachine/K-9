@@ -1,6 +1,7 @@
 package com.team254.lib.control;
 
 import com.team1816.frc2019.Constants;
+import com.team1816.lib.hardware.RobotFactory;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.motion.*;
@@ -113,7 +114,7 @@ public class PathSegment {
                 Constants.kPathFollowingMaxAccel);
         MotionProfileGoal goal_state = new MotionProfileGoal(getLength(), end_speed);
         speedController = MotionProfileGenerator.generateProfile(motionConstraints, goal_state, start_state);
-        // System.out.println(speedController);
+        if(RobotFactory.Verbose())  System.out.println(speedController);
     }
 
     /**

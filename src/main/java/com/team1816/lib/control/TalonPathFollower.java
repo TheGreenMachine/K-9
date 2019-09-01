@@ -10,7 +10,6 @@ import com.team254.lib.motion.MotionProfileConstraints;
 import com.team254.lib.motion.MotionProfileGoal;
 import com.team254.lib.motion.MotionProfileGoal.CompletionBehavior;
 import com.team254.lib.motion.MotionState;
-import com.team254.lib.motion.ProfileFollower;
 
 /**
  * A PathFollower follows a predefined path using a combination of feedforward and feedback control. It uses an
@@ -19,28 +18,6 @@ import com.team254.lib.motion.ProfileFollower;
  */
 public class TalonPathFollower {
     private static final double kReallyBigNumber = 1E6;
-
-    public static class DebugOutput {
-        public double t;
-        public double pose_x;
-        public double pose_y;
-        public double pose_theta;
-        public double linear_displacement;
-        public double linear_velocity;
-        public double profile_displacement;
-        public double profile_velocity;
-        public double velocity_command_dx;
-        public double velocity_command_dy;
-        public double velocity_command_dtheta;
-        public double steering_command_dx;
-        public double steering_command_dy;
-        public double steering_command_dtheta;
-        public double cross_track_error;
-        public double along_track_error;
-        public double lookahead_point_x;
-        public double lookahead_point_y;
-        public double lookahead_point_velocity;
-    }
 
     public static class Parameters {
         public final Lookahead lookahead;
@@ -75,7 +52,6 @@ public class TalonPathFollower {
     final double mInertiaGain;
     boolean overrideFinished = false;
     boolean doneSteering = false;
-    DebugOutput mDebugOutput = new DebugOutput();
 
     double mMaxProfileVel;
     double mMaxProfileAcc;
@@ -84,6 +60,7 @@ public class TalonPathFollower {
     final double mStopSteeringDistance;
     double mCrossTrackError = 0.0;
     double mAlongTrackError = 0.0;
+    double mStartTime = 0.0;
 
     /**
      * Create a new PathFollower for a given path.
@@ -93,13 +70,14 @@ public class TalonPathFollower {
         mLastSteeringDelta = Twist2d.identity();
         mVelocityController = new TalonProfileFollower(parameters.profile_kp, parameters.profile_ki);
         mVelocityController.setConstraints(
-                new MotionProfileConstraints(parameters.profile_max_abs_vel, parameters.profile_max_abs_acc));
+            new MotionProfileConstraints(parameters.profile_max_abs_vel, parameters.profile_max_abs_acc));
         mMaxProfileVel = parameters.profile_max_abs_vel;
         mMaxProfileAcc = parameters.profile_max_abs_acc;
         mGoalPosTolerance = parameters.goal_pos_tolerance;
         mGoalVelTolerance = parameters.goal_vel_tolerance;
         mInertiaGain = parameters.inertia_gain;
         mStopSteeringDistance = parameters.stop_steering_distance;
+        mStartTime = 0.0;
     }
 
     /**
@@ -112,29 +90,25 @@ public class TalonPathFollower {
      * @return The velocity command to apply
      */
     public synchronized Twist2d update(double t, Pose2d pose, double displacement, double velocity) {
+        if (mStartTime <= 0.0) mStartTime = t;
         if (!mSteeringController.isFinished()) {
             final AdaptivePurePursuitController.Command steering_command = mSteeringController.update(pose);
-            mDebugOutput.lookahead_point_x = steering_command.lookahead_point.x();
-            mDebugOutput.lookahead_point_y = steering_command.lookahead_point.y();
-            mDebugOutput.lookahead_point_velocity = steering_command.end_velocity;
-            mDebugOutput.steering_command_dx = steering_command.delta.dx;
-            mDebugOutput.steering_command_dy = steering_command.delta.dy;
-            mDebugOutput.steering_command_dtheta = steering_command.delta.dtheta;
             mCrossTrackError = steering_command.cross_track_error;
             mLastSteeringDelta = steering_command.delta;
             mVelocityController.setGoalAndConstraints(
-                    new MotionProfileGoal(displacement + steering_command.delta.dx,
-                            Math.abs(steering_command.end_velocity), CompletionBehavior.VIOLATE_MAX_ACCEL,
-                            mGoalPosTolerance, mGoalVelTolerance),
-                    new MotionProfileConstraints(Math.min(mMaxProfileVel, steering_command.max_velocity),
-                            mMaxProfileAcc));
+                new MotionProfileGoal(displacement + steering_command.delta.dx,
+                    Math.abs(steering_command.end_velocity), CompletionBehavior.OVERSHOOT,
+                    mGoalPosTolerance, mGoalVelTolerance),
+                new MotionProfileConstraints(Math.min(mMaxProfileVel, steering_command.max_velocity),
+                    mMaxProfileAcc));
 
             if (steering_command.remaining_path_length < mStopSteeringDistance) {
                 doneSteering = true;
             }
         }
 
-        final double velocity_command = mVelocityController.update(new MotionState(t, displacement, velocity, 0.0), t);
+        var pathTime = t - mStartTime;
+        final double velocity_command = mVelocityController.update(new MotionState(pathTime, displacement, velocity, 0.0), pathTime);
         mAlongTrackError = mVelocityController.getPosError();
         final double curvature = mLastSteeringDelta.dtheta / mLastSteeringDelta.dx;
         double dtheta = mLastSteeringDelta.dtheta;
@@ -145,21 +119,6 @@ public class TalonPathFollower {
         }
         final double scale = velocity_command / mLastSteeringDelta.dx;
         final Twist2d rv = new Twist2d(mLastSteeringDelta.dx * scale, 0.0, dtheta * scale);
-
-        // Fill out debug.
-        mDebugOutput.t = t;
-        mDebugOutput.pose_x = pose.getTranslation().x();
-        mDebugOutput.pose_y = pose.getTranslation().y();
-        mDebugOutput.pose_theta = pose.getRotation().getRadians();
-        mDebugOutput.linear_displacement = displacement;
-        mDebugOutput.linear_velocity = velocity;
-        mDebugOutput.profile_displacement = mVelocityController.getSetpoint().pos();
-        mDebugOutput.profile_velocity = mVelocityController.getSetpoint().vel();
-        mDebugOutput.velocity_command_dx = rv.dx;
-        mDebugOutput.velocity_command_dy = rv.dy;
-        mDebugOutput.velocity_command_dtheta = rv.dtheta;
-        mDebugOutput.cross_track_error = mCrossTrackError;
-        mDebugOutput.along_track_error = mAlongTrackError;
 
         return rv;
     }
@@ -172,13 +131,9 @@ public class TalonPathFollower {
         return mAlongTrackError;
     }
 
-    public DebugOutput getDebug() {
-        return mDebugOutput;
-    }
-
     public boolean isFinished() {
         return (mSteeringController.isFinished() && mVelocityController.isFinishedProfile()
-                && mVelocityController.onTarget()) || overrideFinished;
+            && mVelocityController.onTarget()) || overrideFinished;
     }
 
     public void forceFinish() {

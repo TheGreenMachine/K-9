@@ -121,7 +121,6 @@ public class TalonProfileFollower {
         } else {
             mInitialState = prev_state;
         }
-        final double dt = Math.max(0.0, t - prev_state.t());
         mLatestSetpoint = mSetpointGenerator.getSetpoint(mConstraints, mGoal, prev_state, t);
 
         // Update error.
@@ -129,16 +128,8 @@ public class TalonProfileFollower {
         mLatestVelError = mLatestSetpoint.motion_state.vel() - latest_state.vel();
 
         // Calculate the feedforward and proportional terms.
-        double output = mKp * mLatestPosError + mLatestSetpoint.motion_state.vel();
+        double output = mLatestSetpoint.motion_state.vel();
 
-        if (output >= mMinOutput && output <= mMaxOutput) {
-            // Update integral.
-            mTotalError += mLatestPosError * dt;
-            output += mKi * mTotalError;
-        } else {
-            // Reset integral windup.
-            mTotalError = 0.0;
-        }
         // Clamp to limits.
         output = Math.max(mMinOutput, Math.min(mMaxOutput, output));
 
