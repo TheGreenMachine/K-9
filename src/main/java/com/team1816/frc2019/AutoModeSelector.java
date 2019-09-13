@@ -55,19 +55,13 @@ public class AutoModeSelector {
         mModeChooser.addOption("Do Nothing", DesiredMode.DO_NOTHING);
         SmartDashboard.putData("Auto mode", mModeChooser);
 
-        // Trajectory Generator
+        // CheezeCurd
+//        mModeChooser.addOption("Living Room",DesiredMode.LIVING_ROOM);
+//        mModeChooser.addOption("Shop", DesiredMode.SHOP);
+//        mModeChooser.addOption("PID", DesiredMode.PID);
+        mModeChooser.addOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
 
-        mModeChooser = new SendableChooser<>();
-        mModeChooser.setDefaultOption("Cross Auto Line", DesiredMode.CROSS_AUTO_LINE);
-        mModeChooser.addOption("Living Room",DesiredMode.LIVING_ROOM);
-        mModeChooser.addOption("Shop", DesiredMode.SHOP);
-        mModeChooser.addOption("PID", DesiredMode.PID);
-        SmartDashboard.putData("Auto mode", mModeChooser);
-
-        mStartPositionChooser = new SendableChooser<>();
-        mStartPositionChooser.setDefaultOption("Right", StartingPosition.RIGHT);
         mStartPositionChooser.addOption("Center", StartingPosition.CENTER);
-        mStartPositionChooser.addOption("Left", StartingPosition.LEFT);
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
 
 //        mSwitchScalePositionChooser = new SendableChooser<>();

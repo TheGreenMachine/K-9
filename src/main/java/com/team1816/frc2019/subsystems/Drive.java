@@ -238,7 +238,10 @@ public class Drive extends Subsystem {
                                 mLogger.log();
                                 updatePathFollower(timestamp);
                             }
+                        case TRAJECTORY_FOLLOWING:
+                            updatePathFollower(timestamp);
                             break;
+
                         default:
                             System.out.println("unexpected drive control state: " + mDriveControlState);
                             break;
@@ -481,12 +484,12 @@ public class Drive extends Subsystem {
             mOverrideTrajectory = false;
             mMotionPlanner.reset();
             mMotionPlanner.setTrajectory(trajectory);
-            mDriveControlState = DriveControlState.PATH_FOLLOWING;
+            mDriveControlState = DriveControlState.TRAJECTORY_FOLLOWING;
         }
     }
 
     public boolean isDoneWithTrajectory() {
-        if (mMotionPlanner == null || mDriveControlState != DriveControlState.PATH_FOLLOWING) {
+        if (mMotionPlanner == null || mDriveControlState != DriveControlState.TRAJECTORY_FOLLOWING) {
             return false;
         }
         return mMotionPlanner.isDone() || mOverrideTrajectory;
@@ -510,8 +513,21 @@ public class Drive extends Subsystem {
         }
     }
 
-    private void updatePathFollower() {
+    private void updatePathFollower(double timestamp) {
         if (mDriveControlState == DriveControlState.PATH_FOLLOWING) {
+            RobotState robot_state = RobotState.getInstance();
+            Pose2d field_to_vehicle = robot_state.getLatestFieldToVehicle().getValue();
+            Twist2d command = mPathFollower.update(timestamp, field_to_vehicle, robot_state.getDistanceDriven(),
+                    robot_state.getPredictedVelocity().dx);
+            if (!mPathFollower.isFinished()) {
+                DriveSignal setpoint = Kinematics.inverseKinematics(command);
+                setVelocity(new DriveSignal(inchesPerSecondToTicksPer100ms(setpoint.getLeft()), inchesPerSecondToTicksPer100ms(setpoint.getRight())), new DriveSignal(0, 0));
+            } else {
+                if (!mPathFollower.isForceFinished()) {
+                    setVelocity(new DriveSignal(0, 0), new DriveSignal(0, 0));
+                }
+            }
+        } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             final double now = Timer.getFPGATimestamp();
 
             DriveMotionPlanner.Output output = mMotionPlanner.update(now, RobotState.getInstance().getFieldToVehicle(now));
@@ -530,26 +546,6 @@ public class Drive extends Subsystem {
             } else {
                 setVelocity(DriveSignal.BRAKE, DriveSignal.BRAKE);
                 mPeriodicIO.left_accel = mPeriodicIO.right_accel = 0.0;
-            }
-        } else {
-            DriverStation.reportError("Drive is not in path following state", false);
-        }
-    }
-
-
-    private void updatePathFollower(double timestamp) {
-        if (mDriveControlState == DriveControlState.PATH_FOLLOWING) {
-            RobotState robot_state = RobotState.getInstance();
-            Pose2d field_to_vehicle = robot_state.getLatestFieldToVehicle().getValue();
-            Twist2d command = mPathFollower.update(timestamp, field_to_vehicle, robot_state.getDistanceDriven(),
-                    robot_state.getPredictedVelocity().dx);
-            if (!mPathFollower.isFinished()) {
-                DriveSignal setpoint = Kinematics.inverseKinematics(command);
-                setVelocity(new DriveSignal(inchesPerSecondToTicksPer100ms(setpoint.getLeft()), inchesPerSecondToTicksPer100ms(setpoint.getRight())), new DriveSignal(0, 0));
-            } else {
-                if (!mPathFollower.isForceFinished()) {
-                    setVelocity(new DriveSignal(0, 0), new DriveSignal(0, 0));
-                }
             }
         } else {
             DriverStation.reportError("drive is not in path following state", false);
@@ -581,6 +577,7 @@ public class Drive extends Subsystem {
     public enum DriveControlState {
         OPEN_LOOP, // open loop voltage control
         PATH_FOLLOWING, // velocity PID control
+        TRAJECTORY_FOLLOWING
     }
 
     public enum ShifterState {

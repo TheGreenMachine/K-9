@@ -2,8 +2,12 @@ package com.team1816.frc2019;
 
 import badlog.lib.BadLog;
 import com.team1816.frc2019.controlboard.ControlBoard;
+import com.team1816.frc2019.paths.TrajectoryGenerator;
 import com.team1816.frc2019.states.TimedLEDState;
-import com.team1816.frc2019.subsystems.*;
+import com.team1816.frc2019.subsystems.CarriageCanifier;
+import com.team1816.frc2019.subsystems.Drive;
+import com.team1816.frc2019.subsystems.LED;
+import com.team1816.frc2019.subsystems.Superstructure;
 import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.controlboard.IButtonControlBoard;
@@ -15,10 +19,9 @@ import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.wpilib.TimedRobot;
 import com.team254.lib.util.*;
 import com.team254.lib.vision.AimingParameters;
-
+import com.team254.lib.wpilib.TimedRobot;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -74,6 +77,8 @@ public class Robot extends TimedRobot {
 
     private AutoModeSelector mAutoModeSelector = new AutoModeSelector();
     private AutoModeExecutor mAutoModeExecutor;
+
+    private TrajectoryGenerator mTrajectoryGenerator = TrajectoryGenerator.getInstance();
 
     private boolean mDriveByCameraInAuto = false;
     private double loopStart;
@@ -150,6 +155,8 @@ public class Robot extends TimedRobot {
             // Robot starts forwards.
             mRobotState.reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
             mDrive.setHeading(Rotation2d.identity());
+
+            mTrajectoryGenerator.generateTrajectories();
 
             mAutoModeSelector.updateModeCreator();
         } catch (Throwable t) {

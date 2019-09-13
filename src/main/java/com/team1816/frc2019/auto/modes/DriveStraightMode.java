@@ -18,7 +18,7 @@ public class DriveStraightMode extends AutoModeBase {
 
     @Override
     protected void routine() throws AutoModeEndedException {
-        System.out.println("Running Cross auto line");;
+        System.out.println("Running Drive Straight Mode");;
         runAction(new WaitAction(.5));
         runAction(mDriveStraight);
     }
