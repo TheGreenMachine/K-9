@@ -12,7 +12,7 @@ public class DriveStraight implements PathContainer {
   public Path buildPath() {
     ArrayList<PathBuilder.Waypoint> waypoints = new ArrayList<>();
     waypoints.add(new PathBuilder.Waypoint(0, 0, 0, 0));
-    waypoints.add(new PathBuilder.Waypoint(24, 0, 0, 30));
+    waypoints.add(new PathBuilder.Waypoint(48, 0, 0, 30));
     return  PathBuilder.buildPathFromWaypoints(waypoints);
   }
 

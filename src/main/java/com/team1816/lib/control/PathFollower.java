@@ -1,6 +1,5 @@
 package com.team1816.lib.control;
 
-import com.team1816.lib.motion.TalonProfileFollower;
 import com.team254.lib.control.AdaptivePurePursuitController;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.control.Path;
@@ -10,13 +9,14 @@ import com.team254.lib.motion.MotionProfileConstraints;
 import com.team254.lib.motion.MotionProfileGoal;
 import com.team254.lib.motion.MotionProfileGoal.CompletionBehavior;
 import com.team254.lib.motion.MotionState;
+import com.team254.lib.motion.ProfileFollower;
 
 /**
  * A PathFollower follows a predefined path using a combination of feedforward and feedback control. It uses an
  * AdaptivePurePursuitController to choose a reference pose and generate a steering command (curvature), and then a
  * ProfileFollower to generate a profile (displacement and velocity) command.
  */
-public class TalonPathFollower {
+public class PathFollower {
     private static final double kReallyBigNumber = 1E6;
 
     public static class Parameters {
@@ -24,6 +24,10 @@ public class TalonPathFollower {
         public final double inertia_gain;
         public final double profile_kp;
         public final double profile_ki;
+        public final double profile_kv;
+        public final double profile_kffv;
+        public final double profile_kffa;
+        public final double profile_ks;
         public final double profile_max_abs_vel;
         public final double profile_max_abs_acc;
         public final double goal_pos_tolerance;
@@ -31,13 +35,17 @@ public class TalonPathFollower {
         public final double stop_steering_distance;
 
         public Parameters(Lookahead lookahead, double inertia_gain, double profile_kp, double profile_ki,
-                          double profile_max_abs_vel,
+                          double profile_kv, double profile_kffv, double profile_kffa, double profile_ks, double profile_max_abs_vel,
                           double profile_max_abs_acc, double goal_pos_tolerance, double goal_vel_tolerance,
                           double stop_steering_distance) {
             this.lookahead = lookahead;
             this.inertia_gain = inertia_gain;
             this.profile_kp = profile_kp;
             this.profile_ki = profile_ki;
+            this.profile_kv = profile_kv;
+            this.profile_kffv = profile_kffv;
+            this.profile_kffa = profile_kffa;
+            this.profile_ks = profile_ks;
             this.profile_max_abs_vel = profile_max_abs_vel;
             this.profile_max_abs_acc = profile_max_abs_acc;
             this.goal_pos_tolerance = goal_pos_tolerance;
@@ -48,7 +56,7 @@ public class TalonPathFollower {
 
     AdaptivePurePursuitController mSteeringController;
     Twist2d mLastSteeringDelta;
-    TalonProfileFollower mVelocityController;
+    ProfileFollower mVelocityController;
     final double mInertiaGain;
     boolean overrideFinished = false;
     boolean doneSteering = false;
@@ -65,10 +73,11 @@ public class TalonPathFollower {
     /**
      * Create a new PathFollower for a given path.
      */
-    public TalonPathFollower(Path path, boolean reversed, Parameters parameters) {
+    public PathFollower(Path path, boolean reversed, Parameters parameters) {
         mSteeringController = new AdaptivePurePursuitController(path, reversed, parameters.lookahead);
         mLastSteeringDelta = Twist2d.identity();
-        mVelocityController = new TalonProfileFollower(parameters.profile_kp, parameters.profile_ki);
+        mVelocityController = new ProfileFollower(parameters.profile_kp, parameters.profile_ki, parameters.profile_kv,
+            parameters.profile_kffv, parameters.profile_kffa, parameters.profile_ks);
         mVelocityController.setConstraints(
             new MotionProfileConstraints(parameters.profile_max_abs_vel, parameters.profile_max_abs_acc));
         mMaxProfileVel = parameters.profile_max_abs_vel;
@@ -97,7 +106,7 @@ public class TalonPathFollower {
             mLastSteeringDelta = steering_command.delta;
             mVelocityController.setGoalAndConstraints(
                 new MotionProfileGoal(displacement + steering_command.delta.dx,
-                    Math.abs(steering_command.end_velocity), CompletionBehavior.OVERSHOOT,
+                    Math.abs(steering_command.end_velocity), CompletionBehavior.VIOLATE_MAX_ACCEL,
                     mGoalPosTolerance, mGoalVelTolerance),
                 new MotionProfileConstraints(Math.min(mMaxProfileVel, steering_command.max_velocity),
                     mMaxProfileAcc));
