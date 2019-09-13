@@ -22,6 +22,10 @@ public class YamlConfig {
         return yaml.load(input);
     }
 
+    public Double getConstant(String key) {
+        return constants.get(key);
+    }
+
     public static class SubsystemConfig {
         boolean implemented = false;
         Map<String, Integer> talons = new HashMap<>();
