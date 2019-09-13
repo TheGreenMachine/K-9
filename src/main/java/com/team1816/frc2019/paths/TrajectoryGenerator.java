@@ -1,5 +1,7 @@
 package com.team1816.frc2019.paths;
 
+import com.team1816.frc2019.Robot;
+import com.team1816.frc2019.planners.DriveMotionPlanner;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.geometry.Rotation2d;
@@ -7,8 +9,6 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryUtil;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
-import com.team1816.frc2019.Robot;
-import com.team1816.frc2019.planners.DriveMotionPlanner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -63,6 +63,7 @@ public class TrajectoryGenerator {
     private static final Pose2d kCenterStartPose = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(180.0));
     private static final Pose2d kCenterStraightPose = new Pose2d(-144, 0.0, Rotation2d.fromDegrees(180.0));
 
+
     public class TrajectorySet {
 
         public class MirroredTrajectory {
@@ -82,12 +83,14 @@ public class TrajectoryGenerator {
         public final Trajectory<TimedState<Pose2dWithCurvature>> centerStartToStairs;
         public final Trajectory<TimedState<Pose2dWithCurvature>> centerStartToVex;
         public final Trajectory<TimedState<Pose2dWithCurvature>> centerPID;
+        public final Trajectory<TimedState<Pose2dWithCurvature>> driveStraight;
 
         private TrajectorySet() {
             centerStartToStairs = getCenterStartToStairs();
             centerStartToVex = getCenterStartToVex();
             centerPID = getPID();
-            System.out.println(centerPID.toString());
+            driveStraight = getDriveStraight();
+            // System.out.println(centerPID.toString());
         }
 
         private Trajectory<TimedState<Pose2dWithCurvature>> getPID() {
@@ -115,6 +118,14 @@ public class TrajectoryGenerator {
             waypoints.add(kVexBox);
             return mMotionPlanner.generateTrajectory(false, waypoints, Arrays.asList(new CentripetalAccelerationConstraint(kMaxCentripetalAccel)),
                     kMaxVelocity, kMaxAccel, kMaxVoltage);
+        }
+
+        private Trajectory<TimedState<Pose2dWithCurvature>> getDriveStraight() {
+            List<Pose2d> waypoints = new ArrayList<>();
+            waypoints.add(kCenterStartPose);
+            waypoints.add(kCenterStraightPose);
+            return mMotionPlanner.generateTrajectory(false, waypoints, Arrays.asList(new CentripetalAccelerationConstraint(kMaxCentripetalAccel)),
+                kMaxVelocity, kMaxAccel, kMaxVoltage);
         }
     }
 }

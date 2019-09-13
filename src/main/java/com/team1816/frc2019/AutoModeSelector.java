@@ -1,9 +1,11 @@
 package com.team1816.frc2019;
 
 import com.team1816.frc2019.auto.modes.DriveByCameraMode;
+import com.team1816.frc2019.auto.modes.DriveStraightMode;
 import com.team1816.frc2019.auto.modes.FrontThenSideCargoShipMode;
 import com.team1816.frc2019.auto.modes.TuneDrivetrainMode;
-import com.team1816.lib.auto.modes.*;
+import com.team1816.lib.auto.modes.AutoModeBase;
+import com.team1816.lib.auto.modes.DoNothingMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -12,14 +14,20 @@ import java.util.Optional;
 public class AutoModeSelector {
 
     enum StartingPosition {
-        LEFT_HAB_2, RIGHT_HAB_2, CENTER_HAB_1, LEFT_HAB_1, RIGHT_HAB_1
+        LEFT_HAB_2, RIGHT_HAB_2, CENTER_HAB_1, LEFT_HAB_1, RIGHT_HAB_1,
+        LEFT, CENTER, RIGHT,
     }
 
     enum DesiredMode {
         DRIVE_BY_CAMERA,
         DO_NOTHING,
         FRONT_THEN_SIDE_CARGO_SHIP,
-        TUNE_DRIVETRAIN;
+        TUNE_DRIVETRAIN,
+        CROSS_AUTO_LINE,
+        LIVING_ROOM,
+        SHOP,
+        PID,
+        DRIVE_STRAIGHT
     }
 
     private DesiredMode mCachedDesiredMode = null;
@@ -46,6 +54,30 @@ public class AutoModeSelector {
         mModeChooser.addOption("Front Then Side Cargo Ship", DesiredMode.FRONT_THEN_SIDE_CARGO_SHIP);
         mModeChooser.addOption("Do Nothing", DesiredMode.DO_NOTHING);
         SmartDashboard.putData("Auto mode", mModeChooser);
+
+        // Trajectory Generator
+
+        mModeChooser = new SendableChooser<>();
+        mModeChooser.setDefaultOption("Cross Auto Line", DesiredMode.CROSS_AUTO_LINE);
+        mModeChooser.addOption("Living Room",DesiredMode.LIVING_ROOM);
+        mModeChooser.addOption("Shop", DesiredMode.SHOP);
+        mModeChooser.addOption("PID", DesiredMode.PID);
+        SmartDashboard.putData("Auto mode", mModeChooser);
+
+        mStartPositionChooser = new SendableChooser<>();
+        mStartPositionChooser.setDefaultOption("Right", StartingPosition.RIGHT);
+        mStartPositionChooser.addOption("Center", StartingPosition.CENTER);
+        mStartPositionChooser.addOption("Left", StartingPosition.LEFT);
+        SmartDashboard.putData("Starting Position", mStartPositionChooser);
+
+//        mSwitchScalePositionChooser = new SendableChooser<>();
+//        mSwitchScalePositionChooser.setDefaultOption("Use FMS Data", SwitchScalePosition.USE_FMS_DATA);
+//        mSwitchScalePositionChooser.addOption("Left Switch Left Scale", SwitchScalePosition.LEFT_SWITCH_LEFT_SCALE);
+//        mSwitchScalePositionChooser.addOption("Left Switch Right Scale", SwitchScalePosition.LEFT_SWITCH_RIGHT_SCALE);
+//        mSwitchScalePositionChooser.addOption("Right Switch Left Scale", SwitchScalePosition.RIGHT_SWITCH_LEFT_SCALE);
+//        mSwitchScalePositionChooser.addOption("Right Switch Right Scale", SwitchScalePosition.RIGHT_SWITCH_RIGHT_SCALE);
+//        SmartDashboard.putData("Switch and Scale Position", mSwitchScalePositionChooser);
+
     }
 
     public void updateModeCreator() {
@@ -79,6 +111,8 @@ public class AutoModeSelector {
                     startingLeft(position), startingHab1(position)));
             case TUNE_DRIVETRAIN:
                 return Optional.of(new TuneDrivetrainMode());
+            case DRIVE_STRAIGHT:
+                return (Optional.of(new DriveStraightMode()));
             default:
                 break;
         }
