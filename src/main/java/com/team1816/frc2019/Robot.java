@@ -106,7 +106,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         try {
 
-            var logFile = new SimpleDateFormat("DDD_HH-mm").format(new Date());
+            var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             logger = BadLog.init("/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag");
             BadLog.createTopic("Drivetrain/LeftActVel", "NativeUnits", mDrive::getLeftVelocityNativeUnits, "hide",
                 "join:Drivetrain/Velocities");

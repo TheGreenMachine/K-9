@@ -10,7 +10,6 @@ import com.team1816.frc2019.Kinematics;
 import com.team1816.frc2019.Robot;
 import com.team1816.frc2019.RobotState;
 import com.team1816.frc2019.planners.DriveMotionPlanner;
-import com.team1816.lib.control.TalonPathFollower;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.hardware.TalonSRXChecker;
 import com.team1816.lib.loops.ILooper;
@@ -18,6 +17,7 @@ import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.control.Path;
+import com.team254.lib.control.PathFollower;
 import com.team254.lib.geometry.*;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
@@ -42,7 +42,7 @@ public class Drive extends Subsystem {
     private IMotorController mLeftSlaveA, mRightSlaveA, mLeftSlaveB, mRightSlaveB;
 
     // Controllers
-    private TalonPathFollower mPathFollower;
+    private PathFollower mPathFollower;
     private Path mCurrentPath = null;
 
     private final Solenoid mShifter;
@@ -465,13 +465,16 @@ public class Drive extends Subsystem {
     public synchronized void setWantDrivePath(Path path, boolean reversed) {
         if (mCurrentPath != path || mDriveControlState != DriveControlState.PATH_FOLLOWING) {
             RobotState.getInstance().resetDistanceDriven();
-            mPathFollower = new TalonPathFollower(path, reversed, new TalonPathFollower.Parameters(
-                    new Lookahead(Constants.kMinLookAhead, Constants.kMaxLookAhead, Constants.kMinLookAheadSpeed,
-                            Constants.kMaxLookAheadSpeed),
-                    Constants.kInertiaSteeringGain, Constants.kPathFollowingProfileKp,
-                    Constants.kPathFollowingProfileKi, Constants.kPathFollowingMaxVel,
-                    Constants.kPathFollowingMaxAccel, Constants.kPathFollowingGoalPosTolerance,
-                    Constants.kPathFollowingGoalVelTolerance, Constants.kPathStopSteeringDistance));
+            mPathFollower = new PathFollower(path, reversed, new PathFollower.Parameters(
+                new Lookahead(Constants.kMinLookAhead, Constants.kMaxLookAhead, Constants.kMinLookAheadSpeed,
+                    Constants.kMaxLookAheadSpeed),
+                Constants.kInertiaSteeringGain, Constants.kPathFollowingProfileKp,
+                Constants.kPathFollowingProfileKi, Constants.kPathFollowingProfileKv,
+                Constants.kPathFollowingProfileKffv, Constants.kPathFollowingProfileKffa,
+                Constants.kPathFollowingProfileKs, Constants.kPathFollowingMaxVel,
+                Constants.kPathFollowingMaxAccel, Constants.kPathFollowingGoalPosTolerance,
+                Constants.kPathFollowingGoalVelTolerance, Constants.kPathStopSteeringDistance));
+
             mDriveControlState = DriveControlState.PATH_FOLLOWING;
             mCurrentPath = path;
         } else {

@@ -14,7 +14,7 @@ subsystems:
       kP: .85
       kI: 0.01
       kD: 20
-      kF: 0.6200
+      kF: 0.553
       iZone: 9
       encPPR: 4096 # CTRE mag encoder
       invertMotor: 2
@@ -35,5 +35,6 @@ constants:
   sensorPhase: 0
   kLooperDt: .01
   kTrackScrubFactor: 1.0
+  pathKs: .0125
   kPCMId: 0
   verbose: 0
