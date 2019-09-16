@@ -122,6 +122,8 @@ public class Drive extends Subsystem {
         // force a CAN message across
         mIsBrakeMode = true;
         setBrakeMode(false);
+
+        mMotionPlanner = new DriveMotionPlanner();
     }
 
     private synchronized void reloadGains() {
@@ -239,6 +241,8 @@ public class Drive extends Subsystem {
                                 updatePathFollower(timestamp);
                             }
                         case TRAJECTORY_FOLLOWING:
+                            mLogger.updateTopics();
+                            mLogger.log();
                             updatePathFollower(timestamp);
                             break;
 
@@ -533,7 +537,7 @@ public class Drive extends Subsystem {
         } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             final double now = Timer.getFPGATimestamp();
 
-            DriveMotionPlanner.Output output = mMotionPlanner.update(now, RobotState.getInstance().getFieldToVehicle(now));
+            DriveMotionPlanner.Output output = mMotionPlanner.update(timestamp, RobotState.getInstance().getFieldToVehicle(now));
 
             // DriveSignal signal = new DriveSignal(demand.left_feedforward_voltage / 12.0, demand.right_feedforward_voltage / 12.0);
 
