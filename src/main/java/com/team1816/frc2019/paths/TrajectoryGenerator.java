@@ -15,11 +15,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TrajectoryGenerator {
-    // velocities are in/sec
-    private static final double kMaxVelocity = Robot.getFactory().getConstant("maxVel");
-    private static final double kMaxAccel = Robot.getFactory().getConstant("maxAccel");
-    private static final double kMaxCentripetalAccel = 100.0;
-    private static final double kMaxVoltage = 9.0;
 
     private static TrajectoryGenerator mInstance = new TrajectoryGenerator();
     private final DriveMotionPlanner mMotionPlanner;
@@ -30,7 +25,7 @@ public class TrajectoryGenerator {
     }
 
     private TrajectoryGenerator() {
-        mMotionPlanner = new DriveMotionPlanner();
+        mMotionPlanner = DriveMotionPlanner.getInstance();
     }
 
     public void generateTrajectories() {
@@ -59,10 +54,6 @@ public class TrajectoryGenerator {
     private static final Pose2d kMiddleWalkway = new Pose2d(-79.5,11.0, Rotation2d.fromDegrees(180+45));
     private static final Pose2d kStairs = new Pose2d(-176,36, Rotation2d.fromDegrees(180));
 
-    // STARTING IN CENTER
-    private static final Pose2d kCenterStartPose = new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(180.0));
-    private static final Pose2d kCenterStraightPose = new Pose2d(-144, 0.0, Rotation2d.fromDegrees(180.0));
-
 
     public class TrajectorySet {
 
@@ -80,52 +71,10 @@ public class TrajectoryGenerator {
             public final Trajectory<TimedState<Pose2dWithCurvature>> right;
         }
 
-        public final Trajectory<TimedState<Pose2dWithCurvature>> centerStartToStairs;
-        public final Trajectory<TimedState<Pose2dWithCurvature>> centerStartToVex;
-        public final Trajectory<TimedState<Pose2dWithCurvature>> centerPID;
         public final Trajectory<TimedState<Pose2dWithCurvature>> driveStraight;
 
         private TrajectorySet() {
-            centerStartToStairs = getCenterStartToStairs();
-            centerStartToVex = getCenterStartToVex();
-            centerPID = getPID();
-            driveStraight = getDriveStraight();
-            // System.out.println(centerPID.toString());
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getPID() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(kCenterStartPose);
-            waypoints.add(kCenterStraightPose);
-            return mMotionPlanner.generateTrajectory(false, waypoints, Arrays.asList(new CentripetalAccelerationConstraint(kMaxCentripetalAccel)),
-                    kMaxVelocity, kMaxAccel, kMaxVoltage);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getCenterStartToStairs() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(kCenterStartPose);
-            waypoints.add(kMiddleWalkway);
-            waypoints.add(kStairs);
-            return mMotionPlanner.generateTrajectory(false, waypoints, Arrays.asList(new CentripetalAccelerationConstraint(kMaxCentripetalAccel)),
-                    kMaxVelocity, kMaxAccel, kMaxVoltage);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getCenterStartToVex() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(kCenterStartPose);
-            waypoints.add(kShop1);
-            waypoints.add(kShop2);
-            waypoints.add(kVexBox);
-            return mMotionPlanner.generateTrajectory(false, waypoints, Arrays.asList(new CentripetalAccelerationConstraint(kMaxCentripetalAccel)),
-                    kMaxVelocity, kMaxAccel, kMaxVoltage);
-        }
-
-        private Trajectory<TimedState<Pose2dWithCurvature>> getDriveStraight() {
-            List<Pose2d> waypoints = new ArrayList<>();
-            waypoints.add(kCenterStartPose);
-            waypoints.add(kCenterStraightPose);
-            return mMotionPlanner.generateTrajectory(false, waypoints, Arrays.asList(new CentripetalAccelerationConstraint(kMaxCentripetalAccel)),
-                kMaxVelocity, kMaxAccel, kMaxVoltage);
+            driveStraight = new DriveStraight().generateTrajectory();
         }
     }
 }

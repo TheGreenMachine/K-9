@@ -21,6 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DriveMotionPlanner implements CSVWritable {
+
+    private static final DriveMotionPlanner INSTANCE = new DriveMotionPlanner();
+
     private static final double kMaxDx = 2.0;
     private static final double kMaxDy = 0.25;
     private static final double kMaxDTheta = Math.toRadians(5.0);
@@ -354,6 +357,10 @@ public class DriveMotionPlanner implements CSVWritable {
 
     public TimedState<Pose2dWithCurvature> setpoint() {
         return mSetpoint;
+    }
+
+    public static DriveMotionPlanner getInstance() {
+        return INSTANCE;
     }
 }
 
