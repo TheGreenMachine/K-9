@@ -1,6 +1,7 @@
 package com.team1816.frc2019.auto.modes;
 
 import com.team1816.frc2019.paths.DriveStraight;
+import com.team1816.frc2019.paths.TrajectorySet;
 import com.team1816.lib.auto.AutoModeEndedException;
 import com.team1816.lib.auto.actions.DriveTrajectory;
 import com.team1816.lib.auto.actions.WaitAction;
@@ -11,7 +12,7 @@ public class DriveStraightMode extends AutoModeBase {
     private DriveTrajectory mDriveStraight;
 
     public DriveStraightMode() {
-        var trajectory = new DriveStraight().generateTrajectory();
+        var trajectory = TrajectorySet.getInstance().DRIVE_STRAIGHT;
         mDriveStraight = new DriveTrajectory(trajectory, true);
     }
 

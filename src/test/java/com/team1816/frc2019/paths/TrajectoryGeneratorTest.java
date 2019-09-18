@@ -94,7 +94,7 @@ public class TrajectoryGeneratorTest {
 
     @Test
     public void test() {
-        var driveStraightTrajectory = new DriveStraight().generateTrajectory();
+        var driveStraightTrajectory = TrajectorySet.getInstance().DRIVE_STRAIGHT;
         System.out.println(driveStraightTrajectory.toString());
         verifyTrajectory(driveStraightTrajectory, true);
     }

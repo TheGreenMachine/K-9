@@ -2,7 +2,7 @@ package com.team1816.frc2019;
 
 import badlog.lib.BadLog;
 import com.team1816.frc2019.controlboard.ControlBoard;
-import com.team1816.frc2019.paths.TrajectoryGenerator;
+import com.team1816.frc2019.paths.TrajectorySet;
 import com.team1816.frc2019.states.TimedLEDState;
 import com.team1816.frc2019.subsystems.CarriageCanifier;
 import com.team1816.frc2019.subsystems.Drive;
@@ -77,8 +77,6 @@ public class Robot extends TimedRobot {
 
     private AutoModeSelector mAutoModeSelector = new AutoModeSelector();
     private AutoModeExecutor mAutoModeExecutor;
-
-    private TrajectoryGenerator mTrajectoryGenerator = TrajectoryGenerator.getInstance();
 
     private boolean mDriveByCameraInAuto = false;
     private double loopStart;
@@ -156,7 +154,7 @@ public class Robot extends TimedRobot {
             mRobotState.reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
             mDrive.setHeading(Rotation2d.identity());
 
-            mTrajectoryGenerator.generateTrajectories();
+            TrajectorySet.getInstance();
 
             mAutoModeSelector.updateModeCreator();
         } catch (Throwable t) {
