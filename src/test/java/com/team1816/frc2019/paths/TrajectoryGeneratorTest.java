@@ -94,9 +94,9 @@ public class TrajectoryGeneratorTest {
 
     @Test
     public void test() {
-        var driveStraightTrajectory = TrajectorySet.getInstance().DRIVE_STRAIGHT;
-        System.out.println(driveStraightTrajectory.toString());
-        verifyTrajectory(driveStraightTrajectory, true);
+        var ts = TrajectorySet.getInstance();
+        System.out.println(ts.getDRIVE_STRAIGHT());
+        verifyTrajectory(ts.getDRIVE_STRAIGHT(), true);
     }
 
     private void verifyTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> trajectory, boolean shouldBeReversed) {
