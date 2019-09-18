@@ -38,6 +38,10 @@ public interface PathContainer {
             kMaxVelocity, kMaxAccel, kMaxVoltage);
     }
 
+    default Trajectory.Mirrored generateMirroredTrajectory() {
+        return new Trajectory.Mirrored(generateTrajectory());
+    }
+
 
     boolean isReversed();
 }

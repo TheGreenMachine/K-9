@@ -20,7 +20,7 @@ public class TrajectoryGeneratorTest {
 
     public static final double kTestEpsilon = 1e-5;
 
-    public void verifyMirroredTrajectories(final TrajectoryGenerator.TrajectorySet.MirroredTrajectory mirrored,
+    public void verifyMirroredTrajectories(final Trajectory.Mirrored mirrored,
                                            boolean shouldBeReversed) {
         assertEquals(mirrored.left.length(), mirrored.right.length());
         TrajectoryIterator<TimedState<Pose2dWithCurvature>> left_iterator = new TrajectoryIterator<>(new TimedView<>
@@ -94,10 +94,9 @@ public class TrajectoryGeneratorTest {
 
     @Test
     public void test() {
-        TrajectoryGenerator.getInstance().generateTrajectories();
-        var ts = TrajectoryGenerator.getInstance().getTrajectorySet();
-        System.out.println(ts.getDriveStraight().toString());
-        verifyTrajectory(ts.getDriveStraight(), true);
+        var driveStraightTrajectory = new DriveStraight().generateTrajectory();
+        System.out.println(driveStraightTrajectory.toString());
+        verifyTrajectory(driveStraightTrajectory, true);
     }
 
     private void verifyTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> trajectory, boolean shouldBeReversed) {
