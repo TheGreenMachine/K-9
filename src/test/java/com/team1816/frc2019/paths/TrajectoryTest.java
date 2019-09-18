@@ -16,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(JUnit4.class)
-public class TrajectoryGeneratorTest {
+public class TrajectoryTest {
 
     public static final double kTestEpsilon = 1e-5;
 
@@ -94,9 +94,9 @@ public class TrajectoryGeneratorTest {
 
     @Test
     public void test() {
-        var ts = TrajectorySet.getInstance();
-        System.out.println(ts.DRIVE_STRAIGHT);
-        verifyTrajectory(ts.DRIVE_STRAIGHT, true);
+        var trajectories = TrajectorySet.getInstance();
+        System.out.println(trajectories.DRIVE_STRAIGHT);
+        verifyTrajectory(trajectories.DRIVE_STRAIGHT, true);
     }
 
     private void verifyTrajectory(Trajectory<TimedState<Pose2dWithCurvature>> trajectory, boolean shouldBeReversed) {
