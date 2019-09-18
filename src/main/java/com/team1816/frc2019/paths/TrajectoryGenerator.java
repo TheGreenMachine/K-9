@@ -5,6 +5,7 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryUtil;
 import com.team254.lib.trajectory.timing.TimedState;
 
+@Deprecated
 public class TrajectoryGenerator {
 
     private static TrajectoryGenerator mInstance = new TrajectoryGenerator();
