@@ -19,8 +19,4 @@ public class TrajectorySet {
     private TrajectorySet() {
         this.DRIVE_STRAIGHT = new DriveStraight().generateTrajectory();
     }
-
-    public Trajectory<TimedState<Pose2dWithCurvature>> getDRIVE_STRAIGHT() {
-        return DRIVE_STRAIGHT;
-    }
 }
