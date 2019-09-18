@@ -1,6 +1,7 @@
 package com.team1816.frc2019;
 
 import com.team1816.frc2019.auto.modes.DriveByCameraMode;
+import com.team1816.frc2019.auto.modes.DriveStraightMode;
 import com.team1816.frc2019.auto.modes.FrontThenSideCargoShipMode;
 import com.team1816.frc2019.auto.modes.TuneDrivetrainMode;
 import com.team1816.lib.auto.modes.AutoModeBase;
@@ -104,6 +105,8 @@ public class AutoModeSelector {
                     startingLeft(position), startingHab1(position)));
             case TUNE_DRIVETRAIN:
                 return Optional.of(new TuneDrivetrainMode());
+            case DRIVE_STRAIGHT:
+                return Optional.of(new DriveStraightMode());
             default:
                 break;
         }
