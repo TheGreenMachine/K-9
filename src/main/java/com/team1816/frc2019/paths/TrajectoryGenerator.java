@@ -1,23 +1,13 @@
 package com.team1816.frc2019.paths;
 
-import com.team1816.frc2019.Robot;
-import com.team1816.frc2019.planners.DriveMotionPlanner;
-import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryUtil;
-import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class TrajectoryGenerator {
 
     private static TrajectoryGenerator mInstance = new TrajectoryGenerator();
-    private final DriveMotionPlanner mMotionPlanner;
     private TrajectorySet mTrajectorySet = null;
 
     public static TrajectoryGenerator getInstance() {
@@ -25,7 +15,6 @@ public class TrajectoryGenerator {
     }
 
     private TrajectoryGenerator() {
-        mMotionPlanner = DriveMotionPlanner.getInstance();
     }
 
     public void generateTrajectories() {
@@ -47,13 +36,6 @@ public class TrajectoryGenerator {
     // ALL POSES DEFINED FOR THE CASE THAT ROBOT STARTS ON RIGHT! (mirrored about +x axis for LEFT)
 
     // shop
-    private static final Pose2d kShop1 = new Pose2d(-74,-36, Rotation2d.fromDegrees(180-45));
-    private static final Pose2d kShop2 = new Pose2d(-114,-126, Rotation2d.fromDegrees(180-22));
-    private static final Pose2d kVexBox = new Pose2d(-198,-150, Rotation2d.fromDegrees(180));
-
-    private static final Pose2d kMiddleWalkway = new Pose2d(-79.5,11.0, Rotation2d.fromDegrees(180+45));
-    private static final Pose2d kStairs = new Pose2d(-176,36, Rotation2d.fromDegrees(180));
-
 
     public class TrajectorySet {
 
@@ -74,7 +56,11 @@ public class TrajectoryGenerator {
         public final Trajectory<TimedState<Pose2dWithCurvature>> driveStraight;
 
         private TrajectorySet() {
-            driveStraight = new DriveStraight().generateTrajectory();
+            this.driveStraight = new DriveStraight().generateTrajectory();
+        }
+
+        public Trajectory<TimedState<Pose2dWithCurvature>> getDriveStraight() {
+            return driveStraight;
         }
     }
 }

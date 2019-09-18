@@ -24,6 +24,8 @@ public interface PathContainer {
     double kMaxCentripetalAccel = 100.0;
     double kMaxVoltage = 9.0;
 
+    //TODO: Merge PathBuilder and Trajectory generation so only one path has to be created
+
     Path buildPath();
 
     List<Pose2d> buildWaypoints();

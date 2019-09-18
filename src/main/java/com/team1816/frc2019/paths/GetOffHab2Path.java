@@ -9,8 +9,14 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GetOffHab2Path implements PathContainer {
+
+    @Override
+    public List<Pose2d> buildWaypoints() {
+        return null;
+    }
 
     @Override
     public Path buildPath() {
