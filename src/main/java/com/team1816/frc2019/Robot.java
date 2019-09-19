@@ -114,6 +114,10 @@ public class Robot extends TimedRobot {
                 "join:Drivetrain/Velocities");
             BadLog.createTopic("Drivetrain/RightVel", "NativeUnits", mDrive::getRightVelocityDemand, "hide",
                 "join:Drivetrain/Velocities");
+            BadLog.createTopic("Drivetrain/LeftVel+FF", "NativeUnits", mDrive::getLeftDemandWithFF, "hide",
+                "join:Drivetrain/Velocities");
+            BadLog.createTopic("Drivetrain/RightVel+FF", "NativeUnits", mDrive::getRightDemandWithFF, "hide",
+                "join:Drivetrain/Velocities");
             BadLog.createTopic("Drivetrain/LeftError", "NativeUnits", mDrive::getLeftError, "hide",
                 "join:Drivetrain/VelocityError");
             BadLog.createTopic("Drivetrain/RightError", "NativeUnits", mDrive::getRightError, "hide",

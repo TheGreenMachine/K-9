@@ -217,6 +217,22 @@ public class Drive extends Subsystem {
         }
     }
 
+    public double getLeftFeedForward() {
+        return mPeriodicIO.left_feedforward + kTalonKd * mPeriodicIO.left_accel / 1023.0;
+    }
+
+    public double getRightFeedForward() {
+        return mPeriodicIO.right_feedforward + kTalonKd * mPeriodicIO.right_accel / 1023.0;
+    }
+
+    public double getLeftDemandWithFF() {
+        return getLeftVelocityDemand() + getLeftFeedForward();
+    }
+
+    public double getRightDemandWithFF() {
+        return getRightVelocityDemand() + getRightFeedForward();
+    }
+
     @Override
     public void registerEnabledLoops(ILooper in) {
         in.register(new Loop() {
