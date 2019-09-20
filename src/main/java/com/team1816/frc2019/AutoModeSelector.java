@@ -1,9 +1,6 @@
 package com.team1816.frc2019;
 
-import com.team1816.frc2019.auto.modes.DriveByCameraMode;
-import com.team1816.frc2019.auto.modes.DriveStraightMode;
-import com.team1816.frc2019.auto.modes.FrontThenSideCargoShipMode;
-import com.team1816.frc2019.auto.modes.TuneDrivetrainMode;
+import com.team1816.frc2019.auto.modes.*;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.auto.modes.DoNothingMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -14,8 +11,7 @@ import java.util.Optional;
 public class AutoModeSelector {
 
     enum StartingPosition {
-        LEFT_HAB_2, RIGHT_HAB_2, CENTER_HAB_1, LEFT_HAB_1, RIGHT_HAB_1,
-        LEFT, CENTER, RIGHT,
+        LEFT_HAB_2, RIGHT_HAB_2, CENTER_HAB_1, LEFT_HAB_1, RIGHT_HAB_1
     }
 
     enum DesiredMode {
@@ -56,22 +52,11 @@ public class AutoModeSelector {
         SmartDashboard.putData("Auto mode", mModeChooser);
 
         // CheezeCurd
-//        mModeChooser.addOption("Living Room",DesiredMode.LIVING_ROOM);
+        mModeChooser.addOption("Living Room",DesiredMode.LIVING_ROOM);
 //        mModeChooser.addOption("Shop", DesiredMode.SHOP);
 //        mModeChooser.addOption("PID", DesiredMode.PID);
         mModeChooser.addOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
-
-        mStartPositionChooser.addOption("Center", StartingPosition.CENTER);
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
-
-//        mSwitchScalePositionChooser = new SendableChooser<>();
-//        mSwitchScalePositionChooser.setDefaultOption("Use FMS Data", SwitchScalePosition.USE_FMS_DATA);
-//        mSwitchScalePositionChooser.addOption("Left Switch Left Scale", SwitchScalePosition.LEFT_SWITCH_LEFT_SCALE);
-//        mSwitchScalePositionChooser.addOption("Left Switch Right Scale", SwitchScalePosition.LEFT_SWITCH_RIGHT_SCALE);
-//        mSwitchScalePositionChooser.addOption("Right Switch Left Scale", SwitchScalePosition.RIGHT_SWITCH_LEFT_SCALE);
-//        mSwitchScalePositionChooser.addOption("Right Switch Right Scale", SwitchScalePosition.RIGHT_SWITCH_RIGHT_SCALE);
-//        SmartDashboard.putData("Switch and Scale Position", mSwitchScalePositionChooser);
-
     }
 
     public void updateModeCreator() {
@@ -106,7 +91,9 @@ public class AutoModeSelector {
             case TUNE_DRIVETRAIN:
                 return Optional.of(new TuneDrivetrainMode());
             case DRIVE_STRAIGHT:
-                return Optional.of(new DriveStraightMode());
+                return (Optional.of(new DriveStraightMode()));
+            case LIVING_ROOM:
+                return (Optional.of(new LivingRoomMode()));
             default:
                 break;
         }

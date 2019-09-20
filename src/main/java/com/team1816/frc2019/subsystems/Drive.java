@@ -62,8 +62,6 @@ public class Drive extends Subsystem {
     private PeriodicIO mPeriodicIO;
     private DriveMotionPlanner mMotionPlanner;
     private boolean mOverrideTrajectory = false;
-    private static double kD = Robot.getFactory().getConstant(NAME, "kD");
-
 
     public synchronized static Drive getInstance() {
         if (mInstance == null) {
@@ -157,8 +155,6 @@ public class Drive extends Subsystem {
         public double right_voltage;
         public int left_position_ticks;
         public int right_position_ticks;
-        public double left_distance;
-        public double right_distance;
         public int left_velocity_ticks_per_100ms;
         public int right_velocity_ticks_per_100ms;
         public Rotation2d gyro_heading = Rotation2d.identity();
@@ -190,13 +186,6 @@ public class Drive extends Subsystem {
         mPeriodicIO.left_error = mLeftMaster.getClosedLoopError(0);
         mPeriodicIO.right_error = mRightMaster.getClosedLoopError(0);
 
-        double deltaLeftTicks = ((mPeriodicIO.left_position_ticks - prevLeftTicks) / DRIVE_ENCODER_PPR) * Math.PI;
-        mPeriodicIO.left_distance += deltaLeftTicks * Constants.kDriveWheelDiameterInches;
-
-        double deltaRightTicks = ((mPeriodicIO.right_position_ticks - prevRightTicks) / DRIVE_ENCODER_PPR) * Math.PI;
-        mPeriodicIO.right_distance += deltaRightTicks * Constants.kDriveWheelDiameterInches;
-
-
         if (mCSVWriter != null) {
             mCSVWriter.add(mPeriodicIO);
         }
@@ -207,13 +196,11 @@ public class Drive extends Subsystem {
     @Override
     public synchronized void writePeriodicOutputs() {
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
-            mLeftMaster.set(ControlMode.PercentOutput, mPeriodicIO.left_demand, DemandType.ArbitraryFeedForward, 0.0);
-            mRightMaster.set(ControlMode.PercentOutput, mPeriodicIO.right_demand, DemandType.ArbitraryFeedForward, 0.0);
+            mLeftMaster.set(ControlMode.PercentOutput, mPeriodicIO.left_demand);
+            mRightMaster.set(ControlMode.PercentOutput, mPeriodicIO.right_demand);
         } else {
-            mLeftMaster.set(ControlMode.Velocity, mPeriodicIO.left_demand, DemandType.ArbitraryFeedForward,
-                mPeriodicIO.left_feedforward + kTalonKd * mPeriodicIO.left_accel / 1023.0);
-            mRightMaster.set(ControlMode.Velocity, mPeriodicIO.right_demand, DemandType.ArbitraryFeedForward,
-                mPeriodicIO.right_feedforward + kTalonKd * mPeriodicIO.right_accel / 1023.0);
+            mLeftMaster.set(ControlMode.Velocity, mPeriodicIO.left_demand);
+            mRightMaster.set(ControlMode.Velocity, mPeriodicIO.right_demand);
         }
     }
 
@@ -364,10 +351,9 @@ public class Drive extends Subsystem {
      * Configure talons for velocity control
      */
     public synchronized void setVelocity(DriveSignal signal, DriveSignal feedforward) {
-        if (mDriveControlState != DriveControlState.PATH_FOLLOWING) {
+        if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             setBrakeMode(true);
-            System.out.println("switching to path following");
-            mDriveControlState = DriveControlState.PATH_FOLLOWING;
+            System.out.println("Switching to Velocity");
             mLeftMaster.selectProfileSlot(0, 0);
             mRightMaster.selectProfileSlot(0, 0);
             mLeftMaster.configNeutralDeadband(0.0, 0);
@@ -668,10 +654,10 @@ public class Drive extends Subsystem {
 
     @Override
     public void outputTelemetry() {
-        SmartDashboard.putNumber("Right Drive Distance", mPeriodicIO.right_distance);
+        SmartDashboard.putNumber("Right Drive Distance", getRightEncoderDistance());
         SmartDashboard.putNumber("Right Drive Ticks", mPeriodicIO.right_position_ticks);
         SmartDashboard.putNumber("Left Drive Ticks", mPeriodicIO.left_position_ticks);
-        SmartDashboard.putNumber("Left Drive Distance", mPeriodicIO.left_distance);
+        SmartDashboard.putNumber("Left Drive Distance", getLeftEncoderDistance());
         // SmartDashboard.putNumber("Right Linear Velocity", getRightLinearVelocity());
         // SmartDashboard.putNumber("Left Linear Velocity", getLeftLinearVelocity());
 

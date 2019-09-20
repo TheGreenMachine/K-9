@@ -15,8 +15,9 @@ public class TrajectorySet {
     }
 
     public final Trajectory<TimedState<Pose2dWithCurvature>> DRIVE_STRAIGHT;
-
+    public final Trajectory<TimedState<Pose2dWithCurvature>> LIVING_ROOM;
     private TrajectorySet() {
         this.DRIVE_STRAIGHT = new DriveStraight().generateTrajectory();
+        this.LIVING_ROOM = new LivingRoomPath().generateTrajectory();
     }
 }
