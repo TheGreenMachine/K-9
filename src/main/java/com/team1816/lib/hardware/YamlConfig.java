@@ -1,5 +1,6 @@
 package com.team1816.lib.hardware;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.BeanAccess;
@@ -13,7 +14,7 @@ import java.util.Map;
 @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
 public class YamlConfig {
     Map<String, SubsystemConfig> subsystems;
-    Map<String, Double> constants = new HashMap<>();
+    Constants constants = new Constants();
     int pcm;
 
     public static YamlConfig loadFrom(InputStream input) {
@@ -22,8 +23,28 @@ public class YamlConfig {
         return yaml.load(input);
     }
 
-    public Double getConstant(String key) {
-        return constants.get(key);
+    public Double getDouble(String key) {
+        if (!constants.doubles.containsKey(key)) {
+            DriverStation.reportError("Yaml constants:" + key + " missing", false);
+            return null;
+        }
+        return constants.doubles.get(key);
+    }
+
+    public Boolean getBoolean(String key) {
+        if (!constants.booleans.containsKey(key)) {
+            DriverStation.reportError("Yaml constants:" + key + " missing", false);
+            return null;
+        }
+        return constants.booleans.get(key);
+    }
+
+    public Integer getInteger(String key) {
+        if (!constants.ints.containsKey(key)) {
+            DriverStation.reportError("Yaml constants:" + key + " missing", false);
+            return null;
+        }
+        return constants.ints.get(key);
     }
 
     public static class SubsystemConfig {
@@ -32,7 +53,7 @@ public class YamlConfig {
         Map<String, Integer> victors = new HashMap<>();
         Map<String, Integer> solenoids = new HashMap<>();
         Map<String, DoubleSolenoidConfig> doublesolenoids = new HashMap<>();
-        Map<String, Double> constants = new HashMap<>();
+        Constants constants = new Constants();
         Integer canifier;
 
         @Override
@@ -45,6 +66,21 @@ public class YamlConfig {
                     "  doublesolenoids = " + doublesolenoids.toString() + ",\n" +
                     "  canifier = " + canifier + ",\n" +
                     "  constants = " + constants.toString() + ",\n" +
+                    "}";
+        }
+    }
+
+    public static class Constants {
+        Map<String, Double> doubles = new HashMap<>();
+        Map<String, Boolean> booleans = new HashMap<>();
+        Map<String, Integer> ints = new HashMap<>();
+
+        @Override
+        public String toString() {
+            return  "Constants {\n" +
+                    "  doubles = " + doubles.toString() + ",\n" +
+                    "  booleans = " + booleans.toString() + ",\n" +
+                    "  ints = " + ints.toString() + ",\n" +
                     "}";
         }
     }

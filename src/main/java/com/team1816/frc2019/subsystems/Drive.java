@@ -73,7 +73,7 @@ public class Drive extends Subsystem {
 
     private Drive() {
 
-        DRIVE_ENCODER_PPR = mFactory.getConstant(NAME, "encPPR");
+        DRIVE_ENCODER_PPR = mFactory.getDouble(NAME, "encPPR");
         mPeriodicIO = new PeriodicIO();
 
         // start all Talons in open loop mode
@@ -88,8 +88,8 @@ public class Drive extends Subsystem {
 
         mShifter = mFactory.getSolenoid("drivetrain", "kShifterSolenoidId");
 
-        if (mFactory.getConstant(NAME, "pigeonOnTalon").intValue() == 1) {
-            var pigeonId = mFactory.getConstant(NAME, "pigeonId").intValue();
+        if (mFactory.getDouble(NAME, "pigeonOnTalon").intValue() == 1) {
+            var pigeonId = mFactory.getDouble(NAME, "pigeonId").intValue();
             System.out.println("Pigeon on Talon " + pigeonId);
             IMotorController master = null;
             if (mLeftSlaveA.getDeviceID() == pigeonId) {
@@ -104,10 +104,10 @@ public class Drive extends Subsystem {
             if(master != null) {
                 mPigeon = new PigeonIMU((TalonSRX) master);
             } else {
-                mPigeon = new PigeonIMU(new TalonSRX(mFactory.getConstant(NAME, "pigeonId").intValue()));
+                mPigeon = new PigeonIMU(new TalonSRX(mFactory.getDouble(NAME, "pigeonId").intValue()));
             }
         } else {
-            mPigeon = new PigeonIMU(mFactory.getConstant(NAME, "pigeonId").intValue());
+            mPigeon = new PigeonIMU(mFactory.getDouble(NAME, "pigeonId").intValue());
         }
         mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 10, 10);
 
@@ -130,12 +130,12 @@ public class Drive extends Subsystem {
     }
 
     private void reloadTalonGains(IMotorControllerEnhanced talon) {
-        kTalonKd = mFactory.getConstant(NAME, "kD");
-        talon.config_kP(0, mFactory.getConstant(NAME, "kP"), Constants.kLongCANTimeoutMs);
-        talon.config_kI(0, mFactory.getConstant(NAME, "kI"), Constants.kLongCANTimeoutMs);
+        kTalonKd = mFactory.getDouble(NAME, "kD");
+        talon.config_kP(0, mFactory.getDouble(NAME, "kP"), Constants.kLongCANTimeoutMs);
+        talon.config_kI(0, mFactory.getDouble(NAME, "kI"), Constants.kLongCANTimeoutMs);
         talon.config_kD(0, kTalonKd, Constants.kLongCANTimeoutMs);
-        talon.config_kF(0, mFactory.getConstant(NAME, "kF"), Constants.kLongCANTimeoutMs);
-        talon.config_IntegralZone(0, mFactory.getConstant(NAME, "iZone").intValue(), Constants.kLongCANTimeoutMs);
+        talon.config_kF(0, mFactory.getDouble(NAME, "kF"), Constants.kLongCANTimeoutMs);
+        talon.config_IntegralZone(0, mFactory.getDouble(NAME, "iZone").intValue(), Constants.kLongCANTimeoutMs);
     }
 
     private ReflectingCSVWriter<PeriodicIO> mCSVWriter = null;
@@ -627,10 +627,10 @@ public class Drive extends Subsystem {
     private TalonSRXChecker.CheckerConfig getTalonCheckerConfig(IMotorControllerEnhanced talon) {
         return new TalonSRXChecker.CheckerConfig() {
             {
-                mCurrentFloor = Robot.getFactory().getConstant(NAME,"currentFloorCheck");
-                mRPMFloor = Robot.getFactory().getConstant(NAME,"rpmFloorCheck");
-                mCurrentEpsilon = Robot.getFactory().getConstant(NAME,"currentEpsilonCheck");
-                mRPMEpsilon = Robot.getFactory().getConstant(NAME,"rpmEpsilonCheck");
+                mCurrentFloor = Robot.getFactory().getDouble(NAME,"currentFloorCheck");
+                mRPMFloor = Robot.getFactory().getDouble(NAME,"rpmFloorCheck");
+                mCurrentEpsilon = Robot.getFactory().getDouble(NAME,"currentEpsilonCheck");
+                mRPMEpsilon = Robot.getFactory().getDouble(NAME,"rpmEpsilonCheck");
                 mRPMSupplier = () -> talon.getSelectedSensorVelocity(0);
             }
         };

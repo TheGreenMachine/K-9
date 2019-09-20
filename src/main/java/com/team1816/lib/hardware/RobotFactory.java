@@ -16,7 +16,7 @@ public class RobotFactory {
   public RobotFactory(String configName) {
     System.out.println("Loading Config for " + configName);
     config = YamlConfig.loadFrom(this.getClass().getClassLoader().getResourceAsStream(configName + ".config.yml"));
-    verbose = getConstant("verbose") >= 1;
+    verbose = config.getBoolean("verbose");
   }
 
   public boolean isImplemented(String subsystem) {
@@ -28,7 +28,7 @@ public class RobotFactory {
       YamlConfig.SubsystemConfig subsystem = getSubsystem(subsystemName);
       if (isHardwareValid(subsystem.talons.get(name))) {
         var motor = CtreMotorFactory.createDefaultTalon(subsystem.talons.get(name));
-        if (subsystem.constants.get("invertMotor").intValue() == motor.getDeviceID()) {
+        if (subsystem.constants.doubles.get("invertMotor").intValue() == motor.getDeviceID()) {
           System.out.println("Inverting " + name);
           motor.setInverted(true);
         }
@@ -83,20 +83,22 @@ public class RobotFactory {
     return null;
   }
 
-  public Double getConstant(String name) {
-    if (!config.constants.containsKey(name)) {
+  @Deprecated
+  public Double getDouble(String name) {
+    if (!config.constants.doubles.containsKey(name)) {
       DriverStation.reportError("Yaml constants:" + name + " missing", false);
       return null;
     }
-    return config.constants.get(name);
+    return config.constants.doubles.get(name);
   }
 
-  public Double getConstant(String subsystem, String name) {
-    if (!getSubsystem(subsystem).constants.containsKey(name)) {
+  @Deprecated
+  public Double getDouble(String subsystem, String name) {
+    if (!getSubsystem(subsystem).constants.doubles.containsKey(name)) {
       DriverStation.reportError("Yaml " + subsystem + " constants:" + name + " missing", false);
       return null;
     }
-    return getSubsystem(subsystem).constants.get(name);
+    return getSubsystem(subsystem).constants.doubles.get(name);
   }
 
   public YamlConfig getConfig() {
