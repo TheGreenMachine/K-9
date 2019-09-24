@@ -28,7 +28,7 @@ public class RobotFactory {
       YamlConfig.SubsystemConfig subsystem = getSubsystem(subsystemName);
       if (isHardwareValid(subsystem.talons.get(name))) {
         var motor = CtreMotorFactory.createDefaultTalon(subsystem.talons.get(name));
-        if (subsystem.constants.get("invertMotor").intValue() == motor.getDeviceID()) {
+        if (subsystem.invertMotor.contains(motor.getDeviceID())) {
           System.out.println("Inverting " + name);
           motor.setInverted(true);
         }

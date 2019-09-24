@@ -5,7 +5,9 @@ import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 // Since the Collections of configurations are injected by SnakeYaml,
@@ -19,7 +21,11 @@ public class YamlConfig {
     public static YamlConfig loadFrom(InputStream input) {
         Yaml yaml = new Yaml(new Constructor(YamlConfig.class));
         yaml.setBeanAccess(BeanAccess.FIELD);
-        return yaml.load(input);
+        try {
+            return yaml.load(input);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Double getConstant(String key) {
@@ -34,6 +40,7 @@ public class YamlConfig {
         Map<String, DoubleSolenoidConfig> doublesolenoids = new HashMap<>();
         Map<String, Double> constants = new HashMap<>();
         Integer canifier;
+        List<Integer> invertMotor = new ArrayList<>();
 
         @Override
         public String toString() {
@@ -41,6 +48,7 @@ public class YamlConfig {
                     "  implemented = " + implemented + ",\n" +
                     "  talons = " + talons.toString() + ",\n" +
                     "  victors = " + victors.toString() + ",\n" +
+                    "  invertMotor = " + invertMotor + ",\n" +
                     "  solenoids = " + solenoids.toString() + ",\n" +
                     "  doublesolenoids = " + doublesolenoids.toString() + ",\n" +
                     "  canifier = " + canifier + ",\n" +
