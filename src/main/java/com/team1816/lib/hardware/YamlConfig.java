@@ -22,10 +22,12 @@ public class YamlConfig {
         Yaml yaml = new Yaml(new Constructor(YamlConfig.class));
         yaml.setBeanAccess(BeanAccess.FIELD);
         try {
+            System.out.println("yaml loaded");
             return yaml.load(input);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return yaml.load(input);
     }
 
     public Double getConstant(String key) {

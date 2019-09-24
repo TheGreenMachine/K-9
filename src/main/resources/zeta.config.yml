@@ -6,6 +6,8 @@ subsystems:
       leftSlaveOne: 13
       rightMain: 1
       rightSlaveOne: 2
+    invertMotor:
+        - 14
     victors:
       rightSlaveTwo: 0
       leftSlaveTwo: 15
@@ -15,12 +17,9 @@ subsystems:
       kP: 0
       kI: 0
       kD: 0
-      kF: .1279
+      kF: .82493
       iZone: 0
       encPPR: 1015.3333333333
-      invertMotor:
-          - 1
-          - 14
       currentFloorCheck: .4
       currentEpsilonCheck: .2
       rpmFloorCheck: 500
