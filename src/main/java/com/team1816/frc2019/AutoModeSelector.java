@@ -1,9 +1,8 @@
 package com.team1816.frc2019;
 
-import com.team1816.frc2019.auto.modes.DriveByCameraMode;
-import com.team1816.frc2019.auto.modes.FrontThenSideCargoShipMode;
-import com.team1816.frc2019.auto.modes.TuneDrivetrainMode;
-import com.team1816.lib.auto.modes.*;
+import com.team1816.frc2019.auto.modes.*;
+import com.team1816.lib.auto.modes.AutoModeBase;
+import com.team1816.lib.auto.modes.DoNothingMode;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -19,7 +18,12 @@ public class AutoModeSelector {
         DRIVE_BY_CAMERA,
         DO_NOTHING,
         FRONT_THEN_SIDE_CARGO_SHIP,
-        TUNE_DRIVETRAIN;
+        TUNE_DRIVETRAIN,
+        CROSS_AUTO_LINE,
+        LIVING_ROOM,
+        SHOP,
+        PID,
+        DRIVE_STRAIGHT
     }
 
     private DesiredMode mCachedDesiredMode = null;
@@ -46,6 +50,13 @@ public class AutoModeSelector {
         mModeChooser.addOption("Front Then Side Cargo Ship", DesiredMode.FRONT_THEN_SIDE_CARGO_SHIP);
         mModeChooser.addOption("Do Nothing", DesiredMode.DO_NOTHING);
         SmartDashboard.putData("Auto mode", mModeChooser);
+
+        // CheezeCurd
+        mModeChooser.addOption("Living Room",DesiredMode.LIVING_ROOM);
+//        mModeChooser.addOption("Shop", DesiredMode.SHOP);
+//        mModeChooser.addOption("PID", DesiredMode.PID);
+        mModeChooser.addOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
+        SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
 
     public void updateModeCreator() {
@@ -79,6 +90,10 @@ public class AutoModeSelector {
                     startingLeft(position), startingHab1(position)));
             case TUNE_DRIVETRAIN:
                 return Optional.of(new TuneDrivetrainMode());
+            case DRIVE_STRAIGHT:
+                return (Optional.of(new DriveStraightMode()));
+            case LIVING_ROOM:
+                return (Optional.of(new LivingRoomMode()));
             default:
                 break;
         }
