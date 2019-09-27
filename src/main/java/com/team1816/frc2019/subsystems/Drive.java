@@ -1,7 +1,10 @@
 package com.team1816.frc2019.subsystems;
 
 import badlog.lib.BadLog;
-import com.ctre.phoenix.motorcontrol.*;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.IMotorController;
+import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
@@ -9,7 +12,6 @@ import com.team1816.frc2019.Constants;
 import com.team1816.frc2019.Kinematics;
 import com.team1816.frc2019.Robot;
 import com.team1816.frc2019.RobotState;
-import com.team254.lib.control.PathFollower;
 import com.team1816.frc2019.planners.DriveMotionPlanner;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.hardware.TalonSRXChecker;
@@ -18,6 +20,7 @@ import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.control.Path;
+import com.team254.lib.control.PathFollower;
 import com.team254.lib.geometry.*;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
@@ -146,6 +149,22 @@ public class Drive extends Subsystem {
 
     public double getDesiredHeading() {
         return mPeriodicIO.desired_headig.getDegrees();
+    }
+
+    public double getKP() {
+        return mFactory.getConstant(NAME, "kP");
+    }
+
+    public double getKI() {
+        return mFactory.getConstant(NAME, "kI");
+    }
+
+    public double getKD() {
+        return mFactory.getConstant(NAME, "kD");
+    }
+
+    public double getKF() {
+        return mFactory.getConstant(NAME, "kF");
     }
 
     public static class PeriodicIO {
