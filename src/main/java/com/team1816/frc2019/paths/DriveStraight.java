@@ -23,7 +23,7 @@ public class DriveStraight implements PathContainer {
     public List<Pose2d> buildWaypoints() {
         List<Pose2d> waypoints = new ArrayList<>();
         waypoints.add(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0)));
-        waypoints.add(new Pose2d(-144, 0.0, Rotation2d.fromDegrees(0)));
+        waypoints.add(new Pose2d(144, 0.0, Rotation2d.fromDegrees(0)));
         return waypoints;
     }
 

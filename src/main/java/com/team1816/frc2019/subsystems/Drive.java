@@ -119,7 +119,7 @@ public class Drive extends Subsystem {
 
         // force a CAN message across
         mIsBrakeMode = true;
-        setBrakeMode(false);
+        setBrakeMode(mIsBrakeMode);
 
         mMotionPlanner = new DriveMotionPlanner();
     }

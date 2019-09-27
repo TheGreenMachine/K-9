@@ -14,7 +14,7 @@ subsystems:
     constants:
       pigeonId: 3
       pigeonOnTalon: 1
-      kP: 0
+      kP: 1.0
       kI: 0
       kD: 0
       kF: .82493
@@ -31,8 +31,8 @@ subsystems:
 constants:
   wheelDiameter: 3.92820959548
   trackWidth: 25
-  maxVel: 90 #inch/s
-  maxAccel: 50 #inch/s^2
+  maxVel: 25 #inch/s
+  maxAccel: 25 #inch/s^2
   sensorPhase: 0
   kLooperDt: .030
   kTrackScrubFactor: 1.0
