@@ -87,8 +87,8 @@ public class Robot extends TimedRobot {
 
     private static RobotFactory factory;
 
-    public static RobotFactory getFactory(){
-        if(factory == null) {
+    public static RobotFactory getFactory() {
+        if (factory == null) {
             var robotName = System.getenv("ROBOT_NAME");
             if (robotName == null) robotName = "default";
             factory = new RobotFactory(robotName);
@@ -138,11 +138,12 @@ public class Robot extends TimedRobot {
             CrashTracker.logRobotInit();
 
             mSubsystemManager.setSubsystems(
-                    mRobotStateEstimator,
-                    mDrive,
-                    mSuperstructure,
-                    mCarriageCanifer,
-                    mInfrastructure);
+                mRobotStateEstimator,
+                mDrive,
+                mSuperstructure,
+                mCarriageCanifer,
+                mInfrastructure
+            );
 
             mCarriageCanifer.zeroSensors();
             mDrive.zeroSensors();
@@ -367,9 +368,9 @@ public class Robot extends TimedRobot {
         boolean wantsLowGear = mControlBoard.getWantsLowGear() && !sandstorm;
 
         boolean hangModePressed =
-                mHangModeEnablePressed.update(mControlBoard.getToggleHangMode(), 0.250);
+            mHangModeEnablePressed.update(mControlBoard.getToggleHangMode(), 0.250);
         boolean hangModeLowPressed =
-                mHangModeLowEnablePressed.update(mControlBoard.getToggleHangModeLow(), 0.250);
+            mHangModeLowEnablePressed.update(mControlBoard.getToggleHangModeLow(), 0.250);
 
         if ((hangModeLowPressed && hangModePressed) && !mInHangMode && mHangModeReleased) {
             System.out.println("Entering hang mode for low: " + hangModeLowPressed + " high: " + hangModePressed);
@@ -438,5 +439,6 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void testPeriodic() {}
+    public void testPeriodic() {
+    }
 }
