@@ -9,6 +9,7 @@ import com.team1816.frc2019.Constants;
 import com.team1816.frc2019.Kinematics;
 import com.team1816.frc2019.Robot;
 import com.team1816.frc2019.RobotState;
+import com.team254.lib.control.PathFollower;
 import com.team1816.frc2019.planners.DriveMotionPlanner;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.hardware.TalonSRXChecker;
@@ -17,7 +18,6 @@ import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.control.Path;
-import com.team254.lib.control.PathFollower;
 import com.team254.lib.geometry.*;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
@@ -480,7 +480,6 @@ public class Drive extends Subsystem {
                 Constants.kPathFollowingProfileKs, Constants.kPathFollowingMaxVel,
                 Constants.kPathFollowingMaxAccel, Constants.kPathFollowingGoalPosTolerance,
                 Constants.kPathFollowingGoalVelTolerance, Constants.kPathStopSteeringDistance));
-
             mDriveControlState = DriveControlState.PATH_FOLLOWING;
             mCurrentPath = path;
         } else {

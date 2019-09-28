@@ -8,7 +8,9 @@ public class Constants {
     public static double kTrackScrubFactor = Robot.getFactory().getDouble("kTrackScrubFactor");
     public static int kPCMId = Robot.getFactory().getDouble("kPCMId").intValue();
     public static final int kCANTimeoutMs = 10; // use for important on the fly updates
-    public static final int kLongCANTimeoutMs = 100; // use for constructor
+    public static final int kLongCANTimeoutMs = 100; // use for constructors
+
+    public static final double kDriveWheelRadiusInches = kDriveWheelDiameterInches / 2.0;
 
     // reset button
     public static final int kResetButtonChannel = 4;
@@ -41,14 +43,13 @@ public class Constants {
     public static final double kInertiaSteeringGain = 0.0; // angular velocity command is multiplied by this gain * our speed in inches per sec
     public static final double kPathFollowingProfileKp = Robot.getFactory().getDouble("drivetrain", "kP");
     public static final double kPathFollowingProfileKi = Robot.getFactory().getDouble("drivetrain", "kI");
-    ;
+
     public static final double kPathFollowingGoalPosTolerance = 1.0;
     public static final double kPathFollowingGoalVelTolerance = 12.0;
     public static final double kPathStopSteeringDistance = 12.0;
     public static double kCameraFrameRate = 30;
     public static final double kPathFollowingMaxAccel = Robot.getFactory().getDouble("maxAccel");
     public static final double kPathFollowingMaxVel = Robot.getFactory().getDouble("maxVel");
-
 
     // Trajectory Generator constants
 
