@@ -19,8 +19,8 @@ import java.util.List;
 public interface PathContainer {
 
     // velocities are in/sec
-    double kMaxVelocity = Robot.getFactory().getConstant("maxVel");
-    double kMaxAccel = Robot.getFactory().getConstant("maxAccel");
+    double kMaxVelocity = Robot.getFactory().getDouble("maxVel");
+    double kMaxAccel = Robot.getFactory().getDouble("maxAccel");
     double kMaxCentripetalAccel = 100.0;
     double kMaxVoltage = 9.0;
 
