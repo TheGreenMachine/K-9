@@ -17,7 +17,7 @@ subsystems:
       kP: 1.0
       kI: 0
       kD: 0
-      kF: .82493
+      kF: 1.05449
       iZone: 0
       encPPR: 1015.3333333333
       currentFloorCheck: .4
