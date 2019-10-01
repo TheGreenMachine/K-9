@@ -128,6 +128,7 @@ public class Robot extends TimedRobot {
             BadLog.createTopic("Drivetrain/Heading", "Angle", mDrive::getDesiredHeading, "hide", "join:Drivetrain/Heading");
             BadLog.createTopic("Timings/Looper", "ms", mEnabledLooper::getLastLoop, "hide", "join:Timings");
             BadLog.createTopic("Timings/RobotLoop", "ms", this::getLastLoop, "hide", "join:Timings");
+            BadLog.createTopic("Timings/Timestamp", "s", Timer::getFPGATimestamp, "xaxis", "hide");
             logger.finishInitialization();
             mDrive.setLogger(logger);
 
