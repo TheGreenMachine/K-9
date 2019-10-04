@@ -36,16 +36,16 @@ public class AutoModeSelector {
 
     public AutoModeSelector() {
         mStartPositionChooser = new SendableChooser<>();
-        mStartPositionChooser.setDefaultOption("Left HAB 2", StartingPosition.LEFT_HAB_2);
+        mStartPositionChooser.addOption("Left HAB 2", StartingPosition.LEFT_HAB_2);
         mStartPositionChooser.addOption("Right HAB 2", StartingPosition.RIGHT_HAB_2);
         mStartPositionChooser.addOption("Right HAB 1", StartingPosition.RIGHT_HAB_1);
         mStartPositionChooser.addOption("Left HAB 1", StartingPosition.LEFT_HAB_1);
-        mStartPositionChooser.addOption("Center HAB 1", StartingPosition.CENTER_HAB_1);
+        mStartPositionChooser.setDefaultOption("Center HAB 1", StartingPosition.CENTER_HAB_1);
 
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
 
         mModeChooser = new SendableChooser<>();
-        mModeChooser.setDefaultOption("Drive By Camera", DesiredMode.DRIVE_BY_CAMERA);
+        mModeChooser.addOption("Drive By Camera", DesiredMode.DRIVE_BY_CAMERA);
         mModeChooser.addOption("Tune Drivetrain", DesiredMode.TUNE_DRIVETRAIN);
         mModeChooser.addOption("Front Then Side Cargo Ship", DesiredMode.FRONT_THEN_SIDE_CARGO_SHIP);
         mModeChooser.addOption("Do Nothing", DesiredMode.DO_NOTHING);
@@ -55,7 +55,7 @@ public class AutoModeSelector {
         mModeChooser.addOption("Living Room",DesiredMode.LIVING_ROOM);
 //        mModeChooser.addOption("Shop", DesiredMode.SHOP);
 //        mModeChooser.addOption("PID", DesiredMode.PID);
-        mModeChooser.addOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
+        mModeChooser.setDefaultOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
     }
 

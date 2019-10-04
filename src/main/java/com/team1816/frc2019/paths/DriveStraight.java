@@ -11,11 +11,13 @@ import java.util.List;
 
 public class DriveStraight implements PathContainer {
 
+    private  static int driveDistance = 72;
+
   @Override
   public Path buildPath() {
     ArrayList<PathBuilder.Waypoint> waypoints = new ArrayList<>();
     waypoints.add(new PathBuilder.Waypoint(0, 0, 0, 0));
-    waypoints.add(new PathBuilder.Waypoint(48, 0, 0, 30));
+    waypoints.add(new PathBuilder.Waypoint(driveDistance, 0, 0, 30));
     return  PathBuilder.buildPathFromWaypoints(waypoints);
   }
 
@@ -23,7 +25,7 @@ public class DriveStraight implements PathContainer {
     public List<Pose2d> buildWaypoints() {
         List<Pose2d> waypoints = new ArrayList<>();
         waypoints.add(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0)));
-        waypoints.add(new Pose2d(48, 0.0, Rotation2d.fromDegrees(0)));
+        waypoints.add(new Pose2d(driveDistance, 0.0, Rotation2d.fromDegrees(0)));
         return waypoints;
     }
 
