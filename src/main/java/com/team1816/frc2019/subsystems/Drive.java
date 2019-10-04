@@ -151,7 +151,7 @@ public class Drive extends Subsystem {
         if( mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             return mPeriodicIO.path_setpoint.state().getRotation().getDegrees();
         }
-        return mPeriodicIO.desired_headig.getDegrees();
+        return mPeriodicIO.desired_heading.getDegrees();
     }
 
     public double getKP() {
@@ -191,7 +191,7 @@ public class Drive extends Subsystem {
         public double right_accel;
         public double left_feedforward;
         public double right_feedforward;
-        public Rotation2d desired_headig = Rotation2d.identity();
+        public Rotation2d desired_heading = Rotation2d.identity();
         TimedState<Pose2dWithCurvature> path_setpoint = new TimedState<>(Pose2dWithCurvature.identity());
     }
 
@@ -431,7 +431,7 @@ public class Drive extends Subsystem {
         mGyroOffset = heading.rotateBy(Rotation2d.fromDegrees(mPigeon.getFusedHeading()).inverse());
         System.out.println("gyro offset: " + mGyroOffset.getDegrees());
 
-        mPeriodicIO.desired_headig = heading;
+        mPeriodicIO.desired_heading = heading;
     }
 
     public synchronized void resetEncoders() {
