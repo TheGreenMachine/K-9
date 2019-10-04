@@ -148,6 +148,9 @@ public class Drive extends Subsystem {
     }
 
     public double getDesiredHeading() {
+        if( mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
+            return mPeriodicIO.path_setpoint.state().getRotation().getDegrees();
+        }
         return mPeriodicIO.desired_headig.getDegrees();
     }
 
@@ -189,7 +192,6 @@ public class Drive extends Subsystem {
         public double left_feedforward;
         public double right_feedforward;
         public Rotation2d desired_headig = Rotation2d.identity();
-
         TimedState<Pose2dWithCurvature> path_setpoint = new TimedState<>(Pose2dWithCurvature.identity());
     }
 
