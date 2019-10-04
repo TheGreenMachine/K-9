@@ -110,6 +110,23 @@ public class RobotState {
      * Returns the robot's position on the field at a certain time. Linearly interpolates between stored robot positions
      * to fill in the gaps.
      */
+
+    public synchronized double getEstimatedX() {
+        return field_to_vehicle_.lastEntry().getValue().getTranslation().x();
+    }
+
+    public synchronized double getEstimatedY() {
+        return field_to_vehicle_.lastEntry().getValue().getTranslation().y();
+    }
+
+    public synchronized double getPoseX(double timestamp) {
+        return field_to_vehicle_.getInterpolated(new InterpolatingDouble(timestamp)).getTranslation().x();
+    }
+
+    public synchronized double getPoseY(double timestamp) {
+        return field_to_vehicle_.getInterpolated(new InterpolatingDouble(timestamp)).getTranslation().y();
+    }
+
     public synchronized Pose2d getFieldToVehicle(double timestamp) {
         return field_to_vehicle_.getInterpolated(new InterpolatingDouble(timestamp));
     }
@@ -268,5 +285,7 @@ public class RobotState {
 
     public synchronized void outputToSmartDashboard() {
         SmartDashboard.putString("Robot Velocity", getMeasuredVelocity().toString());
+        SmartDashboard.putNumber("Estimated Pose X", getEstimatedX());
+        SmartDashboard.putNumber("Estimated Pose Y", getEstimatedY());
     }
 }
