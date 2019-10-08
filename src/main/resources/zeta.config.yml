@@ -2,20 +2,20 @@ subsystems:
   drivetrain:
     implemented: true
     talons:
-      leftMain: 14
-      leftSlaveOne: 13
-      rightMain: 1
-      rightSlaveOne: 2
+      leftMain: 1
+      leftSlaveOne: 2
+      rightMain: 14
+      rightSlaveOne: 13
     invertMotor:
         - 14
     victors:
-      rightSlaveTwo: 0
-      leftSlaveTwo: 15
+      rightSlaveTwo: 15
+      leftSlaveTwo: 0
     constants:
       pigeonId: 3
       pigeonOnTalon: 1
       kP: 1.8
-      kI: .0018
+      kI: .05
       kD: 18
       kF: 0.91
       iZone: 0
@@ -31,7 +31,7 @@ subsystems:
 constants:
   wheelDiameter: 5.72332
   trackWidth: 25
-  maxVel: 60 #inch/s
+  maxVel: 40 #inch/s
   maxAccel: 30 #inch/s^2
   sensorPhase: 0
   kLooperDt: .030
