@@ -2,12 +2,10 @@ package com.team1816.frc2019.subsystems1816;
 
 import com.ctre.phoenix.motorcontrol.*;
 import com.team1816.frc2019.Robot;
-import com.team1816.lib.checker.CheckFailException;
-import com.team1816.lib.checker.Checkable;
 import com.team1816.lib.checker.RunTest;
 import com.team1816.lib.hardware.RobotFactory;
+import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -15,7 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Subsystem for the cargo shooter.
  */
 @RunTest
-public class CargoShooter extends Subsystem implements Checkable {
+public class CargoShooter extends Subsystem {
     public static final String NAME = "cargoshooter";
 
     private IMotorControllerEnhanced armTalon;
@@ -46,7 +44,6 @@ public class CargoShooter extends Subsystem implements Checkable {
     private boolean isPercentOutput;
 
     public CargoShooter() {
-        super(NAME);
         RobotFactory factory = Robot.getFactory();
 
         this.armTalon = (IMotorControllerEnhanced) factory.getMotor(NAME, "arm");
@@ -83,7 +80,7 @@ public class CargoShooter extends Subsystem implements Checkable {
         armTalon.configPeakCurrentLimit(5, kTimeoutMs);
         armTalon.configPeakCurrentDuration(75, kTimeoutMs);
         armTalon.configSelectedFeedbackSensor(
-                FeedbackDevice.CTRE_MagEncoder_Relative, kPIDLoopIdx, kTimeoutMs);
+            FeedbackDevice.CTRE_MagEncoder_Relative, kPIDLoopIdx, kTimeoutMs);
 
         /* Config the peak and nominal outputs, 12V means full */
         armTalon.configNominalOutputForward(0, kTimeoutMs);
@@ -94,7 +91,7 @@ public class CargoShooter extends Subsystem implements Checkable {
         this.setPid(kP, kI, kD);
 
         armTalon.configAllowableClosedloopError(
-                kPIDLoopIdx, ALLOWABLE_CLOSED_LOOP_ERROR, kTimeoutMs);
+            kPIDLoopIdx, ALLOWABLE_CLOSED_LOOP_ERROR, kTimeoutMs);
 
         // Both overrides must be true to enable soft limits
         armTalon.overrideLimitSwitchesEnable(true);
@@ -136,7 +133,6 @@ public class CargoShooter extends Subsystem implements Checkable {
         this.armPosition = pos;
         outputsChanged = true;
         isPercentOutput = false;
-        periodic();
     }
 
     public ArmPosition getArmPosition() {
@@ -163,10 +159,10 @@ public class CargoShooter extends Subsystem implements Checkable {
         isPercentOutput = true;
 
         System.out.println(
-                new StringBuilder("Nominal range\tSet value: ").append(armPow)
-                        .append(" Arm Pos Abs: ").append(getArmPositionAbsolute())
-                        .append(" Arm Pos Rel: ").append(getArmEncoderPosition())
-                        .toString()
+            new StringBuilder("Nominal range\tSet value: ").append(armPow)
+                .append(" Arm Pos Abs: ").append(getArmPositionAbsolute())
+                .append(" Arm Pos Rel: ").append(getArmEncoderPosition())
+                .toString()
         );
 
         this.armPower = armPow * 0.50;
@@ -192,7 +188,7 @@ public class CargoShooter extends Subsystem implements Checkable {
     }
 
     @Override
-    public void periodic() {
+    public void writePeriodicOutputs() {
         if (outputsChanged) {
             if (isPercentOutput) {
                 armTalon.set(ControlMode.PercentOutput, armPower);
@@ -206,28 +202,11 @@ public class CargoShooter extends Subsystem implements Checkable {
     }
 
     @Override
-    protected void initDefaultCommand() {
-
+    public void stop() {
     }
 
-     @Override
-     public void initSendable(SendableBuilder builder) {
-         builder.addStringProperty("ControlMode", () -> armTalon.getControlMode().toString(), null);
-         builder.addDoubleProperty("CurrentPosition", this::getArmEncoderPosition, null);
-         builder.addDoubleProperty("ClosedLoop/TargetPosition",
-                 () -> (armTalon.getControlMode() == ControlMode.Position ? armTalon.getClosedLoopTarget(kPIDLoopIdx) : 0), null);
-         builder.addDoubleProperty("ClosedLoop/Error",
-                 () -> (armTalon.getControlMode() == ControlMode.Position ? armTalon.getClosedLoopError(kPIDLoopIdx) : 0), null);
-         builder.addDoubleProperty("MotorOutput", armTalon::getMotorOutputPercent, null);
-         builder.addBooleanProperty("Busy", this::isBusy, null);
-         builder.addDoubleProperty("IntakePower", this::getIntakePower, this::setIntake);
-         builder.addDoubleProperty("Absolute Arm Position", this::getArmPositionAbsolute, null);
-         SmartDashboard.putNumber("max_thresh", ARM_POSITION_MAX);
-         SmartDashboard.putNumber("min_thresh", ARM_POSITION_MIN);
-     }
-
     @Override
-    public boolean check() throws CheckFailException {
+    public boolean checkSystem() {
         System.out.println("Warning: mechanisms will move!");
         Timer.delay(3);
 
@@ -236,5 +215,21 @@ public class CargoShooter extends Subsystem implements Checkable {
         setIntake(0);
 
         return true;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        builder.addStringProperty("ControlMode", () -> armTalon.getControlMode().toString(), null);
+        builder.addDoubleProperty("CurrentPosition", this::getArmEncoderPosition, null);
+        builder.addDoubleProperty("ClosedLoop/TargetPosition",
+            () -> (armTalon.getControlMode() == ControlMode.Position ? armTalon.getClosedLoopTarget(kPIDLoopIdx) : 0), null);
+        builder.addDoubleProperty("ClosedLoop/Error",
+            () -> (armTalon.getControlMode() == ControlMode.Position ? armTalon.getClosedLoopError(kPIDLoopIdx) : 0), null);
+        builder.addDoubleProperty("MotorOutput", armTalon::getMotorOutputPercent, null);
+        builder.addBooleanProperty("Busy", this::isBusy, null);
+        builder.addDoubleProperty("IntakePower", this::getIntakePower, this::setIntake);
+        builder.addDoubleProperty("Absolute Arm Position", this::getArmPositionAbsolute, null);
+        SmartDashboard.putNumber("max_thresh", ARM_POSITION_MAX);
+        SmartDashboard.putNumber("min_thresh", ARM_POSITION_MIN);
     }
 }

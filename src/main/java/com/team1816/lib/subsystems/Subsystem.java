@@ -1,6 +1,7 @@
 package com.team1816.lib.subsystems;
 
 import com.team1816.lib.loops.ILooper;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
  * The Subsystem abstract class, which serves as a basic framework for all robot subsystems. Each subsystem outputs
@@ -29,5 +30,8 @@ public abstract class Subsystem {
 
     public abstract boolean checkSystem();
 
-    public abstract void outputTelemetry();
+    @Deprecated
+    public void outputTelemetry() {}
+
+    public abstract void initSendable(SendableBuilder builder);
 }

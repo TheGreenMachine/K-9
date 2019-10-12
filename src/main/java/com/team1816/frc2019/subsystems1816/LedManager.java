@@ -2,14 +2,13 @@ package com.team1816.frc2019.subsystems1816;
 
 import com.ctre.phoenix.CANifier;
 import com.team1816.frc2019.Robot;
-import com.team1816.lib.checker.CheckFailException;
-import com.team1816.lib.checker.Checkable;
 import com.team1816.lib.checker.RunTest;
+import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 @RunTest
-public class LedManager extends Subsystem implements Checkable {
+public class LedManager extends Subsystem {
     public static final String NAME = "ledmanager";
 
     private CANifier canifier;
@@ -26,7 +25,6 @@ public class LedManager extends Subsystem implements Checkable {
     private int ledBlinkB;
 
     public LedManager() {
-        super(NAME);
         this.canifier = Robot.getFactory().getCanifier(NAME);
         this.ledR = 0;
         this.ledG = 0;
@@ -70,7 +68,7 @@ public class LedManager extends Subsystem implements Checkable {
     }
 
     @Override
-    public void periodic() {
+    public void writePeriodicOutputs() {
         if (outputsChanged && canifier != null) {
             canifier.setLEDOutput((double) (ledG / 255.0), CANifier.LEDChannel.LEDChannelA);
             canifier.setLEDOutput((double) (ledR / 255.0), CANifier.LEDChannel.LEDChannelB);
@@ -80,28 +78,33 @@ public class LedManager extends Subsystem implements Checkable {
     }
 
     @Override
-    protected void initDefaultCommand() {
+    public void stop() {
 
     }
 
     @Override
-    public boolean check() throws CheckFailException {
+    public boolean checkSystem() {
         System.out.println("Warning: checking LED systems");
         Timer.delay(3);
 
         setLedColor(255, 0, 0);
-        periodic();
+        writePeriodicOutputs();
         Timer.delay(0.4);
         setLedColor(0, 255, 0);
-        periodic();
+        writePeriodicOutputs();
         Timer.delay(0.4);
         setLedColor(0, 0, 255);
-        periodic();
+        writePeriodicOutputs();
         Timer.delay(0.4);
         setLedColor(0, 0, 0);
-        periodic();
+        writePeriodicOutputs();
 
         return true;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+
     }
 
     public enum RobotStatus {

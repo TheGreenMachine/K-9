@@ -31,7 +31,7 @@ import com.team254.lib.vision.AimingParameters;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 import java.util.ArrayList;
 
@@ -672,12 +672,16 @@ public class Drive extends Subsystem {
         return mPeriodicIO.right_error;
     }
 
+    public double getRightDriveTicks() { return mPeriodicIO.right_position_ticks; }
+
+    public double getLeftDriveTicks() { return mPeriodicIO.left_position_ticks; }
+
     @Override
-    public void outputTelemetry() {
-        SmartDashboard.putNumber("Right Drive Distance", getRightEncoderDistance());
-        SmartDashboard.putNumber("Right Drive Ticks", mPeriodicIO.right_position_ticks);
-        SmartDashboard.putNumber("Left Drive Ticks", mPeriodicIO.left_position_ticks);
-        SmartDashboard.putNumber("Left Drive Distance", getLeftEncoderDistance());
+    public void initSendable(SendableBuilder builder) {
+        builder.addDoubleProperty("Right Drive Distance", this::getRightEncoderDistance, null);
+        builder.addDoubleProperty("Right Drive Ticks", this::getRightDriveTicks, null);
+        builder.addDoubleProperty("Left Drive Distance", this::getLeftEncoderDistance, null);
+        builder.addDoubleProperty("Left Drive Ticks", this::getLeftDriveTicks, null);
         // SmartDashboard.putNumber("Right Linear Velocity", getRightLinearVelocity());
         // SmartDashboard.putNumber("Left Linear Velocity", getLeftLinearVelocity());
 
@@ -697,7 +701,7 @@ public class Drive extends Subsystem {
         // }
 
         if (getHeading() != null) {
-            SmartDashboard.putNumber("Gyro Heading", getHeading().getDegrees());
+            builder.addDoubleProperty("Gyro Heading", this::getHeadingDegrees, null);
         }
 
         if (mCSVWriter != null) {

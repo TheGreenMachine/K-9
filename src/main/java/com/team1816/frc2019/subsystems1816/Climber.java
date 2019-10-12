@@ -3,17 +3,16 @@ package com.team1816.frc2019.subsystems1816;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.team1816.frc2019.Robot;
-import com.team1816.lib.checker.CheckFailException;
-import com.team1816.lib.checker.Checkable;
 import com.team1816.lib.checker.RunTest;
 import com.team1816.lib.hardware.RobotFactory;
+import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 @RunTest
-public class Climber extends Subsystem implements Checkable {
+public class Climber extends Subsystem {
     public static final String NAME = "climber";
 
     private IMotorControllerEnhanced climbMaster;
@@ -29,7 +28,6 @@ public class Climber extends Subsystem implements Checkable {
     private static final int kTimeoutMs = 100;
 
     public Climber() {
-        super(NAME);
         RobotFactory factory = Robot.getFactory();
 
         this.climbMaster = (IMotorControllerEnhanced) factory.getMotor(NAME, "climbMaster");
@@ -77,7 +75,7 @@ public class Climber extends Subsystem implements Checkable {
     }
 
     @Override
-    public void periodic() {
+    public void writePeriodicOutputs() {
         if (outputsChanged) {
             climbMaster.set(ControlMode.PercentOutput, motorPower);
             habPiston.set(habPistonState);
@@ -85,11 +83,12 @@ public class Climber extends Subsystem implements Checkable {
         }
     }
 
-    public void initDefaultCommand() {
+    @Override
+    public void stop() {
     }
 
     @Override
-    public boolean check() throws CheckFailException {
+    public boolean checkSystem() {
         System.out.println("Warning: mechanisms will move!");
         Timer.delay(3);
         setClimberPower(0.5);
@@ -106,5 +105,10 @@ public class Climber extends Subsystem implements Checkable {
         Timer.delay(3);
         setHabPiston(Value.kOff);
         return true;
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+
     }
 }

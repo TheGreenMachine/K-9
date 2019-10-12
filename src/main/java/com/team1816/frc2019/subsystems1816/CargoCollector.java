@@ -3,17 +3,16 @@ package com.team1816.frc2019.subsystems1816;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.team1816.frc2019.Robot;
-import com.team1816.lib.checker.CheckFailException;
-import com.team1816.lib.checker.Checkable;
 import com.team1816.lib.checker.RunTest;
 import com.team1816.lib.hardware.RobotFactory;
+import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 
 @RunTest
-public class CargoCollector extends Subsystem implements Checkable {
+public class CargoCollector extends Subsystem {
     public static final String NAME = "cargocollector";
 
     private Solenoid armPiston;
@@ -25,7 +24,6 @@ public class CargoCollector extends Subsystem implements Checkable {
     private boolean outputsChanged = false;
 
     public CargoCollector() {
-        super(NAME);
         RobotFactory factory = Robot.getFactory();
 
         this.intake = factory.getMotor(NAME, "intake");
@@ -35,7 +33,7 @@ public class CargoCollector extends Subsystem implements Checkable {
     public void setArm(boolean down) {
         this.armDown = down;
         outputsChanged = true;
-        periodic();
+        writePeriodicOutputs();
     }
 
     public void setIntake(double intakePower) {
@@ -52,7 +50,7 @@ public class CargoCollector extends Subsystem implements Checkable {
     }
 
     @Override
-    public void periodic() {
+    public void writePeriodicOutputs() {
         if (outputsChanged) {
             this.intake.set(ControlMode.PercentOutput, intakePow);
             this.armPiston.set(armDown);
@@ -60,11 +58,12 @@ public class CargoCollector extends Subsystem implements Checkable {
         }
     }
 
-    public void initDefaultCommand() {
+    @Override
+    public void stop() {
     }
 
     @Override
-    public boolean check() throws CheckFailException {
+    public boolean checkSystem() {
         System.out.println("Warning: mechanisms will move!");
         Timer.delay(3);
 
@@ -74,4 +73,10 @@ public class CargoCollector extends Subsystem implements Checkable {
 
         return true;
     }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+
+    }
+
 }
