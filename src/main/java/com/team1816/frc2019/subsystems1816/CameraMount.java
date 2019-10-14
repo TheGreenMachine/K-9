@@ -2,16 +2,12 @@ package com.team1816.frc2019.subsystems1816;
 
 
 import com.team1816.frc2019.Robot;
-import com.team1816.lib.checker.CheckFailException;
-import com.team1816.lib.checker.Checkable;
-import com.team1816.lib.checker.RunTest;
 import com.team1816.lib.hardware.RobotFactory;
+import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
-import edu.wpi.first.wpilibj.command.Subsystem;
 
-@RunTest
-public class CameraMount extends Subsystem implements Checkable {
+public class CameraMount extends Subsystem {
     public static final String NAME = "cameramount";
 
     private DoubleSolenoid camRetractor;
@@ -48,18 +44,20 @@ public class CameraMount extends Subsystem implements Checkable {
     }
 
     @Override
-    public void periodic() {
+    public void writePeriodicOutputs() {
         if (outputsChanged) {
             camRetractor.set(camState);
             outputsChanged = false;
         }
     }
 
-    public void initDefaultCommand() {
+    @Override
+    public void stop() {
+
     }
 
     @Override
-    public boolean check() throws CheckFailException {
+    public boolean checkSystem() {
         return true;
     }
 }

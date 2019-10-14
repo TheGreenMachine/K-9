@@ -2,7 +2,6 @@ package com.team1816.frc2019.subsystems1816;
 
 import com.ctre.phoenix.motorcontrol.*;
 import com.team1816.frc2019.Robot;
-import com.team1816.lib.checker.RunTest;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
@@ -12,7 +11,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /**
  * Subsystem for the cargo shooter.
  */
-@RunTest
 public class CargoShooter extends Subsystem {
     public static final String NAME = "cargoshooter";
 
