@@ -33,5 +33,5 @@ public abstract class Subsystem {
     @Deprecated
     public void outputTelemetry() {}
 
-    public abstract void initSendable(SendableBuilder builder);
+    public void initSendable(SendableBuilder builder) {}
 }
