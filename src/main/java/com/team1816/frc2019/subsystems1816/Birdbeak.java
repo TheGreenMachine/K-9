@@ -2,17 +2,13 @@ package com.team1816.frc2019.subsystems1816;
 
 
 import com.team1816.frc2019.Robot;
-import com.team1816.lib.checker.CheckFailException;
-import com.team1816.lib.checker.Checkable;
-import com.team1816.lib.checker.RunTest;
 import com.team1816.lib.hardware.RobotFactory;
+import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.command.Subsystem;
 
 
-@RunTest
-public class Birdbeak extends Subsystem implements Checkable {
+public class Birdbeak extends Subsystem {
     public static final String NAME = "birdbeak";
 
     private Solenoid beak;
@@ -23,7 +19,6 @@ public class Birdbeak extends Subsystem implements Checkable {
     private boolean outputsChanged = false;
 
     public Birdbeak() {
-        super(NAME);
         RobotFactory factory = Robot.getFactory();
 
         this.beak = factory.getSolenoid(NAME, "beak");
@@ -49,11 +44,7 @@ public class Birdbeak extends Subsystem implements Checkable {
     }
 
     @Override
-    protected void initDefaultCommand() {
-    }
-
-    @Override
-    public void periodic() {
+    public void writePeriodicOutputs() {
         if (outputsChanged) {
             beak.set(beakNotGripped);
             hatchPuncher.set(puncherOut);
@@ -63,7 +54,11 @@ public class Birdbeak extends Subsystem implements Checkable {
     }
 
     @Override
-    public boolean check() throws CheckFailException {
+    public void stop() {
+    }
+
+    @Override
+    public boolean checkSystem() {
         System.out.println("Warning: mechanisms will move!");
         Timer.delay(3);
 
