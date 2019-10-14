@@ -14,6 +14,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
  * initializing all member components at the start of the match.
  */
 public abstract class Subsystem {
+    private final String name;
+
+    protected Subsystem(String name) {
+        this.name = name;
+    }
+
     public void writeToLog() {}
 
     // Optional design pattern for caching periodic reads to avoid hammering the HAL/CAN.
@@ -34,4 +40,8 @@ public abstract class Subsystem {
     public void outputTelemetry() {}
 
     public void initSendable(SendableBuilder builder) {}
+
+    public String getName() {
+        return name;
+    }
 }

@@ -75,7 +75,7 @@ public class Drive extends Subsystem {
     }
 
     private Drive() {
-
+        super(NAME);
         DRIVE_ENCODER_PPR = mFactory.getConstant(NAME, "encPPR");
         mPeriodicIO = new PeriodicIO();
 

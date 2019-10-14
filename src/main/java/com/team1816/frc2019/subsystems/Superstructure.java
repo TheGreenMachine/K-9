@@ -30,6 +30,7 @@ public class Superstructure extends Subsystem {
   }
 
   private Superstructure() {
+      super("superstructure");
   }
 
   @Override

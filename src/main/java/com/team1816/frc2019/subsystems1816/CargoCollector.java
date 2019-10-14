@@ -24,6 +24,7 @@ public class CargoCollector extends Subsystem {
     private boolean outputsChanged = false;
 
     public CargoCollector() {
+        super(NAME);
         RobotFactory factory = Robot.getFactory();
 
         this.intake = factory.getMotor(NAME, "intake");

@@ -44,6 +44,7 @@ public class CargoShooter extends Subsystem {
     private boolean isPercentOutput;
 
     public CargoShooter() {
+        super(NAME);
         RobotFactory factory = Robot.getFactory();
 
         this.armTalon = (IMotorControllerEnhanced) factory.getMotor(NAME, "arm");

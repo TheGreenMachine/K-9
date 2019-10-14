@@ -19,6 +19,7 @@ public class Birdbeak extends Subsystem {
     private boolean outputsChanged = false;
 
     public Birdbeak() {
+        super(NAME);
         RobotFactory factory = Robot.getFactory();
 
         this.beak = factory.getSolenoid(NAME, "beak");

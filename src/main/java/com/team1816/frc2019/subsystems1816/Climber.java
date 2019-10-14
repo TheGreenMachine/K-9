@@ -28,6 +28,7 @@ public class Climber extends Subsystem {
     private static final int kTimeoutMs = 100;
 
     public Climber() {
+        super(NAME);
         RobotFactory factory = Robot.getFactory();
 
         this.climbMaster = (IMotorControllerEnhanced) factory.getMotor(NAME, "climbMaster");

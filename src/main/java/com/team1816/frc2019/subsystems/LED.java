@@ -47,6 +47,7 @@ public class LED extends Subsystem {
     }
 
     private LED() {
+        super("cheesyled");
         mCarriageCanifier = CarriageCanifier.getInstance();
     }
 

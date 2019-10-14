@@ -25,6 +25,7 @@ public class LedManager extends Subsystem {
     private int ledBlinkB;
 
     public LedManager() {
+        super(NAME);
         this.canifier = Robot.getFactory().getCanifier(NAME);
         this.ledR = 0;
         this.ledG = 0;

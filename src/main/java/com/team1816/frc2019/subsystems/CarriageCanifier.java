@@ -15,6 +15,7 @@ public class CarriageCanifier extends Subsystem {
     private boolean mOutputsChanged;
 
     private CarriageCanifier() {
+        super("carriagecanifier");
         mCanifierWrist = new CANifier(Constants.kCanifierWristId);
 
         mCanifierWrist.setStatusFramePeriod(CANifierStatusFrame.Status_2_General, 2, Constants.kLongCANTimeoutMs);
