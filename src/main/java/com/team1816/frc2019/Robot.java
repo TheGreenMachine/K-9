@@ -3,10 +3,8 @@ package com.team1816.frc2019;
 import badlog.lib.BadLog;
 import com.team1816.frc2019.controlboard.ControlBoard;
 import com.team1816.frc2019.paths.TrajectorySet;
-import com.team1816.frc2019.states.TimedLEDState;
 import com.team1816.frc2019.subsystems.CarriageCanifier;
 import com.team1816.frc2019.subsystems.Drive;
-import com.team1816.frc2019.subsystems.LED;
 import com.team1816.frc2019.subsystems.Superstructure;
 import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.modes.AutoModeBase;
@@ -41,7 +39,6 @@ public class Robot extends TimedRobot {
     // subsystems
     private final Superstructure mSuperstructure = Superstructure.getInstance();
     private final CarriageCanifier mCarriageCanifer = CarriageCanifier.getInstance();
-    private final LED mLED = LED.getInstance();
     private final Infrastructure mInfrastructure = Infrastructure.getInstance();
     private final RobotState mRobotState = RobotState.getInstance();
     private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
@@ -148,9 +145,6 @@ public class Robot extends TimedRobot {
             mSubsystemManager.registerEnabledLoops(mEnabledLooper);
             mSubsystemManager.registerDisabledLoops(mDisabledLooper);
 
-            mLED.registerEnabledLoops(mDisabledLooper);
-            mLED.registerEnabledLoops(mEnabledLooper);
-
             mInHangMode = false;
 
             // Robot starts forwards.
@@ -181,11 +175,6 @@ public class Robot extends TimedRobot {
             mAutoModeExecutor = new AutoModeExecutor();
 
             mInfrastructure.setIsManualControl(false);
-            if (!mInHangMode) {
-                mLED.setWantedAction(LED.WantedAction.DISPLAY_ZEROING);
-            } else {
-                mLED.setWantedAction(LED.WantedAction.DISPLAY_HANG);
-            }
 
             mDisabledLooper.start();
 
@@ -207,7 +196,6 @@ public class Robot extends TimedRobot {
             mRobotState.reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
             mDrive.setHeading(Rotation2d.identity());
 
-            mLED.setWantedAction(LED.WantedAction.DISPLAY_INTAKE);
             mHasBeenEnabled = true;
 
             mInfrastructure.setIsManualControl(true); // turn on compressor when superstructure is not moving
@@ -239,7 +227,6 @@ public class Robot extends TimedRobot {
                 mAutoModeExecutor.stop();
             }
 
-            mLED.setWantedAction(LED.WantedAction.DISPLAY_INTAKE);
             mHasBeenEnabled = true;
 
             mEnabledLooper.start();
@@ -295,7 +282,6 @@ public class Robot extends TimedRobot {
         try {
             if (!resetRobotButton.get() && !mHasBeenEnabled) {
                 System.out.println("Zeroing Robot!");
-                mLED.updateZeroed();
                 mCarriageCanifer.zeroSensors();
                 mDrive.zeroSensors();
             }
@@ -304,8 +290,6 @@ public class Robot extends TimedRobot {
             mAutoModeSelector.updateModeCreator();
 
             mCarriageCanifer.writePeriodicOutputs();
-
-            LED.getInstance().setClimbLEDState(TimedLEDState.BlinkingLEDState.kHangNoPressure);
 
             Optional<AutoModeBase> autoMode = mAutoModeSelector.getAutoMode();
             mDriveByCameraInAuto = mAutoModeSelector.isDriveByCamera();
@@ -372,12 +356,10 @@ public class Robot extends TimedRobot {
         if ((hangModeLowPressed && hangModePressed) && !mInHangMode && mHangModeReleased) {
             System.out.println("Entering hang mode for low: " + hangModeLowPressed + " high: " + hangModePressed);
             mInHangMode = true;
-            mLED.setWantedAction(LED.WantedAction.DISPLAY_HANG);
             mHangModeReleased = false;
         } else if ((hangModeLowPressed && hangModePressed) && mInHangMode && mHangModeReleased) {
             System.out.println("Exiting hang mode!");
             mInHangMode = false;
-            mLED.setWantedAction(LED.WantedAction.DISPLAY_INTAKE);
             mHangModeReleased = false;
         }
 
