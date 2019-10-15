@@ -3,6 +3,7 @@ package com.team1816.frc2019;
 import badlog.lib.BadLog;
 import com.team1816.frc2019.controlboard.ControlBoard;
 import com.team1816.frc2019.paths.TrajectorySet;
+import com.team1816.frc2019.subsystems.Birdbeak;
 import com.team1816.frc2019.subsystems.CarriageCanifier;
 import com.team1816.frc2019.subsystems.Drive;
 import com.team1816.frc2019.subsystems.Superstructure;
@@ -43,6 +44,7 @@ public class Robot extends TimedRobot {
     private final RobotState mRobotState = RobotState.getInstance();
     private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
     private final Drive mDrive = Drive.getInstance();
+    private final Birdbeak birdbeak = Birdbeak.getInstance();
 
     private TimeDelayedBoolean mHangModeEnablePressed = new TimeDelayedBoolean();
     private TimeDelayedBoolean mHangModeLowEnablePressed = new TimeDelayedBoolean();
@@ -136,7 +138,8 @@ public class Robot extends TimedRobot {
                 mDrive,
                 mSuperstructure,
                 mCarriageCanifer,
-                mInfrastructure
+                mInfrastructure,
+                birdbeak
             );
 
             mCarriageCanifer.zeroSensors();

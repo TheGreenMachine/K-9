@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.Timer;
 
 public class Birdbeak extends Subsystem {
     public static final String NAME = "birdbeak";
+    private static Birdbeak INSTANCE;
 
     private Solenoid beak;
     private Solenoid hatchPuncher;
@@ -18,12 +19,19 @@ public class Birdbeak extends Subsystem {
     private boolean puncherOut;
     private boolean outputsChanged = false;
 
-    public Birdbeak() {
+    private Birdbeak() {
         super(NAME);
         RobotFactory factory = Robot.getFactory();
 
         this.beak = factory.getSolenoid(NAME, "beak");
         this.hatchPuncher = factory.getSolenoid(NAME, "puncher");
+    }
+
+    public static Birdbeak getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new Birdbeak();
+        }
+        return INSTANCE;
     }
 
     public void setBeak(boolean notGripped) {
