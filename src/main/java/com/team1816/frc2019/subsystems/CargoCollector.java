@@ -1,4 +1,4 @@
-package com.team1816.frc2019.subsystems1816;
+package com.team1816.frc2019.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorController;
