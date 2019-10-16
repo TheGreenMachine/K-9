@@ -3,7 +3,6 @@ package com.team1816.frc2019.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.team1816.frc2019.Robot;
-import com.team1816.lib.checker.RunTest;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -11,7 +10,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 
-@RunTest
 public class CargoCollector extends Subsystem {
     public static final String NAME = "cargocollector";
 
