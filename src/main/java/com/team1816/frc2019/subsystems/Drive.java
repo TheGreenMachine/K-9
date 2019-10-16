@@ -18,6 +18,7 @@ import com.team1816.lib.hardware.TalonSRXChecker;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
+import com.team1816.lib.subsystems.TrackableDrivetrain;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.control.Path;
 import com.team254.lib.control.PathFollower;
@@ -35,7 +36,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 import java.util.ArrayList;
 
-public class Drive extends Subsystem {
+public class Drive extends Subsystem implements TrackableDrivetrain {
     private static Drive mInstance;
     private static final String NAME = "drivetrain";
     private static double DRIVE_ENCODER_PPR;
@@ -223,22 +224,6 @@ public class Drive extends Subsystem {
             mLeftMaster.set(ControlMode.Velocity, mPeriodicIO.left_demand);
             mRightMaster.set(ControlMode.Velocity, mPeriodicIO.right_demand);
         }
-    }
-
-    public double getLeftFeedForward() {
-        return mPeriodicIO.left_feedforward + kTalonKd * mPeriodicIO.left_accel / 1023.0;
-    }
-
-    public double getRightFeedForward() {
-        return mPeriodicIO.right_feedforward + kTalonKd * mPeriodicIO.right_accel / 1023.0;
-    }
-
-    public double getLeftDemandWithFF() {
-        return getLeftVelocityDemand() + getLeftFeedForward();
-    }
-
-    public double getRightDemandWithFF() {
-        return getRightVelocityDemand() + getRightFeedForward();
     }
 
     @Override
@@ -448,14 +433,17 @@ public class Drive extends Subsystem {
         return mPeriodicIO.right_position_ticks / DRIVE_ENCODER_PPR;
     }
 
+    @Override
     public double getLeftEncoderDistance() {
         return rotationsToInches(getLeftEncoderRotations());
     }
 
+    @Override
     public double getRightEncoderDistance() {
         return rotationsToInches(getRightEncoderRotations());
     }
 
+    @Override
     public double getRightVelocityNativeUnits() {
         return mPeriodicIO.right_velocity_ticks_per_100ms;
     }
@@ -464,6 +452,7 @@ public class Drive extends Subsystem {
         return rotationsToInches(getRightVelocityNativeUnits() * 10.0 / DRIVE_ENCODER_PPR);
     }
 
+    @Override
     public double getLeftVelocityNativeUnits() {
         return mPeriodicIO.left_velocity_ticks_per_100ms;
     }
@@ -656,19 +645,23 @@ public class Drive extends Subsystem {
         };
     }
 
+    @Override
     public double getLeftVelocityDemand() {
         return mPeriodicIO.left_demand;
     }
 
+    @Override
     public double getRightVelocityDemand() {
         return mPeriodicIO.right_demand;
     }
 
-    public double getLeftError() {
+    @Override
+    public double getLeftVelocityError() {
         return mPeriodicIO.left_error;
     }
 
-    public double getRightError() {
+    @Override
+    public double getRightVelocityError() {
         return mPeriodicIO.right_error;
     }
 
