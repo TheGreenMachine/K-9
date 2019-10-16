@@ -13,6 +13,7 @@ import com.team1816.lib.controlboard.IButtonControlBoard;
 import com.team1816.lib.controlboard.IControlBoard;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.loops.Looper;
+import com.team1816.lib.subsystems.DrivetrainLogger;
 import com.team1816.lib.subsystems.Infrastructure;
 import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
@@ -105,26 +106,8 @@ public class Robot extends TimedRobot {
 
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             logger = BadLog.init("/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag");
+            DrivetrainLogger.init(mDrive);
             BadLog.createValue("PID", String.format("kP = %f, kI = %f, kD = %f, kF = %f", mDrive.getKP(), mDrive.getKI(), mDrive.getKD(), mDrive.getKF()));
-            BadLog.createTopic("Drivetrain/LeftActVel", "NativeUnits", mDrive::getLeftVelocityNativeUnits, "hide",
-                "join:Drivetrain/Velocities");
-            BadLog.createTopic("Drivetrain/RightActVel", "NativeUnits", mDrive::getRightVelocityNativeUnits, "hide",
-                "join:Drivetrain/Velocities");
-            BadLog.createTopic("Drivetrain/LeftVel", "NativeUnits", mDrive::getLeftVelocityDemand, "hide",
-                "join:Drivetrain/Velocities");
-            BadLog.createTopic("Drivetrain/RightVel", "NativeUnits", mDrive::getRightVelocityDemand, "hide",
-                "join:Drivetrain/Velocities");
-            BadLog.createTopic("Drivetrain/LeftError", "NativeUnits", mDrive::getLeftError, "hide",
-                "join:Drivetrain/VelocityError");
-            BadLog.createTopic("Drivetrain/RightError", "NativeUnits", mDrive::getRightError, "hide",
-                "join:Drivetrain/VelocityError");
-            BadLog.createTopic("Drivetrain/LeftDistance", "Inches", mDrive::getLeftEncoderDistance, "hide",
-                "join:Drivetrain/Distance");
-            BadLog.createTopic("Drivetrain/RightDistance", "Inches", mDrive::getRightEncoderDistance, "hide",
-                "join:Drivetrain/Distance");
-            BadLog.createTopic("Drivetrain/ActualHeading", "Angle", mDrive::getHeadingDegrees, "hide",
-                "join:Drivetrain/Heading");
-            BadLog.createTopic("Drivetrain/Heading", "Angle", mDrive::getDesiredHeading, "hide", "join:Drivetrain/Heading");
             BadLog.createTopic("Timings/Looper", "ms", mEnabledLooper::getLastLoop, "hide", "join:Timings");
             BadLog.createTopic("Timings/RobotLoop", "ms", this::getLastLoop, "hide", "join:Timings");
             BadLog.createTopic("Timings/Timestamp", "s", Timer::getFPGATimestamp, "xaxis", "hide");
