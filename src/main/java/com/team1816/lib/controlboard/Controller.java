@@ -42,6 +42,8 @@ public abstract class Controller {
 
     public abstract double getTriggerScalar(Side side);
 
+    public void setRumble(boolean on) { /* no-op */ }
+
     public int getDPad() {
         return mController.getPOV();
     }

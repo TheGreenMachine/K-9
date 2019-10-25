@@ -1,8 +1,9 @@
 package com.team1816.frc2019.controlboard;
 
 import com.team1816.frc2019.Constants;
+import com.team1816.lib.controlboard.Controller;
 import com.team1816.lib.controlboard.IButtonControlBoard;
-import com.team1816.lib.controlboard.XboxController;
+import com.team1816.lib.controlboard.LogitechController;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.Deadband;
 import com.team254.lib.util.DelayedBoolean;
@@ -26,16 +27,16 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
         return mInstance;
     }
 
-    private final XboxController mController;
+    private final Controller mController;
 
     private GamepadButtonControlBoard() {
-        mController = new XboxController(Constants.kButtonGamepadPort);
+        mController = new LogitechController(Constants.kButtonGamepadPort);
         reset();
     }
 
     @Override
     public double getJogTurret() {
-        double jog = mController.getJoystick(XboxController.Side.LEFT, XboxController.Axis.X);
+        double jog = mController.getJoystick(LogitechController.Side.LEFT, LogitechController.Axis.X);
         if (Deadband.inDeadband(jog, kDeadband)) {
             return 0.0;
         }
@@ -49,52 +50,52 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
 
     @Override
     public boolean getScorePresetLow() {
-        return mController.getButton(XboxController.Button.A);
+        return mController.getButton(LogitechController.Button.A);
     }
 
     @Override
     public boolean getScorePresetMiddle() {
-        return mController.getButton(XboxController.Button.B);
+        return mController.getButton(LogitechController.Button.B);
     }
 
     @Override
     public boolean getScorePresetHigh() {
-        return mController.getButton(XboxController.Button.Y);
+        return mController.getButton(LogitechController.Button.Y);
     }
 
     @Override
     public boolean getScorePresetCargo() {
-        return mController.getButton(XboxController.Button.X);
+        return mController.getButton(LogitechController.Button.X);
     }
 
     @Override
     public boolean getPresetStow() {
-        return mController.getButton(XboxController.Button.LB);
+        return mController.getButton(LogitechController.Button.LB);
     }
 
     @Override
     public boolean getPickupDiskWall() {
-        return mController.getTrigger(XboxController.Side.RIGHT);
+        return mController.getTrigger(LogitechController.Side.RIGHT);
     }
 
     @Override
     public boolean getPickupBallGround() {
-        return mController.getButton(XboxController.Button.RB);
+        return mController.getButton(LogitechController.Button.RB);
     }
 
     @Override
     public boolean getToggleHangMode() {
-        return mController.getButton(XboxController.Button.START);
+        return mController.getButton(LogitechController.Button.START);
     }
 
     @Override
     public boolean getToggleHangModeLow() {
-        return mController.getButton(XboxController.Button.BACK);
+        return mController.getButton(LogitechController.Button.BACK);
     }
 
     @Override
     public double getElevatorThrottle() {
-        double jog = mController.getJoystick(XboxController.Side.RIGHT, XboxController.Axis.Y);
+        double jog = mController.getJoystick(LogitechController.Side.RIGHT, LogitechController.Axis.Y);
         if (Deadband.inDeadband(jog, kDeadband)) {
             return 0.0;
         }
@@ -129,12 +130,12 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
 
     @Override
     public boolean getAutoAim() {
-        return mController.getTrigger(XboxController.Side.LEFT);
+        return mController.getTrigger(LogitechController.Side.LEFT);
     }
 
     @Override
     public double getJoggingX() {
-        double jog = mController.getJoystick(XboxController.Side.RIGHT, XboxController.Axis.X);
+        double jog = mController.getJoystick(LogitechController.Side.RIGHT, LogitechController.Axis.X);
         if (Deadband.inDeadband(jog, kDeadband)) {
             return 0.0;
         }
@@ -143,7 +144,7 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
 
     @Override
     public double getJoggingZ() {
-        double jog = mController.getJoystick(XboxController.Side.RIGHT, XboxController.Axis.Y);
+        double jog = mController.getJoystick(LogitechController.Side.RIGHT, LogitechController.Axis.Y);
         if (Deadband.inDeadband(jog, kDeadband)) {
             return 0.0;
         }

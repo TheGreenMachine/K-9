@@ -38,6 +38,7 @@ public class XboxController extends Controller {
         return mController.getRawAxis(side == Side.LEFT ? 2 : 3);
     }
 
+    @Override
     public void setRumble(boolean on) {
         mController.setRumble(RumbleType.kRightRumble, on ? 1 : 0);
     }
