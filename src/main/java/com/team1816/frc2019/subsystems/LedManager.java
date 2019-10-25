@@ -102,9 +102,7 @@ public class LedManager extends Subsystem {
     }
 
     @Override
-    public void initSendable(SendableBuilder builder) {
-
-    }
+    public void initSendable(SendableBuilder builder) { }
 
     public enum RobotStatus {
         ENABLED(223, 255, 0), // gross yellowgreen

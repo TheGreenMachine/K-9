@@ -5,6 +5,7 @@ import com.team1816.frc2019.subsystems.Superstructure;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 /**
  * Subsystem to ensure the compressor never runs while the superstructure moves
@@ -82,5 +83,5 @@ public class Infrastructure extends Subsystem {
     }
 
     @Override
-    public void outputTelemetry() {}
+    public void initSendable(SendableBuilder builder){ }
 }

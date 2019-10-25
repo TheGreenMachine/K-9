@@ -5,6 +5,7 @@ import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.vision.AimingParameters;
 import com.team1816.frc2019.Robot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 import java.util.Optional;
 
@@ -72,8 +73,7 @@ public class Superstructure extends Subsystem {
     return false;
   }
 
-  @Override
-  public synchronized void outputTelemetry() {
-  }
-
+    @Override
+    public void initSendable(SendableBuilder builder) {
+    }
 }
