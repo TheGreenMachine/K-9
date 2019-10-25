@@ -3,7 +3,6 @@ package com.team1816.lib.subsystems;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.loops.Looper;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilderImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,7 +51,7 @@ public class SubsystemManager implements ILooper {
 
     public void setSubsystems(Subsystem... allSubsystems) {
         mAllSubsystems = Arrays.asList(allSubsystems);
-        mAllSubsystems.forEach(subsystem -> subsystem.initSendable(new SendableBuilderImpl()));
+//        mAllSubsystems.forEach(subsystem -> subsystem.initSendable(new SendableBuilderImpl()));
     }
 
     private class EnabledLoop implements Loop {

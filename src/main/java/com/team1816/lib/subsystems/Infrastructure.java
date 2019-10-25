@@ -17,7 +17,9 @@ public class Infrastructure extends Subsystem {
 
     private boolean mIsManualControl = false;
 
-    private Infrastructure() {}
+    private Infrastructure() {
+        super("Infrastructure");
+    }
 
     public static Infrastructure getInstance() {
         if (mInstance == null) {

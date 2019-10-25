@@ -26,7 +26,9 @@ public class RobotStateEstimator extends Subsystem {
         return mInstance;
     }
 
-    private RobotStateEstimator() {}
+    private RobotStateEstimator() {
+        super("RobotStateEstimator");
+    }
 
     @Override
     public void registerEnabledLoops(ILooper looper) {

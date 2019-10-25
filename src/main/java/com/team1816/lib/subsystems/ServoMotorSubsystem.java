@@ -81,6 +81,7 @@ public abstract class ServoMotorSubsystem extends Subsystem {
     protected final int mReverseSoftLimitTicks;
 
     protected ServoMotorSubsystem(final ServoMotorSubsystemConstants constants) {
+        super("ServoMotorSubsystem");
         mConstants = constants;
         mMaster = TalonSRXFactory.createDefaultTalon(mConstants.kMasterConstants.id);
         mSlaves = new TalonSRX[mConstants.kSlaveConstants.length];
