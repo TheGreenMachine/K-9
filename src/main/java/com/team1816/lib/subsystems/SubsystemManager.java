@@ -52,7 +52,7 @@ public class SubsystemManager implements ILooper {
 
     public void setSubsystems(Subsystem... allSubsystems) {
         mAllSubsystems = Arrays.asList(allSubsystems);
-        mAllSubsystems.forEach(subsystem -> subsystem.initSendable(new SendableBuilderImpl()));
+        // mAllSubsystems.forEach(subsystem -> subsystem.initSendable(new SendableBuilderImpl()));
     }
 
     private class EnabledLoop implements Loop {
