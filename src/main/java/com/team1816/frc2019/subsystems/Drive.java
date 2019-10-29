@@ -1,6 +1,7 @@
 package com.team1816.frc2019.subsystems;
 
 import badlog.lib.BadLog;
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
@@ -8,10 +9,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
-import com.team1816.frc2019.Constants;
-import com.team1816.frc2019.Kinematics;
-import com.team1816.frc2019.Robot;
-import com.team1816.frc2019.RobotState;
+import com.team1816.frc2019.*;
 import com.team1816.frc2019.planners.DriveMotionPlanner;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.hardware.TalonSRXChecker;
@@ -115,6 +113,12 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
         }
         mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 10, 10);
 
+        if (mPigeon.getLastError() != ErrorCode.OK) {
+            BadLog.createValue("PigeonErrorDetected", "true");
+            System.out.println("Error detected with Pigeon IMU - check if the sensor is present and plugged in!");
+            System.out.println("Defaulting to drive straight mode");
+            AutoModeSelector.getInstance().setHardwareFailure(true);
+        }
         // force a solenoid message
         mIsHighGear = false;
         setHighGear(true);

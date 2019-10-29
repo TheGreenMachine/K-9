@@ -10,6 +10,8 @@ import java.util.Optional;
 
 public class AutoModeSelector {
 
+    private boolean hardwareFailure = false;
+
     enum StartingPosition {
         LEFT_HAB_2, RIGHT_HAB_2, CENTER_HAB_1, LEFT_HAB_1, RIGHT_HAB_1
     }
@@ -34,7 +36,7 @@ public class AutoModeSelector {
 
     private Optional<AutoModeBase> mAutoMode = Optional.empty();
 
-    public AutoModeSelector() {
+    private AutoModeSelector() {
         mStartPositionChooser = new SendableChooser<>();
         mStartPositionChooser.addOption("Left HAB 2", StartingPosition.LEFT_HAB_2);
         mStartPositionChooser.addOption("Right HAB 2", StartingPosition.RIGHT_HAB_2);
@@ -57,6 +59,10 @@ public class AutoModeSelector {
 //        mModeChooser.addOption("PID", DesiredMode.PID);
         mModeChooser.setDefaultOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
         SmartDashboard.putData("Starting Position", mStartPositionChooser);
+    }
+
+    public void setHardwareFailure(boolean hasFailed) {
+        hardwareFailure = hasFailed;
     }
 
     public void updateModeCreator() {
@@ -113,10 +119,22 @@ public class AutoModeSelector {
     }
 
     public Optional<AutoModeBase> getAutoMode() {
+        if (hardwareFailure) {
+            return Optional.of(new DriveStraightMode());
+        }
         return mAutoMode;
     }
 
     public boolean isDriveByCamera() {
         return mCachedDesiredMode == DesiredMode.DRIVE_BY_CAMERA;
+    }
+
+    private static AutoModeSelector INSTANCE;
+
+    public static AutoModeSelector getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new AutoModeSelector();
+        }
+        return INSTANCE;
     }
 }

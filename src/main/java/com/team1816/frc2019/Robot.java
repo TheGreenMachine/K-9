@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
     private IButtonControlBoard.TurretCardinal mPrevTurretCardinal = IButtonControlBoard.TurretCardinal.NONE;
     private boolean mStickyShoot;
 
-    private AutoModeSelector mAutoModeSelector = new AutoModeSelector();
+    private AutoModeSelector mAutoModeSelector = AutoModeSelector.getInstance();
     private AutoModeExecutor mAutoModeExecutor;
 
     private boolean mDriveByCameraInAuto = false;
