@@ -12,4 +12,16 @@ public interface IDriveControlBoard {
     boolean getWantsLowGear();
 
     boolean getThrust();
+
+    boolean getSlowMode();
+
+    boolean getDrivetrainFlipped();
+
+    boolean getEjectBeak();
+
+    boolean getReleaseBeak();
+
+    double getCargoIntake();
+
+    boolean getClimberAndCameraPiston();
 }

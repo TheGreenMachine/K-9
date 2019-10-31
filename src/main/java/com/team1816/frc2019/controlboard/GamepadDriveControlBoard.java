@@ -43,8 +43,38 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
     }
 
     @Override
+    public boolean getSlowMode() {
+        return mController.getButton(LogitechController.Button.RB);
+    }
+
+    @Override
+    public boolean getDrivetrainFlipped() {
+        return mController.getButton(LogitechController.Button.Y);
+    }
+
+    @Override
+    public boolean getEjectBeak() {
+        return mController.getButton(LogitechController.Button.LB);
+    }
+
+    @Override
+    public boolean getReleaseBeak() {
+        return mController.getTrigger(Controller.Side.LEFT);
+    }
+
+    @Override
+    public double getCargoIntake() {
+        return mController.getTriggerScalar(Controller.Side.RIGHT);
+    }
+
+    @Override
+    public boolean getClimberAndCameraPiston() {
+        return mController.getButton(LogitechController.Button.B);
+    }
+
+    @Override
     public boolean getQuickTurn() {
-        return mController.getTrigger(LogitechController.Side.LEFT);
+        return false;
     }
 
     @Override
