@@ -59,6 +59,36 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
+    public boolean getSlowMode() {
+        return false;
+    }
+
+    @Override
+    public boolean getDrivetrainFlipped() {
+        return false;
+    }
+
+    @Override
+    public boolean getEjectBeak() {
+        return false;
+    }
+
+    @Override
+    public boolean getReleaseBeak() {
+        return false;
+    }
+
+    @Override
+    public double getCargoIntake() {
+        return 0;
+    }
+
+    @Override
+    public boolean getClimberAndCameraPiston() {
+        return false;
+    }
+
+    @Override
     public double getJogTurret() {
         return mButtonControlBoard.getJogTurret();
     }
