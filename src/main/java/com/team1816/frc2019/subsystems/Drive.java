@@ -114,7 +114,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain {
         mPigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 10, 10);
 
         if (mPigeon.getLastError() != ErrorCode.OK) {
-            BadLog.createValue("PigeonErrorDetected", "true");
+            // BadLog.createValue("PigeonErrorDetected", "true");
             System.out.println("Error detected with Pigeon IMU - check if the sensor is present and plugged in!");
             System.out.println("Defaulting to drive straight mode");
             AutoModeSelector.getInstance().setHardwareFailure(true);

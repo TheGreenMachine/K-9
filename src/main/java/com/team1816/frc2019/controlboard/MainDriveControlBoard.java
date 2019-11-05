@@ -55,4 +55,34 @@ public class MainDriveControlBoard implements IDriveControlBoard {
     public boolean getThrust() {
         return mThrottleStick.getRawButton(1);
     }
+
+    @Override
+    public boolean getSlowMode() {
+        return false;
+    }
+
+    @Override
+    public boolean getDrivetrainFlipped() {
+        return false;
+    }
+
+    @Override
+    public boolean getEjectBeak() {
+        return false;
+    }
+
+    @Override
+    public boolean getReleaseBeak() {
+        return false;
+    }
+
+    @Override
+    public double getCargoIntake() {
+        return 0;
+    }
+
+    @Override
+    public boolean getClimberAndCameraPiston() {
+        return false;
+    }
 }

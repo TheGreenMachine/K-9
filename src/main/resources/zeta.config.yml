@@ -64,7 +64,7 @@ subsystems:
                 reverse: 7
 pcm: 17
 constants:
-    wheelDiameter: 5.72332
+    wheelDiameter: 5.389459
     trackWidth: 25
     maxVel: 40 #inch/s
     maxAccel: 30 #inch/s^2

@@ -60,32 +60,32 @@ public class ControlBoard implements IControlBoard {
 
     @Override
     public boolean getSlowMode() {
-        return false;
+        return mDriveControlBoard.getSlowMode();
     }
 
     @Override
     public boolean getDrivetrainFlipped() {
-        return false;
+        return mDriveControlBoard.getDrivetrainFlipped();
     }
 
     @Override
     public boolean getEjectBeak() {
-        return false;
+        return mDriveControlBoard.getEjectBeak();
     }
 
     @Override
     public boolean getReleaseBeak() {
-        return false;
+        return mDriveControlBoard.getReleaseBeak();
     }
 
     @Override
     public double getCargoIntake() {
-        return 0;
+        return mDriveControlBoard.getCargoIntake();
     }
 
     @Override
     public boolean getClimberAndCameraPiston() {
-        return false;
+        return mDriveControlBoard.getClimberAndCameraPiston();
     }
 
     @Override

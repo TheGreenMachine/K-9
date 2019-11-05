@@ -11,7 +11,7 @@ import java.util.List;
 
 public class DriveStraight implements PathContainer {
 
-    private  static int driveDistance = 72;
+    private static int driveDistance = 240;
 
   @Override
   public Path buildPath() {
