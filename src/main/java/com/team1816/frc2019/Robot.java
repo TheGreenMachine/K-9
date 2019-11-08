@@ -27,7 +27,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.team1816.frc2019.controlboard.ControlUtils.*;
+import static com.team1816.frc2019.controlboard.ControlUtils.createAction;
+import static com.team1816.frc2019.controlboard.ControlUtils.createScalar;
 
 public class Robot extends TimedRobot {
     private BadLog logger;
@@ -345,22 +346,7 @@ public class Robot extends TimedRobot {
             mLastShootPressedTime = Timer.getFPGATimestamp();
         }
 
-        boolean wantsBeakOpen = mControlBoard.getEjectBeak();
-        boolean beakOpenJustPushed = mWantsBeakDeploy.update(wantsBeakOpen);
-        if (beakOpenJustPushed) {
-            birdbeak.setBeak(true);
-            System.out.println("opening beak");
-        }
-
         mActionManager.update();
-
-        boolean wantsBeakClosed = mControlBoard.getReleaseBeak();
-        System.out.println("wants beak close: " + wantsBeakClosed);
-        // boolean beakCloseJustPushed = mWantsBeakRelease.update(wantsBeakClosed);
-        // if (beakCloseJustPushed) {
-        //     birdbeak.setBeak(false);
-        //     System.out.println("closing beak");
-        // }
 
         boolean wantsLowGear = mControlBoard.getWantsLowGear() && !sandstorm;
 
