@@ -150,4 +150,24 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
         }
         return (jog - kDeadband * Math.signum(jog));
     }
+
+    @Override
+    public boolean getBeakOpen() {
+        return mController.getButton(LogitechController.Button.Y);
+    }
+
+    @Override
+    public boolean getBeakClose() {
+        return mController.getButton(LogitechController.Button.A);
+    }
+
+    @Override
+    public boolean getClimberUp() {
+        return mController.getDPad() == 0;
+    }
+
+    @Override
+    public boolean getClimberDown() {
+        return mController.getDPad() == 180;
+    }
 }

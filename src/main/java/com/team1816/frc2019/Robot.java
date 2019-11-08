@@ -1,12 +1,10 @@
 package com.team1816.frc2019;
 
 import badlog.lib.BadLog;
+import com.team1816.frc2019.controlboard.ActionManager;
 import com.team1816.frc2019.controlboard.ControlBoard;
 import com.team1816.frc2019.paths.TrajectorySet;
-import com.team1816.frc2019.subsystems.Birdbeak;
-import com.team1816.frc2019.subsystems.CarriageCanifier;
-import com.team1816.frc2019.subsystems.Drive;
-import com.team1816.frc2019.subsystems.Superstructure;
+import com.team1816.frc2019.subsystems.*;
 import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.controlboard.IButtonControlBoard;
@@ -29,6 +27,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.team1816.frc2019.controlboard.ControlUtils.*;
+
 public class Robot extends TimedRobot {
     private BadLog logger;
     private final Looper mEnabledLooper = new Looper();
@@ -46,6 +46,7 @@ public class Robot extends TimedRobot {
     private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
     private final Drive mDrive = Drive.getInstance();
     private final Birdbeak birdbeak = Birdbeak.getInstance();
+    private final CargoShooter cargoShooter = CargoShooter.getInstance();
 
     private TimeDelayedBoolean mHangModeEnablePressed = new TimeDelayedBoolean();
     private TimeDelayedBoolean mHangModeLowEnablePressed = new TimeDelayedBoolean();
@@ -82,6 +83,8 @@ public class Robot extends TimedRobot {
 
     private boolean mDriveByCameraInAuto = false;
     private double loopStart;
+
+    private ActionManager mActionManager;
 
     Robot() {
         CrashTracker.logRobotConstruction();
@@ -142,6 +145,13 @@ public class Robot extends TimedRobot {
             TrajectorySet.getInstance();
 
             mAutoModeSelector.updateModeCreator();
+
+            mActionManager = new ActionManager(
+                createAction(mControlBoard::getEjectBeak, () -> birdbeak.setBeak(true)),
+                createAction(mControlBoard::getReleaseBeak, () ->  birdbeak.setBeak(false)),
+                createScalar(mControlBoard::getCargoIntake, cargoShooter::setIntake)
+            );
+
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
             throw t;
@@ -341,6 +351,8 @@ public class Robot extends TimedRobot {
             birdbeak.setBeak(true);
             System.out.println("opening beak");
         }
+
+        mActionManager.update();
 
         boolean wantsBeakClosed = mControlBoard.getReleaseBeak();
         System.out.println("wants beak close: " + wantsBeakClosed);

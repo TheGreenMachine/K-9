@@ -231,4 +231,13 @@ public class CargoShooter extends Subsystem {
         SmartDashboard.putNumber("max_thresh", ARM_POSITION_MAX);
         SmartDashboard.putNumber("min_thresh", ARM_POSITION_MIN);
     }
+
+    private static CargoShooter INSTANCE;
+
+    public static CargoShooter getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new CargoShooter();
+        }
+        return INSTANCE;
+    }
 }

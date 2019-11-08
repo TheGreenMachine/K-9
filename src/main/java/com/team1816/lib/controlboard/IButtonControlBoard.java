@@ -26,6 +26,12 @@ public interface IButtonControlBoard {
     double getJoggingX();
     double getJoggingZ();
 
+    boolean getBeakOpen();
+    boolean getBeakClose();
+
+    boolean getClimberUp();
+    boolean getClimberDown();
+
     // Turret
     enum TurretCardinal {
         BACK(180),

@@ -167,4 +167,24 @@ public class ControlBoard implements IControlBoard {
     public double getJoggingZ() {
         return mButtonControlBoard.getJoggingZ();
     }
+
+    @Override
+    public boolean getBeakOpen() {
+        return mButtonControlBoard.getBeakOpen();
+    }
+
+    @Override
+    public boolean getBeakClose() {
+        return mButtonControlBoard.getBeakClose();
+    }
+
+    @Override
+    public boolean getClimberUp() {
+        return mButtonControlBoard.getClimberUp();
+    }
+
+    @Override
+    public boolean getClimberDown() {
+        return mButtonControlBoard.getClimberDown();
+    }
 }
