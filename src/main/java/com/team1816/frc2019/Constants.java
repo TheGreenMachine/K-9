@@ -16,7 +16,7 @@ public class Constants {
     public static final int kResetButtonChannel = 4;
 
     // Control Board
-    public static final boolean kUseDriveGamepad = false;
+    public static final boolean kUseDriveGamepad = true;
     public static final int kDriveGamepadPort = 0;
     public static final int kButtonGamepadPort = 2;
     public static final int kMainThrottleJoystickPort = 0;

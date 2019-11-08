@@ -72,6 +72,8 @@ public class Robot extends TimedRobot {
     private LatchedBoolean mWantsAutoExecution = new LatchedBoolean();
     private LatchedBoolean mWantsAutoInterrupt = new LatchedBoolean();
     private LatchedBoolean mAutoSteerPressed = new LatchedBoolean();
+    private LatchedBoolean mWantsBeakDeploy = new LatchedBoolean();
+    private LatchedBoolean mWantsBeakRelease = new LatchedBoolean();
     private IButtonControlBoard.TurretCardinal mPrevTurretCardinal = IButtonControlBoard.TurretCardinal.NONE;
     private boolean mStickyShoot;
 
@@ -332,6 +334,22 @@ public class Robot extends TimedRobot {
         if (shotJustPushed) {
             mLastShootPressedTime = Timer.getFPGATimestamp();
         }
+
+        boolean wantsBeakOpen = mControlBoard.getEjectBeak();
+        boolean beakOpenJustPushed = mWantsBeakDeploy.update(wantsBeakOpen);
+        if (beakOpenJustPushed) {
+            birdbeak.setBeak(true);
+            System.out.println("opening beak");
+        }
+
+        boolean wantsBeakClosed = mControlBoard.getReleaseBeak();
+        System.out.println("wants beak close: " + wantsBeakClosed);
+        // boolean beakCloseJustPushed = mWantsBeakRelease.update(wantsBeakClosed);
+        // if (beakCloseJustPushed) {
+        //     birdbeak.setBeak(false);
+        //     System.out.println("closing beak");
+        // }
+
         boolean wantsLowGear = mControlBoard.getWantsLowGear() && !sandstorm;
 
         boolean hangModePressed =
