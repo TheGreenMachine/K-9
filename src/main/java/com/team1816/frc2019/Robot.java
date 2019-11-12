@@ -7,7 +7,6 @@ import com.team1816.frc2019.paths.TrajectorySet;
 import com.team1816.frc2019.subsystems.*;
 import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.modes.AutoModeBase;
-import com.team1816.lib.controlboard.IButtonControlBoard;
 import com.team1816.lib.controlboard.IControlBoard;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.loops.Looper;
@@ -27,8 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.team1816.frc2019.controlboard.ControlUtils.createAction;
-import static com.team1816.frc2019.controlboard.ControlUtils.createScalar;
+import static com.team1816.frc2019.controlboard.ControlUtils.*;
 
 public class Robot extends TimedRobot {
     private BadLog logger;
@@ -48,6 +46,7 @@ public class Robot extends TimedRobot {
     private final Drive mDrive = Drive.getInstance();
     private final Birdbeak birdbeak = Birdbeak.getInstance();
     private final CargoShooter cargoShooter = CargoShooter.getInstance();
+    private final Climber climber = Climber.getInstance();
 
     private TimeDelayedBoolean mHangModeEnablePressed = new TimeDelayedBoolean();
     private TimeDelayedBoolean mHangModeLowEnablePressed = new TimeDelayedBoolean();
@@ -74,9 +73,7 @@ public class Robot extends TimedRobot {
     private LatchedBoolean mWantsAutoExecution = new LatchedBoolean();
     private LatchedBoolean mWantsAutoInterrupt = new LatchedBoolean();
     private LatchedBoolean mAutoSteerPressed = new LatchedBoolean();
-    private LatchedBoolean mWantsBeakDeploy = new LatchedBoolean();
-    private LatchedBoolean mWantsBeakRelease = new LatchedBoolean();
-    private IButtonControlBoard.TurretCardinal mPrevTurretCardinal = IButtonControlBoard.TurretCardinal.NONE;
+
     private boolean mStickyShoot;
 
     private AutoModeSelector mAutoModeSelector = AutoModeSelector.getInstance();
@@ -128,7 +125,9 @@ public class Robot extends TimedRobot {
                 mSuperstructure,
                 mCarriageCanifer,
                 mInfrastructure,
-                birdbeak
+                birdbeak,
+                cargoShooter,
+                climber
             );
 
             mCarriageCanifer.zeroSensors();
@@ -148,9 +147,16 @@ public class Robot extends TimedRobot {
             mAutoModeSelector.updateModeCreator();
 
             mActionManager = new ActionManager(
-                createAction(mControlBoard::getEjectBeak, () -> birdbeak.setBeak(true)),
-                createAction(mControlBoard::getReleaseBeak, () ->  birdbeak.setBeak(false)),
-                createScalar(mControlBoard::getCargoIntake, cargoShooter::setIntake)
+                // Driver Gamepad
+                createHoldAction(mControlBoard::getEjectBeak, birdbeak::setEject),
+                createHoldAction(mControlBoard::getReleaseBeak, birdbeak::setBeak),
+                createScalar(mControlBoard::getCargoIntake, cargoShooter::setIntake),
+                // Operator gamepad
+                createAction(mControlBoard::getBeakOpen, () -> birdbeak.setBeak(true)),
+                createAction(mControlBoard::getBeakClose, () -> birdbeak.setBeak(false)),
+                createScalar(mControlBoard::getClimberThrottle, climber::setClimberPower),
+                createHoldAction(mControlBoard::getShooterIn, (in) -> cargoShooter.setIntake(in ? 1 : 0)),
+                createHoldAction(mControlBoard::getShooterOut, (out) -> cargoShooter.setIntake(out ? -1 : 0))
             );
 
         } catch (Throwable t) {
@@ -234,7 +240,6 @@ public class Robot extends TimedRobot {
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();
 
-            mPrevTurretCardinal = IButtonControlBoard.TurretCardinal.NONE;
             mOffsetOverride = -2.0;
         } catch (Throwable t) {
             CrashTracker.logThrowableCrash(t);
@@ -375,15 +380,10 @@ public class Robot extends TimedRobot {
         boolean wants_auto_steer = mControlBoard.getThrust() && mDiskIntakeTrigger.isPressed();
         boolean auto_steer_pressed = mAutoSteerPressed.update(wants_auto_steer);
 
-        IButtonControlBoard.TurretCardinal turretCardinal = mControlBoard.getTurretCardinal();
-        boolean turretCardinalChanged = turretCardinal != mPrevTurretCardinal;
-        mPrevTurretCardinal = turretCardinal;
-
         if (mInHangMode) {
             mDrive.setHighGear(!wantsLowGear);
         } else {
             // End Effector Jog
-            double jogZ = mControlBoard.getJoggingZ();
             boolean wants_thrust = mControlBoard.getThrust() && !wants_auto_steer;
 
             boolean thrust_just_pressed = mThrustPressed.update(wants_thrust);

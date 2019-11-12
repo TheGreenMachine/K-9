@@ -32,7 +32,12 @@ public class LogitechController extends Controller {
     }
 
     @Override
+    public boolean getTrigger(Side side) {
+        return mController.getRawButton(side == Side.LEFT ? 7 : 8);
+    }
+
+    @Override
     public double getTriggerScalar(Controller.Side side) {
-        return mController.getRawAxis(side == Side.LEFT ? 7 : 8);
+        return getTrigger(side) ? 1 : 0;
     }
 }

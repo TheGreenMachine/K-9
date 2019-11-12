@@ -18,6 +18,8 @@ public class Birdbeak extends Subsystem {
     private boolean beakNotGripped;
     private boolean puncherOut;
     private boolean outputsChanged = false;
+    private boolean enableTimeout = false;
+    private long timeoutStartTime = 0;
 
     private Birdbeak() {
         super(NAME);
@@ -44,6 +46,12 @@ public class Birdbeak extends Subsystem {
         outputsChanged = true;
     }
 
+    public void setEject(boolean eject) {
+        setPuncher(eject);
+        enableTimeout = eject;
+        setBeak(eject);
+    }
+
     public boolean getBeakState() {
         return beak.get();
     }
@@ -55,10 +63,21 @@ public class Birdbeak extends Subsystem {
     @Override
     public void writePeriodicOutputs() {
         if (outputsChanged) {
-            beak.set(beakNotGripped);
             hatchPuncher.set(puncherOut);
-
-            outputsChanged = false;
+            if (enableTimeout) {
+                if (timeoutStartTime == 0) {
+                    timeoutStartTime = System.currentTimeMillis();
+                }
+                if (timeoutStartTime + 100 < System.currentTimeMillis()) {
+                    beak.set(beakNotGripped);
+                    enableTimeout = false;
+                    timeoutStartTime = 0;
+                    outputsChanged = false;
+                }
+            } else {
+                beak.set(beakNotGripped);
+                outputsChanged = false;
+            }
         }
     }
 

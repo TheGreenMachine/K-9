@@ -64,7 +64,7 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
 
     @Override
     public double getCargoIntake() {
-        return mController.getTriggerScalar(Controller.Side.RIGHT);
+        return -1 * mController.getTriggerScalar(Controller.Side.RIGHT);
     }
 
     @Override

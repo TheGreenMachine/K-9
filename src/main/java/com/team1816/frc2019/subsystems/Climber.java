@@ -110,4 +110,13 @@ public class Climber extends Subsystem {
     public void initSendable(SendableBuilder builder) {
 
     }
+
+    private static Climber INSTANCE;
+
+    public static Climber getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new Climber();
+        }
+        return INSTANCE;
+    }
 }

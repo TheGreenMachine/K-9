@@ -89,11 +89,6 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public double getJogTurret() {
-        return mButtonControlBoard.getJogTurret();
-    }
-
-    @Override
     public boolean getScorePresetLow() {
         return mButtonControlBoard.getScorePresetLow();
     }
@@ -144,31 +139,6 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public double getElevatorThrottle() {
-        return mButtonControlBoard.getElevatorThrottle();
-    }
-
-    @Override
-    public TurretCardinal getTurretCardinal() {
-        return mButtonControlBoard.getTurretCardinal();
-    }
-
-    @Override
-    public boolean getAutoAim() {
-        return mButtonControlBoard.getAutoAim();
-    }
-
-    @Override
-    public double getJoggingX() {
-        return mButtonControlBoard.getJoggingX();
-    }
-
-    @Override
-    public double getJoggingZ() {
-        return mButtonControlBoard.getJoggingZ();
-    }
-
-    @Override
     public boolean getBeakOpen() {
         return mButtonControlBoard.getBeakOpen();
     }
@@ -179,12 +149,17 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public boolean getClimberUp() {
-        return mButtonControlBoard.getClimberUp();
+    public double getClimberThrottle() {
+        return mButtonControlBoard.getClimberThrottle();
     }
 
     @Override
-    public boolean getClimberDown() {
-        return mButtonControlBoard.getClimberDown();
+    public boolean getShooterOut() {
+        return mButtonControlBoard.getShooterOut();
+    }
+
+    @Override
+    public boolean getShooterIn() {
+        return mButtonControlBoard.getShooterIn();
     }
 }

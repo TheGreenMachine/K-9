@@ -83,6 +83,8 @@ public class ControlUtils {
         private DoubleSupplier input;
         private DoubleConsumer action;
 
+        private double lastValue;
+
         private ScalarAction(DoubleSupplier input, DoubleConsumer action) {
             this.input = input;
             this.action = action;
@@ -90,7 +92,11 @@ public class ControlUtils {
 
         @Override
         public void update() {
-            action.accept(input.getAsDouble());
+            double newValue = input.getAsDouble();
+            if (newValue != lastValue) {
+                action.accept(newValue);
+            }
+            lastValue = newValue;
         }
     }
 }

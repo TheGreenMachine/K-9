@@ -15,7 +15,6 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
 
     private final double kDPadDelay = 0.02;
     private DelayedBoolean mDPadValid;
-    private TurretCardinal mLastCardinal;
 
     private static GamepadButtonControlBoard mInstance = null;
 
@@ -32,15 +31,6 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     private GamepadButtonControlBoard() {
         mController = new LogitechController(Constants.kButtonGamepadPort);
         reset();
-    }
-
-    @Override
-    public double getJogTurret() {
-        double jog = mController.getJoystick(LogitechController.Side.LEFT, LogitechController.Axis.X);
-        if (Deadband.inDeadband(jog, kDeadband)) {
-            return 0.0;
-        }
-        return (jog - kDeadband * Math.signum(jog));
     }
 
     @Override
@@ -94,61 +84,8 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     }
 
     @Override
-    public double getElevatorThrottle() {
-        double jog = mController.getJoystick(LogitechController.Side.RIGHT, LogitechController.Axis.Y);
-        if (Deadband.inDeadband(jog, kDeadband)) {
-            return 0.0;
-        }
-        return (jog - kDeadband * Math.signum(jog));
-    }
-
-    @Override
     public void reset() {
-        mLastCardinal = TurretCardinal.NONE;
         mDPadValid = new DelayedBoolean(Timer.getFPGATimestamp(), kDPadDelay);
-    }
-
-    @Override
-    public TurretCardinal getTurretCardinal() {
-        int dPad = mController.getDPad();
-        TurretCardinal newCardinal = dPad == -1 ? TurretCardinal.NONE : TurretCardinal.findClosest(Rotation2d.fromDegrees(-dPad));
-        if (newCardinal != TurretCardinal.NONE && TurretCardinal.isDiagonal(newCardinal)) {
-            // Latch previous direction on diagonal presses, because the D-pad sucks at diagonals.
-            newCardinal = mLastCardinal;
-        }
-        boolean valid = mDPadValid.update(Timer.getFPGATimestamp(), newCardinal != TurretCardinal.NONE && (mLastCardinal == TurretCardinal.NONE || newCardinal == mLastCardinal));
-        if (valid) {
-            if (mLastCardinal == TurretCardinal.NONE) {
-                mLastCardinal = newCardinal;
-            }
-            return mLastCardinal;
-        } else {
-            mLastCardinal = newCardinal;
-        }
-        return TurretCardinal.NONE;
-    }
-
-    @Override
-    public boolean getAutoAim() {
-        return mController.getTrigger(LogitechController.Side.LEFT);
-    }
-
-    @Override
-    public double getJoggingX() {
-        double jog = mController.getJoystick(LogitechController.Side.RIGHT, LogitechController.Axis.X);
-        if (Deadband.inDeadband(jog, kDeadband)) {
-            return 0.0;
-        }
-        return (jog - kDeadband * Math.signum(jog));
-    }
-
-    @Override
-    public double getJoggingZ() {
-        double jog = mController.getJoystick(LogitechController.Side.RIGHT, LogitechController.Axis.Y);
-        if (Deadband.inDeadband(jog, kDeadband)) {
-            return 0.0;
-        }
-        return (jog - kDeadband * Math.signum(jog));
     }
 
     @Override
@@ -162,12 +99,17 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     }
 
     @Override
-    public boolean getClimberUp() {
-        return mController.getDPad() == 0;
+    public double getClimberThrottle() {
+        return mController.getJoystick(Controller.Side.LEFT, Controller.Axis.Y);
     }
 
     @Override
-    public boolean getClimberDown() {
-        return mController.getDPad() == 180;
+    public boolean getShooterOut() {
+        return mController.getTrigger(Controller.Side.RIGHT);
+    }
+
+    @Override
+    public boolean getShooterIn() {
+        return mController.getButton(LogitechController.Button.RB);
     }
 }
