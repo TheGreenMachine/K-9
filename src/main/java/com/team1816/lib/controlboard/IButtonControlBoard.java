@@ -1,7 +1,5 @@
 package com.team1816.lib.controlboard;
 
-import com.team254.lib.geometry.Rotation2d;
-
 public interface IButtonControlBoard {
     void reset();
 
@@ -27,4 +25,9 @@ public interface IButtonControlBoard {
 
     boolean getShooterOut();
     boolean getShooterIn();
+
+    boolean getShooterPositionUp();
+    boolean getShooterPositionRocket();
+
+
 }

@@ -162,4 +162,14 @@ public class ControlBoard implements IControlBoard {
     public boolean getShooterIn() {
         return mButtonControlBoard.getShooterIn();
     }
+
+    @Override
+    public boolean getShooterPositionUp() {
+        return mButtonControlBoard.getShooterPositionUp();
+    }
+
+    @Override
+    public boolean getShooterPositionRocket() {
+        return mButtonControlBoard.getShooterPositionRocket();
+    }
 }

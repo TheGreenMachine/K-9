@@ -4,10 +4,7 @@ import com.team1816.frc2019.Constants;
 import com.team1816.lib.controlboard.Controller;
 import com.team1816.lib.controlboard.IButtonControlBoard;
 import com.team1816.lib.controlboard.LogitechController;
-import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.util.Deadband;
 import com.team254.lib.util.DelayedBoolean;
-
 import edu.wpi.first.wpilibj.Timer;
 
 public class GamepadButtonControlBoard implements IButtonControlBoard {
@@ -111,5 +108,15 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     @Override
     public boolean getShooterIn() {
         return mController.getButton(LogitechController.Button.RB);
+    }
+
+    @Override
+    public boolean getShooterPositionUp() {
+        return mController.getButton(LogitechController.Button.B);
+    }
+
+    @Override
+    public boolean getShooterPositionRocket() {
+        return mController.getButton(LogitechController.Button.X);
     }
 }
