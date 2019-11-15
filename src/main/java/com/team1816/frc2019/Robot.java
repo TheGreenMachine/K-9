@@ -158,7 +158,7 @@ public class Robot extends TimedRobot {
                 createHoldAction(mControlBoard::getShooterIn, (in) -> cargoShooter.setIntake(in ? 1 : 0)),
                 createHoldAction(mControlBoard::getShooterOut, (out) -> cargoShooter.setIntake(out ? -1 : 0)),
                 createAction(mControlBoard::getShooterPositionUp, () -> cargoShooter.setArmPosition(CargoShooter.ArmPosition.UP)),
-                createAction(mControlBoard::getShooterPositionUp, () -> cargoShooter.setArmPosition(CargoShooter.ArmPosition.ROCKET))
+                createAction(mControlBoard::getShooterPositionRocket, () -> cargoShooter.setArmPosition(CargoShooter.ArmPosition.ROCKET))
                 ); //TODO: Setting cargoshooter down or up needs a parallel action that stops intake for both and shooter and collector
                    //      Also needs to raise the collector arm
 

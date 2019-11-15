@@ -16,14 +16,6 @@ public class ControlUtils {
         return new HoldAction(input, action);
     }
 
-    public static void createToggle(BooleanSupplier input, Consumer<Boolean> action) {
-
-    }
-
-    // public static void createToggle(BooleanSupplier input, Runnable onAction, Runnable offAction) {
-    //
-    // }
-
     public static ScalarAction createScalar(DoubleSupplier input, DoubleConsumer output) {
         return new ScalarAction(input, output);
     }
@@ -52,6 +44,8 @@ public class ControlUtils {
                 state.update(false);
             }
         }
+
+
     }
 
     public static class HoldAction implements ButtonAction {
@@ -77,6 +71,7 @@ public class ControlUtils {
                 action.accept(false);
             }
         }
+
     }
 
     public static class ScalarAction implements ButtonAction {
