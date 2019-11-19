@@ -22,6 +22,9 @@ public class Superstructure extends Subsystem {
   private static Superstructure mInstance;
   private Optional<AimingParameters> mLatestAimingParameters = Optional.empty();
 
+  private CargoShooter cargoShooter = CargoShooter.getInstance();
+  private CargoCollector cargoCollector =  CargoCollector.getInstance();
+
   public synchronized static Superstructure getInstance() {
     if (mInstance == null) {
       mInstance = new Superstructure();

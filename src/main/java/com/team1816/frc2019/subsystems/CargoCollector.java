@@ -21,13 +21,23 @@ public class CargoCollector extends Subsystem {
     private boolean armDown;
     private boolean outputsChanged = false;
 
-    public CargoCollector() {
+    private static CargoCollector INSTANCE;
+
+    private CargoCollector() {
         super(NAME);
         RobotFactory factory = Robot.getFactory();
 
         this.intake = factory.getMotor(NAME, "intake");
         this.armPiston = factory.getSolenoid(NAME, "arm");
     }
+
+    public static CargoCollector getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new CargoCollector();
+        }
+        return INSTANCE;
+    }
+
 
     public void setArm(boolean down) {
         this.armDown = down;
