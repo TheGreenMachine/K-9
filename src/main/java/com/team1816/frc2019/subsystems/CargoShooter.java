@@ -25,9 +25,9 @@ public class CargoShooter extends Subsystem {
     private static final boolean kSensorPhase = true; // these two booleans should always match
     private static final boolean kMotorInverted = true;
 
-    public static final int ARM_POSITION_MIN = Robot.getFactory().getConstant(NAME, "minPos").intValue();
+    public static final int ARM_POSITION_UP = Robot.getFactory().getConstant(NAME, "minPos").intValue();
     public static final int ARM_POSITION_MID = Robot.getFactory().getConstant(NAME, "midPos").intValue();
-    public static final int ARM_POSITION_MAX = Robot.getFactory().getConstant(NAME, "maxPos").intValue();
+    public static final int ARM_POSITION_DOWN = Robot.getFactory().getConstant(NAME, "maxPos").intValue();
     private static final int ALLOWABLE_CLOSED_LOOP_ERROR = 50;
 
     private static final int kPIDLoopIdx = 0;
@@ -98,8 +98,8 @@ public class CargoShooter extends Subsystem {
 
         armTalon.configForwardSoftLimitEnable(true, kTimeoutMs);
         armTalon.configReverseSoftLimitEnable(true, kTimeoutMs);
-        armTalon.configForwardSoftLimitThreshold(ARM_POSITION_MAX, kTimeoutMs);
-        armTalon.configReverseSoftLimitThreshold(ARM_POSITION_MIN, kTimeoutMs);
+        armTalon.configForwardSoftLimitThreshold(ARM_POSITION_DOWN, kTimeoutMs);
+        armTalon.configReverseSoftLimitThreshold(ARM_POSITION_UP, kTimeoutMs);
     }
 
     public void setPid(double kP, double kI, double kD) {
@@ -113,9 +113,9 @@ public class CargoShooter extends Subsystem {
     }
 
     public enum ArmPosition {
-        DOWN(ARM_POSITION_MAX),
+        DOWN(ARM_POSITION_DOWN),
         ROCKET(ARM_POSITION_MID),
-        UP(ARM_POSITION_MIN);
+        UP(ARM_POSITION_UP);
 
         private double armPos;
 
@@ -228,8 +228,8 @@ public class CargoShooter extends Subsystem {
         builder.addBooleanProperty("Busy", this::isBusy, null);
         builder.addDoubleProperty("IntakePower", this::getIntakePower, this::setIntake);
         builder.addDoubleProperty("Absolute Arm Position", this::getArmPositionAbsolute, null);
-        SmartDashboard.putNumber("max_thresh", ARM_POSITION_MAX);
-        SmartDashboard.putNumber("min_thresh", ARM_POSITION_MIN);
+        SmartDashboard.putNumber("max_thresh", ARM_POSITION_DOWN);
+        SmartDashboard.putNumber("min_thresh", ARM_POSITION_UP);
     }
 
     private static CargoShooter INSTANCE;
