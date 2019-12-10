@@ -28,3 +28,8 @@ constants:
   maxVel: 25
   maxAccel: 75
   sensorPhase: 0
+  verbose: 1
+  kLooperDt: .01
+  kTrackScrubFactor: 1.0
+  kPCMId: 0
+  pathKs: 0

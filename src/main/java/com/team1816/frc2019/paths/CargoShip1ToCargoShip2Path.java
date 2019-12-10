@@ -3,8 +3,10 @@ package com.team1816.frc2019.paths;
 import com.team1816.lib.paths.PathBuilder;
 import com.team1816.lib.paths.PathContainer;
 import com.team254.lib.control.Path;
+import com.team254.lib.geometry.Pose2d;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CargoShip1ToCargoShip2Path implements PathContainer {
     public static final String kTurnTurretMarker = "READY_TO_TURN";
@@ -13,6 +15,11 @@ public class CargoShip1ToCargoShip2Path implements PathContainer {
 
     public CargoShip1ToCargoShip2Path(boolean left) {
         mLeft = left;
+    }
+
+    @Override
+    public List<Pose2d> buildWaypoints() {
+        return null;
     }
 
     @Override

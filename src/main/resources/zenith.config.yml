@@ -38,3 +38,4 @@ constants:
   kTrackScrubFactor: 1.0
   kPCMId: 0
   verbose: 0
+  pathKs: 0

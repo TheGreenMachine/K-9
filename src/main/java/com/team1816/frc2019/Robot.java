@@ -2,8 +2,12 @@ package com.team1816.frc2019;
 
 import badlog.lib.BadLog;
 import com.team1816.frc2019.controlboard.ControlBoard;
+import com.team1816.frc2019.paths.TrajectorySet;
 import com.team1816.frc2019.states.TimedLEDState;
-import com.team1816.frc2019.subsystems.*;
+import com.team1816.frc2019.subsystems.CarriageCanifier;
+import com.team1816.frc2019.subsystems.Drive;
+import com.team1816.frc2019.subsystems.LED;
+import com.team1816.frc2019.subsystems.Superstructure;
 import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.controlboard.IButtonControlBoard;
@@ -15,10 +19,9 @@ import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.wpilib.TimedRobot;
 import com.team254.lib.util.*;
 import com.team254.lib.vision.AimingParameters;
-
+import com.team254.lib.wpilib.TimedRobot;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -101,7 +104,7 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         try {
 
-            var logFile = new SimpleDateFormat("DDD_HH-mm").format(new Date());
+            var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
             logger = BadLog.init("/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag");
             BadLog.createTopic("Drivetrain/LeftActVel", "NativeUnits", mDrive::getLeftVelocityNativeUnits, "hide",
                 "join:Drivetrain/Velocities");
@@ -110,6 +113,10 @@ public class Robot extends TimedRobot {
             BadLog.createTopic("Drivetrain/LeftVel", "NativeUnits", mDrive::getLeftVelocityDemand, "hide",
                 "join:Drivetrain/Velocities");
             BadLog.createTopic("Drivetrain/RightVel", "NativeUnits", mDrive::getRightVelocityDemand, "hide",
+                "join:Drivetrain/Velocities");
+            BadLog.createTopic("Drivetrain/LeftVel+FF", "NativeUnits", mDrive::getLeftDemandWithFF, "hide",
+                "join:Drivetrain/Velocities");
+            BadLog.createTopic("Drivetrain/RightVel+FF", "NativeUnits", mDrive::getRightDemandWithFF, "hide",
                 "join:Drivetrain/Velocities");
             BadLog.createTopic("Drivetrain/LeftError", "NativeUnits", mDrive::getLeftError, "hide",
                 "join:Drivetrain/VelocityError");
@@ -150,6 +157,8 @@ public class Robot extends TimedRobot {
             // Robot starts forwards.
             mRobotState.reset(Timer.getFPGATimestamp(), Pose2d.identity(), Rotation2d.identity());
             mDrive.setHeading(Rotation2d.identity());
+
+            TrajectorySet.getInstance();
 
             mAutoModeSelector.updateModeCreator();
         } catch (Throwable t) {
