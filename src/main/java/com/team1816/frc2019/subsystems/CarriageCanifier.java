@@ -4,6 +4,8 @@ import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifierStatusFrame;
 import com.ctre.phoenix.CANifier.PinValues;
 import com.team1816.frc2019.Constants;
+import com.team1816.frc2019.Robot;
+import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -15,7 +17,8 @@ public class CarriageCanifier extends Subsystem {
     private boolean mOutputsChanged;
 
     private CarriageCanifier() {
-        mCanifierWrist = new CANifier(Constants.kCanifierWristId);
+        mCanifierWrist = Robot.getFactory().getCanifier("canifier");
+        if(mCanifierWrist == null) return;
 
         mCanifierWrist.setStatusFramePeriod(CANifierStatusFrame.Status_2_General, 2, Constants.kLongCANTimeoutMs);
 
@@ -34,6 +37,7 @@ public class CarriageCanifier extends Subsystem {
     }
 
     public synchronized void setLEDColor(double red, double green, double blue) {
+        if(mCanifierWrist == null) return;
         if (red != mPeriodicOutputs.r_ ||
                 green != mPeriodicOutputs.g_ ||
                 blue != mPeriodicOutputs.b_) {
@@ -46,6 +50,7 @@ public class CarriageCanifier extends Subsystem {
 
     @Override
     public synchronized void readPeriodicInputs() {
+        if(mCanifierWrist == null) return;
         mPeriodicInputs.has_ball_ = mCanifierWrist.getGeneralInput(CANifier.GeneralPin.LIMF);
         PinValues pinValues = new PinValues();
         mPeriodicInputs.low_pressure_channel_ = pinValues.QUAD_IDX; // black wire, out1
@@ -98,6 +103,7 @@ public class CarriageCanifier extends Subsystem {
 
     @Override
     public synchronized void zeroSensors() {
+        if(mCanifierWrist == null) return;
         mCanifierWrist.setQuadraturePosition(0, 0);
     }
 

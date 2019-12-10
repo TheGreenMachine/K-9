@@ -22,9 +22,6 @@ public class Constants {
     public static final int kMainTurnJoystickPort = 0;
     public static final double kJoystickThreshold = 0.2;
 
-    // Canifier
-    public static int kCanifierWristId = Robot.getFactory().getConstant("canifier", "canId").intValue();
-
     public static final double kMaxTrackerDistance = 9.0;
     public static final double kMaxGoalTrackAge = 2.5;
     public static final double kMaxGoalTrackAgeNotTracking = 0.1;
