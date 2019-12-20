@@ -2,7 +2,6 @@ package com.team1816.frc2019.states;
 
 
 import com.team1816.frc2019.subsystems.CargoShooter;
-import com.team1816.lib.subsystems.Subsystem;
 
 public class SuperstructureStateManager {
     public enum WantedAction {
@@ -53,8 +52,8 @@ public class SuperstructureStateManager {
     }
 
     private void updateMotionPlannerDesired(SuperstructureState currentState) {
-        mDesiredEndState.angle = mScoringAngle;
-        mDesiredEndState.height = mScoringHeight;
+        mDesiredEndState.armPosition = armPosition;
+        mDesiredEndState.isCollectorDown = collectorDown;
 
         System.out.println("Setting motion planner to height: " + mDesiredEndState.height
             + " angle: " + mDesiredEndState.angle);
@@ -64,8 +63,8 @@ public class SuperstructureStateManager {
             System.out.println("Unable to set elevator planner!");
         }
 
-        mScoringAngle = mDesiredEndState.angle;
-        mScoringHeight = mDesiredEndState.height;
+        armPosition = mDesiredEndState.angle;
+        collectorDown = mDesiredEndState.height;
     }
 
     private SubsystemState handleDefaultTransitions(WantedAction wantedAction, SuperstructureState currentState) {

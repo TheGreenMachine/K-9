@@ -1,7 +1,5 @@
 package com.team1816.frc2019.states;
 
-import com.team254.lib.util.Util;
-
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -13,12 +11,26 @@ public class SuperstructureMotionPlanner {
         }
 
         public SuperstructureState mEndState;
-        public int armPositionThreshold = 30;
-
+        public static final int armPositionThreshold = 30;
 
         public boolean isFinished(SuperstructureState currentState) {
             return mEndState.isInRange(currentState, armPositionThreshold);
         }
+    }
+
+    class WaitForCollectingSubCommand extends SubCommand {
+        public WaitForCollectingSubCommand(SuperstructureState endState) {
+            super(endState);
+        }
+
+        @Override
+        public boolean isFinished(SuperstructureState currentState) {
+            return super.isFinished(currentState) && currentState.isCollectorDown;
+        }
+    }
+
+    class WaitForLoadingPositionSubCommand extends SubCommand {
+
     }
 
     protected SuperstructureState mCommandedState = new SuperstructureState();
@@ -30,25 +42,21 @@ public class SuperstructureMotionPlanner {
     public synchronized boolean setDesiredState(SuperstructureState desiredStateIn, SuperstructureState currentState) {
         SuperstructureState desiredState = new SuperstructureState(desiredStateIn);
 
-        if (desiredState.inIllegalZone(true)) { return false;
+        if (desiredState.inIllegalZone(true)) {
+            return false;
         }
+
         mCommandQueue.clear();
 
         //TODO: Checks to see the position of the cargo shooter and the cargo collector
         // Create two classes (load down) and (raise up)
 
-        final boolean longUpwardsMove = desiredState.height - currentState.height > SuperstructureConstants
-            .kElevatorLongRaiseDistance;
-        final double firstWristAngle = longUpwardsMove ? Math.min(desiredState.angle, SuperstructureConstants
-            .kStowedAngle) : desiredState.angle;
-
-        final boolean
+        boolean longUpwardsMove =
+            desiredState.armPosition - currentState.armPosition > 50; // TODO: 12/19/2019 replace 50 with constant
+        boolean wantCollectorDown = !longUpwardsMove;
 
         if (longUpwardsMove) {
-            if (mUpwardsSubcommandEnabled) {
-                mCommandQueue.add(new WaitForElevatorApproachingSubcommand(new SuperstructureState(desiredState.height,
-                    firstWristAngle, true)));
-            }
+            mCommandQueue.add();
         }
 
         return true;
@@ -61,8 +69,7 @@ public class SuperstructureMotionPlanner {
     }
 
     public boolean isFinished(SuperstructureState currentState) {
-        return mCurrentCommand.isPresent() && mCommandQueue.isEmpty() && currentState.wristSentLastTrajectory &&
-            currentState.elevatorSentLastTrajectory;
+        return mCurrentCommand.isPresent() && mCommandQueue.isEmpty();
     }
 
     public SuperstructureState update(SuperstructureState currentState) {
@@ -81,11 +88,6 @@ public class SuperstructureMotionPlanner {
         } else {
             mIntermediateCommandState = currentState;
         }
-
-        mCommandedState.angle = Util.limit(mIntermediateCommandState.angle, SuperstructureConstants.kWristMinAngle,
-            SuperstructureConstants.kWristMaxAngle);
-        mCommandedState.height = Util.limit(mIntermediateCommandState.height, SuperstructureConstants
-            .kElevatorMinHeight, SuperstructureConstants.kElevatorMaxHeight);
 
         return mCommandedState;
     }

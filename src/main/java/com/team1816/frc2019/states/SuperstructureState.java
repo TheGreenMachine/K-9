@@ -5,11 +5,11 @@ import com.team254.lib.util.Util;
 
 public class SuperstructureState {
     public int armPosition;
-    public boolean collectorDown;
+    public boolean isCollectorDown;
 
-    public SuperstructureState(int armPosition, boolean collectorDown) {
+    public SuperstructureState(int armPosition, boolean isCollectorDown) {
         this.armPosition = armPosition;
-        this.collectorDown = collectorDown;
+        this.isCollectorDown = isCollectorDown;
     }
 //    maxPos: 4027
 //    midPos: 3230
@@ -28,7 +28,7 @@ public class SuperstructureState {
         int minAllowablePosition = CargoShooter.ARM_POSITION_DOWN - allowableArmPositionError;
         int maxAllowablePosition = CargoShooter.ARM_POSITION_DOWN + allowableArmPositionError;
 
-        return !collectorDown
+        return !isCollectorDown
             && (armPosition >= minAllowablePosition)
             && (armPosition <= maxAllowablePosition);
     }
@@ -43,7 +43,7 @@ public class SuperstructureState {
         return
             "SuperstructureState {"
                 + "  armPosition = " + armPosition
-                + "  collectorDown = " + collectorDown
+                + "  collectorDown = " + isCollectorDown
                 + "}";
     }
 }
