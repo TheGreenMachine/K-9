@@ -19,6 +19,8 @@ public class SuperstructureStateManager {
 
     private SubsystemState systemState = SubsystemState.WANTED_POSITION;
 
+    private SuperstructureMotionPlanner planner = new SuperstructureMotionPlanner();
+
     private SuperstructureCommand mCommand = new SuperstructureCommand();
     private SuperstructureState mCommandedState = new SuperstructureState();
     private SuperstructureState mDesiredEndState = new SuperstructureState();
@@ -44,11 +46,26 @@ public class SuperstructureStateManager {
                 case MANUAL:
                     //
             }
-            
-            
+
         }
         
         return mCommand;
+    }
+
+    private void updateMotionPlannerDesired(SuperstructureState currentState) {
+        mDesiredEndState.angle = mScoringAngle;
+        mDesiredEndState.height = mScoringHeight;
+
+        System.out.println("Setting motion planner to height: " + mDesiredEndState.height
+            + " angle: " + mDesiredEndState.angle);
+
+        // Push into elevator planner.
+        if (!planner.setDesiredState(mDesiredEndState, currentState)) {
+            System.out.println("Unable to set elevator planner!");
+        }
+
+        mScoringAngle = mDesiredEndState.angle;
+        mScoringHeight = mDesiredEndState.height;
     }
 
     private SubsystemState handleDefaultTransitions(WantedAction wantedAction, SuperstructureState currentState) {
