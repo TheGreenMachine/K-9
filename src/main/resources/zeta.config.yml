@@ -82,3 +82,4 @@ constants:
     kPCMId: 0
     pathKs: 2
     verbose: 0
+    superstructureMinLongMoveThreshold: 50

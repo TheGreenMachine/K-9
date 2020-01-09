@@ -2,27 +2,26 @@ package com.team1816.frc2019.states;
 
 
 import com.team1816.frc2019.subsystems.CargoShooter;
+import com.team254.lib.util.Util;
 
 public class SuperstructureStateManager {
     public enum WantedAction {
         IDLE,
-        GO_TO_POSITION,
-        WANT_MANUAL,
+        GO_TO_POSITION
     }
     
     public enum SubsystemState {
         WANTED_POSITION,
-        MOVING_TO_POSITION,
-        MANUAL
+        MOVING_TO_POSITION
     }
 
     private SubsystemState systemState = SubsystemState.WANTED_POSITION;
 
     private SuperstructureMotionPlanner planner = new SuperstructureMotionPlanner();
 
-    private SuperstructureCommand mCommand = new SuperstructureCommand();
-    private SuperstructureState mCommandedState = new SuperstructureState();
-    private SuperstructureState mDesiredEndState = new SuperstructureState();
+    private SuperstructureCommand command = new SuperstructureCommand();
+    private SuperstructureState commandedState = new SuperstructureState();
+    private SuperstructureState desiredEndState = new SuperstructureState();
 
     private CargoShooter.ArmPosition ROCKET_POSITION = CargoShooter.ArmPosition.ROCKET;
     private CargoShooter.ArmPosition CARGO_POSITION = CargoShooter.ArmPosition.UP;
@@ -31,103 +30,80 @@ public class SuperstructureStateManager {
 
     // TODO: Set cargo collector and shooter positions as one state
     //  Superstructure class should update the "state" of the cargo collector and shooter (looking at the subsystems holistically)
+    private int armPosition;
+    private boolean isCollectorDown;
 
-    
-    public synchronized SuperstructureCommand update(double timestamp, SuperstructureState currentState) {
+    public boolean scoringPositionChanged() {
+        return !Util.epsilonEquals(desiredEndState.armPosition, armPosition) ||
+            !(desiredEndState.isCollectorDown == isCollectorDown);
+    }
+
+    public synchronized SuperstructureCommand update(double timestamp, WantedAction wantedAction,
+                                                     SuperstructureState currentState) {
         synchronized (SuperstructureStateManager.this) {
             SubsystemState newState;
-            
-            switch (systemState) {
-                case WANTED_POSITION: 
-                    //
-                case MOVING_TO_POSITION:
-                    //
-                case MANUAL:
-                    //
+
+            switch (wantedAction) {
+                case IDLE:
+                    newState = handleHoldingTransitions(currentState);
+                    break;
+                case GO_TO_POSITION:
+                    newState = handleMovingToPositionTransitions(currentState);
+                    break;
+                default:
+                    System.out.println("major bruh alert: " + systemState);
+                    newState = systemState;
+                    break;
             }
 
+            if (newState != systemState) {
+                System.out.println(timestamp +": Superstructure changed state: " + systemState + " -> " + newState);
+                systemState = newState;
+            }
+
+
         }
-        
-        return mCommand;
+
+        return command;
     }
 
     private void updateMotionPlannerDesired(SuperstructureState currentState) {
-        mDesiredEndState.armPosition = armPosition;
-        mDesiredEndState.isCollectorDown = collectorDown;
+        desiredEndState.armPosition = armPosition;
+        desiredEndState.isCollectorDown = isCollectorDown;
 
-        System.out.println("Setting motion planner to height: " + mDesiredEndState.height
-            + " angle: " + mDesiredEndState.angle);
+        System.out.println("Setting motion planner to armPosition: " + desiredEndState.armPosition
+            + " collectorDown: " + desiredEndState.isCollectorDown);
 
         // Push into elevator planner.
-        if (!planner.setDesiredState(mDesiredEndState, currentState)) {
+        if (!planner.setDesiredState(desiredEndState, currentState)) {
             System.out.println("Unable to set elevator planner!");
         }
 
-        armPosition = mDesiredEndState.angle;
-        collectorDown = mDesiredEndState.height;
+        armPosition = desiredEndState.armPosition;
+        isCollectorDown = desiredEndState.isCollectorDown;
     }
 
-    private SubsystemState handleDefaultTransitions(WantedAction wantedAction, SuperstructureState currentState) {
-        if (wantedAction == WantedAction.GO_TO_POSITION) {
-            if (scoringPositionChanged()) {
-                updateMotionPlannerDesired(currentState);
-            } else if (mPlanner.isFinished(currentState)) {
-                return SubsystemState.WANTED_POSITION;
-            }
-            return SubsystemState.MOVING_TO_POSITION;
-        } else if (wantedAction == WantedAction.WANT_MANUAL) {
-            return SubsystemState.MANUAL;
-        } else {
-            if (mSubsystemState == SubsystemState.MOVING_TO_POSITION && !mPlanner.isFinished(currentState)) {
-                return SubsystemState.MOVING_TO_POSITION;
-            } else {
-                return SubsystemState.WANTED_POSITION;
-            }
+    private SubsystemState handleHoldingTransitions(SuperstructureState currentState) {
+        if (scoringPositionChanged()) {
+            updateMotionPlannerDesired(currentState);
+        } else if (planner.isFinished(currentState)) {
+            return SubsystemState.WANTED_POSITION;
         }
-    }
-
-    private SubsystemState handleHoldingPositionTransitions(WantedAction wantedAction,
-                                                         SuperstructureState currentState) {
-        return handleDefaultTransitions(wantedAction, currentState);
-    }
-
-    private void setHoldingPositionCommandedState() {
-
+        return SubsystemState.MOVING_TO_POSITION;
     }
 
     // MOVING_TO_POSITION
-    private SubsystemState handleMovingToPositionTransitions(WantedAction wantedAction,
-                                                          SuperstructureState currentState) {
-
-        return handleDefaultTransitions(wantedAction, currentState);
-    }
-
-    private void setMovingToPositionCommandedState() {
-
-    }
-
-    // MANUAL
-    private SubsystemState handleManualTransitions(WantedAction wantedAction,
-                                                SuperstructureState currentState) {
-        if (wantedAction != WantedAction.WANT_MANUAL) {
-            // Freeze height.
-            mScoringAngle = currentState.angle;
-            mScoringHeight = currentState.height;
-            return handleDefaultTransitions(WantedAction.GO_TO_POSITION, currentState);
+    private SubsystemState handleMovingToPositionTransitions(SuperstructureState currentState) {
+        if (systemState == SubsystemState.MOVING_TO_POSITION && planner.isFinished(currentState)) {
+            return SubsystemState.MOVING_TO_POSITION;
+        } else {
+            return SubsystemState.WANTED_POSITION;
         }
-        return handleDefaultTransitions(wantedAction, currentState);
-    }
-
-    private void setManualCommandedState() {
-
     }
 
     public SubsystemState getSubsystemState() {
         return systemState;
     }
-
-
-
 }
 
 

@@ -117,14 +117,14 @@ public class CargoShooter extends Subsystem {
         ROCKET(ARM_POSITION_MID),
         UP(ARM_POSITION_UP);
 
-        private double armPos;
+        private int encoderValue;
 
-        ArmPosition(double pos) {
-            this.armPos = pos;
+        ArmPosition(int pos) {
+            this.encoderValue = pos;
         }
 
-        public double getPos() {
-            return armPos;
+        public int getEncoderValue() {
+            return encoderValue;
         }
     }
 
@@ -192,8 +192,8 @@ public class CargoShooter extends Subsystem {
             if (isPercentOutput) {
                 armTalon.set(ControlMode.PercentOutput, armPower);
             } else {
-                System.out.println("Setting Arm to " + armPosition.getPos());
-                armTalon.set(ControlMode.Position, armPosition.getPos());
+                System.out.println("Setting Arm to " + armPosition.getEncoderValue());
+                armTalon.set(ControlMode.Position, armPosition.getEncoderValue());
             }
             intakeMotor.set(ControlMode.PercentOutput, intakePower);
             outputsChanged = false;

@@ -25,12 +25,23 @@ public class SuperstructureState {
 
     public boolean inIllegalZone(boolean allowSmallErrors) {
         int allowableArmPositionError = allowSmallErrors ? 30 : 0;
-        int minAllowablePosition = CargoShooter.ARM_POSITION_DOWN - allowableArmPositionError;
+        // Highest position to be considered "down".
+        int minDownPosition = CargoShooter.ARM_POSITION_DOWN - allowableArmPositionError;
+        // Highest allowable position.
+        int minAllowablePosition = CargoShooter.ARM_POSITION_UP - allowableArmPositionError;
+        // Lowest allowable position.
         int maxAllowablePosition = CargoShooter.ARM_POSITION_DOWN + allowableArmPositionError;
 
-        return !isCollectorDown
-            && (armPosition >= minAllowablePosition)
-            && (armPosition <= maxAllowablePosition);
+
+        return (
+            (
+                // Illegal if collector is up and arm is down.
+                !isCollectorDown
+                && (armPosition >= minDownPosition)
+            )
+            || (armPosition <= minAllowablePosition) // Illegal if arm is above the highest position.
+            || (armPosition >= maxAllowablePosition) // Illegal if arm is below the lowest position.
+        );
     }
 
     public boolean isInRange(SuperstructureState otherState, int armPositionThreshold) {

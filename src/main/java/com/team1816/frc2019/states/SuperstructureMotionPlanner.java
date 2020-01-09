@@ -1,11 +1,16 @@
 package com.team1816.frc2019.states;
 
+import com.team1816.frc2019.Robot;
+import com.team1816.frc2019.subsystems.CargoShooter;
+import com.team1816.lib.hardware.RobotFactory;
+import com.team254.lib.util.Util;
+
 import java.util.LinkedList;
 import java.util.Optional;
 
 public class SuperstructureMotionPlanner {
 
-    class SubCommand {
+    static class SubCommand {
         public SubCommand(SuperstructureState endState) {
             mEndState = endState;
         }
@@ -18,7 +23,7 @@ public class SuperstructureMotionPlanner {
         }
     }
 
-    class WaitForCollectingSubCommand extends SubCommand {
+    static class WaitForCollectingSubCommand extends SubCommand {
         public WaitForCollectingSubCommand(SuperstructureState endState) {
             super(endState);
         }
@@ -29,8 +34,15 @@ public class SuperstructureMotionPlanner {
         }
     }
 
-    class WaitForLoadingPositionSubCommand extends SubCommand {
+    static class WaitForEndCollectingSubCommand extends SubCommand {
+        public WaitForEndCollectingSubCommand(SuperstructureState endState) {
+            super(endState);
+        }
 
+        @Override
+        public boolean isFinished(SuperstructureState currentState) {
+            return super.isFinished(currentState) && !currentState.isCollectorDown;
+        }
     }
 
     protected SuperstructureState mCommandedState = new SuperstructureState();
@@ -42,6 +54,11 @@ public class SuperstructureMotionPlanner {
     public synchronized boolean setDesiredState(SuperstructureState desiredStateIn, SuperstructureState currentState) {
         SuperstructureState desiredState = new SuperstructureState(desiredStateIn);
 
+        // Limit illegal inputs.
+        desiredState.armPosition =
+            (int) Util.limit(desiredState.armPosition,
+                CargoShooter.ARM_POSITION_UP, CargoShooter.ARM_POSITION_DOWN);
+
         if (desiredState.inIllegalZone(true)) {
             return false;
         }
@@ -51,12 +68,18 @@ public class SuperstructureMotionPlanner {
         //TODO: Checks to see the position of the cargo shooter and the cargo collector
         // Create two classes (load down) and (raise up)
 
-        boolean longUpwardsMove =
-            desiredState.armPosition - currentState.armPosition > 50; // TODO: 12/19/2019 replace 50 with constant
-        boolean wantCollectorDown = !longUpwardsMove;
-
-        if (longUpwardsMove) {
-            mCommandQueue.add();
+        if (
+            (desiredState.armPosition > CargoShooter.ARM_POSITION_MID)
+            || (currentState.armPosition > CargoShooter.ARM_POSITION_MID)
+        ) {
+            // Target or current below mid position - arm will be moving through collector box
+            // Ensure collector down
+            mCommandQueue.add(new WaitForCollectingSubCommand(desiredState));
+        } else if (
+            (desiredState.armPosition <= CargoShooter.ARM_POSITION_MID)
+        ) {
+            // Lift collector if target position above or equal to mid position
+            mCommandQueue.add(new WaitForEndCollectingSubCommand(desiredState));
         }
 
         return true;
@@ -73,7 +96,7 @@ public class SuperstructureMotionPlanner {
     }
 
     public SuperstructureState update(SuperstructureState currentState) {
-        if (!mCurrentCommand.isPresent() && !mCommandQueue.isEmpty()) {
+        if (mCurrentCommand.isEmpty() && !mCommandQueue.isEmpty()) {
             mCurrentCommand = Optional.of(mCommandQueue.remove());
         }
 
@@ -89,7 +112,11 @@ public class SuperstructureMotionPlanner {
             mIntermediateCommandState = currentState;
         }
 
+        mCommandedState.armPosition =
+            (int) Util.limit(mIntermediateCommandState.armPosition,
+                CargoShooter.ARM_POSITION_UP, CargoShooter.ARM_POSITION_DOWN);
+        mCommandedState.isCollectorDown = mIntermediateCommandState.isCollectorDown;
+
         return mCommandedState;
     }
-}
 }
