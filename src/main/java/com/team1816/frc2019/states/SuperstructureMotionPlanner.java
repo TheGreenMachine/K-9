@@ -55,8 +55,7 @@ public class SuperstructureMotionPlanner {
         SuperstructureState desiredState = new SuperstructureState(desiredStateIn);
 
         // Limit illegal inputs.
-        desiredState.armPosition =
-            (int) Util.limit(desiredState.armPosition,
+        desiredState.armPosition = Util.limit(desiredState.armPosition,
                 CargoShooter.ARM_POSITION_UP, CargoShooter.ARM_POSITION_DOWN);
 
         if (desiredState.inIllegalZone(true)) {
@@ -113,7 +112,7 @@ public class SuperstructureMotionPlanner {
         }
 
         mCommandedState.armPosition =
-            (int) Util.limit(mIntermediateCommandState.armPosition,
+            Util.limit(mIntermediateCommandState.armPosition,
                 CargoShooter.ARM_POSITION_UP, CargoShooter.ARM_POSITION_DOWN);
         mCommandedState.isCollectorDown = mIntermediateCommandState.isCollectorDown;
 

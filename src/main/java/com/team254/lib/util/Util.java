@@ -26,6 +26,10 @@ public class Util {
         return Math.min(max, Math.max(min, v));
     }
 
+    public static int limit(int v, int min, int max) {
+        return Math.min(max, Math.max(min, v));
+    }
+
     public static boolean inRange(double v, double maxMagnitude) {
         return inRange(v, -maxMagnitude, maxMagnitude);
     }

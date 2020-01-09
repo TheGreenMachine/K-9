@@ -27,9 +27,6 @@ public class SuperstructureStateManager {
     private CargoShooter.ArmPosition CARGO_POSITION = CargoShooter.ArmPosition.UP;
     private CargoShooter.ArmPosition INTAKE_POSITION = CargoShooter.ArmPosition.DOWN;
 
-
-    // TODO: Set cargo collector and shooter positions as one state
-    //  Superstructure class should update the "state" of the cargo collector and shooter (looking at the subsystems holistically)
     private int armPosition;
     private boolean isCollectorDown;
 
@@ -61,10 +58,13 @@ public class SuperstructureStateManager {
                 systemState = newState;
             }
 
+            commandedState = planner.update(currentState);
+            command.armPosition = Util.limit(commandedState.armPosition,
+                CargoShooter.ARM_POSITION_UP, CargoShooter.ARM_POSITION_DOWN);;
+            command.collectorDown = commandedState.isCollectorDown;
 
+            return command;
         }
-
-        return command;
     }
 
     private void updateMotionPlannerDesired(SuperstructureState currentState) {
