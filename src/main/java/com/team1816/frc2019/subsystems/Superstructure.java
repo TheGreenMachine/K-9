@@ -1,10 +1,14 @@
 package com.team1816.frc2019.subsystems;
 
+import com.team1816.frc2019.Robot;
+import com.team1816.frc2019.states.SuperstructureCommand;
+import com.team1816.frc2019.states.SuperstructureState;
+import com.team1816.frc2019.states.SuperstructureStateManager;
+import com.team1816.frc2019.states.SuperstructureStateManager.WantedAction;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.vision.AimingParameters;
-import com.team1816.frc2019.Robot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 import java.util.Optional;
@@ -19,11 +23,17 @@ import java.util.Optional;
  * The Superstructure class also adjusts the overall goal based on the turret and elevator control modes.
  */
 public class Superstructure extends Subsystem {
-  private static Superstructure mInstance;
+
+    private static Superstructure mInstance;
+    private SuperstructureState state = new SuperstructureState();
+
+    private CargoShooter cargoShooter = CargoShooter.getInstance();
+    private CargoCollector cargoCollector =  CargoCollector.getInstance();
+    private SuperstructureStateManager stateMachine = new SuperstructureStateManager();
+    private SuperstructureStateManager.WantedAction wantedAction = WantedAction.IDLE;
+
   private Optional<AimingParameters> mLatestAimingParameters = Optional.empty();
 
-  private CargoShooter cargoShooter = CargoShooter.getInstance();
-  private CargoCollector cargoCollector =  CargoCollector.getInstance();
 
   public synchronized static Superstructure getInstance() {
     if (mInstance == null) {
@@ -37,7 +47,29 @@ public class Superstructure extends Subsystem {
       super("superstructure");
   }
 
-  @Override
+  public SuperstructureStateManager.SubsystemState getSuperStructureState() {
+      return stateMachine.getSubsystemState();
+  }
+
+  public SuperstructureState getObservedState() {
+        return state;
+    }
+
+  private void updateObservedState(SuperstructureState state) {
+      state.armPosition = cargoShooter.getArmPositionAbsolute();
+      state.isCollectorDown = cargoCollector.isArmDown();
+  }
+
+  // Update subsystems from planner
+  void setFromCommandState (SuperstructureCommand commandState) {
+
+  }
+
+
+
+
+
+    @Override
   public void registerEnabledLoops(ILooper mEnabledLooper) {
     mEnabledLooper.register(new Loop() {
       @Override
@@ -49,6 +81,8 @@ public class Superstructure extends Subsystem {
       @Override
       public void onLoop(double timestamp) {
         synchronized (Superstructure.this) {
+            updateObservedState(state);
+
         }
       }
 
@@ -66,6 +100,8 @@ public class Superstructure extends Subsystem {
   public synchronized boolean isAtDesiredState() {
     return true;
   }
+
+
 
   @Override
   public void stop() {

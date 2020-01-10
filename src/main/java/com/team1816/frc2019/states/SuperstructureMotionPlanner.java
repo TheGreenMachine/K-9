@@ -1,8 +1,6 @@
 package com.team1816.frc2019.states;
 
-import com.team1816.frc2019.Robot;
 import com.team1816.frc2019.subsystems.CargoShooter;
-import com.team1816.lib.hardware.RobotFactory;
 import com.team254.lib.util.Util;
 
 import java.util.LinkedList;
