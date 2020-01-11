@@ -76,12 +76,12 @@ public class CargoShooter extends Subsystem {
         armTalon.setNeutralMode(NeutralMode.Brake);
         armTalon.setInverted(kMotorInverted);
         armTalon.setSensorPhase(kSensorPhase);
-        armTalon.enableCurrentLimit(true);
-        armTalon.configContinuousCurrentLimit(3, kTimeoutMs);
-        armTalon.configPeakCurrentLimit(5, kTimeoutMs);
-        armTalon.configPeakCurrentDuration(75, kTimeoutMs);
+//        armTalon.enableCurrentLimit(true);
+//        armTalon.configContinuousCurrentLimit(3, kTimeoutMs);
+//        armTalon.configPeakCurrentLimit(5, kTimeoutMs);
+//        armTalon.configPeakCurrentDuration(75, kTimeoutMs);
         armTalon.configSelectedFeedbackSensor(
-            FeedbackDevice.CTRE_MagEncoder_Relative, kPIDLoopIdx, kTimeoutMs);
+            FeedbackDevice.CTRE_MagEncoder_Absolute, kPIDLoopIdx, kTimeoutMs);
 
         /* Config the peak and nominal outputs, 12V means full */
         armTalon.configNominalOutputForward(0, kTimeoutMs);
@@ -147,7 +147,9 @@ public class CargoShooter extends Subsystem {
 
     public int getArmPositionAbsolute() {
         /* Mask out overflows, keep bottom 12 bits */
-        return armTalon.getSensorCollection().getPulseWidthPosition() & 0xFFF;
+        //return armTalon.get
+        return armTalon.getSelectedSensorPosition(kPIDLoopIdx) & 0xFFF;
+      //  return armTalon.getSensorCollection().getPulseWidthPosition() & 0xFFF;
     }
 
     public double getArmEncoderPosition() {
