@@ -26,7 +26,7 @@ public class SuperstructureState {
     public boolean inIllegalZone(boolean allowSmallErrors) {
         int allowableArmPositionError = allowSmallErrors ? 30 : 0;
         // Highest position to be considered "down".
-        int minDownPosition = CargoShooter.ARM_POSITION_DOWN - allowableArmPositionError;
+        int minDownPosition = ((CargoShooter.ARM_POSITION_MID + CargoShooter.ARM_POSITION_DOWN) / 2) - allowableArmPositionError;
         // Highest allowable position.
         int minAllowablePosition = CargoShooter.ARM_POSITION_UP - allowableArmPositionError;
         // Lowest allowable position.

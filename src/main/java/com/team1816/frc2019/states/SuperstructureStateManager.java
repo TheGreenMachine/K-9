@@ -83,6 +83,22 @@ public class SuperstructureStateManager {
         isCollectorDown = desiredEndState.isCollectorDown;
     }
 
+    public synchronized void setArmPosition(int armPosition) {
+        this.armPosition = armPosition;
+    }
+
+    public int getArmPosition() {
+        return armPosition;
+    }
+
+    public synchronized void setCollectorDown(boolean collectorDown) {
+        isCollectorDown = collectorDown;
+    }
+
+    public boolean isCollectorDown() {
+        return isCollectorDown;
+    }
+
     private SubsystemState handleHoldingTransitions(SuperstructureState currentState) {
         if (scoringPositionChanged()) {
             updateMotionPlannerDesired(currentState);

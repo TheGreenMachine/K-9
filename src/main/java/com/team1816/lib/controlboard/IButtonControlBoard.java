@@ -3,15 +3,6 @@ package com.team1816.lib.controlboard;
 public interface IButtonControlBoard {
     void reset();
 
-    boolean getScorePresetLow();
-    boolean getScorePresetMiddle();
-    boolean getScorePresetHigh();
-    boolean getScorePresetCargo();
-
-    boolean getPresetStow();
-    boolean getPickupDiskWall();
-    boolean getPickupBallGround();
-
     void setRumble(boolean on);
 
     // Climbing
@@ -28,6 +19,6 @@ public interface IButtonControlBoard {
 
     boolean getShooterPositionUp();
     boolean getShooterPositionRocket();
-
+    boolean getCollectingMode();
 
 }

@@ -28,89 +28,109 @@ public class Superstructure extends Subsystem {
     private SuperstructureState state = new SuperstructureState();
 
     private CargoShooter cargoShooter = CargoShooter.getInstance();
-    private CargoCollector cargoCollector =  CargoCollector.getInstance();
+    private CargoCollector cargoCollector = CargoCollector.getInstance();
     private SuperstructureStateManager stateMachine = new SuperstructureStateManager();
     private SuperstructureStateManager.WantedAction wantedAction = WantedAction.IDLE;
 
-  private Optional<AimingParameters> mLatestAimingParameters = Optional.empty();
+    private Optional<AimingParameters> mLatestAimingParameters = Optional.empty();
 
 
-  public synchronized static Superstructure getInstance() {
-    if (mInstance == null) {
-      mInstance = new Superstructure();
+    public synchronized static Superstructure getInstance() {
+        if (mInstance == null) {
+            mInstance = new Superstructure();
+        }
+
+        return mInstance;
     }
 
-    return mInstance;
-  }
+    private Superstructure() {
+        super("superstructure");
+    }
 
-  private Superstructure() {
-      super("superstructure");
-  }
+    public SuperstructureStateManager.SubsystemState getSuperStructureState() {
+        return stateMachine.getSubsystemState();
+    }
 
-  public SuperstructureStateManager.SubsystemState getSuperStructureState() {
-      return stateMachine.getSubsystemState();
-  }
-
-  public SuperstructureState getObservedState() {
+    public SuperstructureState getObservedState() {
         return state;
     }
 
-  private void updateObservedState(SuperstructureState state) {
-      state.armPosition = cargoShooter.getArmPositionAbsolute();
-      state.isCollectorDown = cargoCollector.isArmDown();
-  }
+    private synchronized void updateObservedState(SuperstructureState state) {
+        state.armPosition = cargoShooter.getArmPositionAbsolute();
+        state.isCollectorDown = cargoCollector.isArmDown();
+    }
 
-  // Update subsystems from planner
-  void setFromCommandState (SuperstructureCommand commandState) {
-
-  }
-
-
-
+    // Update subsystems from planner
+    synchronized void setFromCommandState(SuperstructureCommand commandState) {
+        cargoShooter.setArmEncoderPosition(commandState.armPosition);
+        cargoCollector.setArm(commandState.collectorDown);
+    }
 
 
     @Override
-  public void registerEnabledLoops(ILooper mEnabledLooper) {
-    mEnabledLooper.register(new Loop() {
-      @Override
-      public void onStart(double timestamp) {
-        synchronized (Superstructure.this) {
-        }
-      }
-
-      @Override
-      public void onLoop(double timestamp) {
-        synchronized (Superstructure.this) {
-            updateObservedState(state);
-
-        }
-      }
-
-      @Override
-      public void onStop(double timestamp) {
-        stop();
-      }
-    });
-  }
-
-  public synchronized Optional<AimingParameters> getLatestAimingParameters() {
-    return mLatestAimingParameters;
-  }
-
-  public synchronized boolean isAtDesiredState() {
-    return true;
-  }
+    public void registerEnabledLoops(ILooper mEnabledLooper) {
+        mEnabledLooper.register(new Loop() {
+            private SuperstructureCommand command;
 
 
+            @Override
+            public void onStart(double timestamp) {}
 
-  @Override
-  public void stop() {
-  }
+            @Override
+            public void onLoop(double timestamp) {
+                synchronized (Superstructure.this) {
+                    updateObservedState(state);
 
-  @Override
-  public boolean checkSystem() {
-    return false;
-  }
+                    command = stateMachine.update(timestamp, wantedAction, state);
+                    setFromCommandState(command);
+                }
+            }
+
+            @Override
+            public void onStop(double timestamp) {
+                stop();
+            }
+        });
+    }
+
+    public synchronized Optional<AimingParameters> getLatestAimingParameters() {
+        return mLatestAimingParameters;
+    }
+
+    public synchronized boolean isAtDesiredState() {
+        return stateMachine.getSubsystemState() == SuperstructureStateManager.SubsystemState.WANTED_POSITION;
+    }
+
+    public void setWantedAction(WantedAction wantedAction) {
+        this.wantedAction = wantedAction;
+    }
+
+    public void setCollectingMode() {
+        stateMachine.setCollectorDown(true);
+        stateMachine.setArmPosition(CargoShooter.ARM_POSITION_DOWN);
+        this.wantedAction = WantedAction.GO_TO_POSITION;
+    }
+
+    public void setRocketMode() {
+        stateMachine.setArmPosition(CargoShooter.ARM_POSITION_MID);
+        stateMachine.setCollectorDown(false);
+        this.wantedAction = WantedAction.GO_TO_POSITION;
+    }
+
+    public void setShootUpwardsMode() {
+        stateMachine.setArmPosition(CargoShooter.ARM_POSITION_UP);
+        stateMachine.setCollectorDown(false);
+        this.wantedAction = WantedAction.GO_TO_POSITION;
+    }
+
+    @Override
+    public void stop() {
+    }
+
+    @Override
+    public boolean checkSystem() {
+        return false;
+    }
 
     @Override
     public void initSendable(SendableBuilder builder) {

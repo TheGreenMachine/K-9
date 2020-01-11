@@ -18,6 +18,7 @@ public class CargoShooter extends Subsystem {
     private IMotorController intakeMotor;
 
     private ArmPosition armPosition;
+    private int armPositionTicks;
 
     private double armPower;
     private double intakePower;
@@ -63,6 +64,7 @@ public class CargoShooter extends Subsystem {
 
         // Calibrate quadrature encoder with absolute mag encoder
         int absolutePosition = getArmPositionAbsolute();
+        this.armPositionTicks = absolutePosition;
 
         /* Set the quadrature (relative) sensor to match absolute */
         this.armTalon.setSelectedSensorPosition(absolutePosition, kPIDLoopIdx, kTimeoutMs);
@@ -130,6 +132,11 @@ public class CargoShooter extends Subsystem {
 
     public void setArmPosition(ArmPosition pos) {
         this.armPosition = pos;
+        setArmEncoderPosition(pos.getEncoderValue());
+    }
+
+    public void setArmEncoderPosition(int ticks) {
+        this.armPositionTicks = ticks;
         outputsChanged = true;
         isPercentOutput = false;
     }
@@ -192,8 +199,8 @@ public class CargoShooter extends Subsystem {
             if (isPercentOutput) {
                 armTalon.set(ControlMode.PercentOutput, armPower);
             } else {
-                System.out.println("Setting Arm to " + armPosition.getEncoderValue());
-                armTalon.set(ControlMode.Position, armPosition.getEncoderValue());
+                System.out.println("Setting Arm to " + armPositionTicks);
+                armTalon.set(ControlMode.Position, armPositionTicks);
             }
             intakeMotor.set(ControlMode.PercentOutput, intakePower);
             outputsChanged = false;

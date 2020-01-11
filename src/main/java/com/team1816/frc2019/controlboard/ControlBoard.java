@@ -89,41 +89,6 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
-    public boolean getScorePresetLow() {
-        return mButtonControlBoard.getScorePresetLow();
-    }
-
-    @Override
-    public boolean getScorePresetMiddle() {
-        return mButtonControlBoard.getScorePresetMiddle();
-    }
-
-    @Override
-    public boolean getScorePresetHigh() {
-        return mButtonControlBoard.getScorePresetHigh();
-    }
-
-    @Override
-    public boolean getScorePresetCargo() {
-        return mButtonControlBoard.getScorePresetCargo();
-    }
-
-    @Override
-    public boolean getPresetStow() {
-        return mButtonControlBoard.getPresetStow();
-    }
-
-    @Override
-    public boolean getPickupDiskWall() {
-        return mButtonControlBoard.getPickupDiskWall();
-    }
-
-    @Override
-    public boolean getPickupBallGround() {
-        return mButtonControlBoard.getPickupBallGround();
-    }
-
-    @Override
     public void setRumble(boolean on) {
         mButtonControlBoard.setRumble(on);
     }
@@ -171,5 +136,10 @@ public class ControlBoard implements IControlBoard {
     @Override
     public boolean getShooterPositionRocket() {
         return mButtonControlBoard.getShooterPositionRocket();
+    }
+
+    @Override
+    public boolean getCollectingMode() {
+        return false;
     }
 }

@@ -36,41 +36,6 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     }
 
     @Override
-    public boolean getScorePresetLow() {
-        return mController.getButton(LogitechController.Button.A);
-    }
-
-    @Override
-    public boolean getScorePresetMiddle() {
-        return mController.getButton(LogitechController.Button.B);
-    }
-
-    @Override
-    public boolean getScorePresetHigh() {
-        return mController.getButton(LogitechController.Button.Y);
-    }
-
-    @Override
-    public boolean getScorePresetCargo() {
-        return mController.getButton(LogitechController.Button.X);
-    }
-
-    @Override
-    public boolean getPresetStow() {
-        return mController.getButton(LogitechController.Button.LB);
-    }
-
-    @Override
-    public boolean getPickupDiskWall() {
-        return mController.getTrigger(LogitechController.Side.RIGHT);
-    }
-
-    @Override
-    public boolean getPickupBallGround() {
-        return mController.getButton(LogitechController.Button.RB);
-    }
-
-    @Override
     public boolean getToggleHangMode() {
         return mController.getButton(LogitechController.Button.START);
     }
@@ -118,5 +83,10 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     @Override
     public boolean getShooterPositionRocket() {
         return mController.getButton(LogitechController.Button.X);
+    }
+
+    @Override
+    public boolean getCollectingMode() {
+        return mController.getButton(LogitechController.Button.LB);
     }
 }
