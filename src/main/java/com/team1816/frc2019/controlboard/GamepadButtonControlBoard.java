@@ -86,7 +86,7 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     }
 
     @Override
-    public boolean getCollectingMode() {
+    public boolean getCollectingMode() { //TODO: mapped incorrectly
         return mController.getButton(LogitechController.Button.LB);
     }
 }

@@ -57,13 +57,12 @@ public class SuperstructureMotionPlanner {
                 CargoShooter.ARM_POSITION_UP, CargoShooter.ARM_POSITION_DOWN);
 
         if (desiredState.inIllegalZone(true)) {
+            System.err.println("Desired State in Illegal Zone!");
             return false;
         }
 
         mCommandQueue.clear();
 
-        //TODO: Checks to see the position of the cargo shooter and the cargo collector
-        // Create two classes (load down) and (raise up)
 
         if (
             (desiredState.armPosition > CargoShooter.ARM_POSITION_MID)
@@ -72,11 +71,13 @@ public class SuperstructureMotionPlanner {
             // Target or current below mid position - arm will be moving through collector box
             // Ensure collector down
             mCommandQueue.add(new WaitForCollectingSubCommand(desiredState));
+            System.out.println("Queuing WaitForCollectingSubCommand - arm will be moving through collector box");
         } else if (
             (desiredState.armPosition <= CargoShooter.ARM_POSITION_MID)
         ) {
             // Lift collector if target position above or equal to mid position
             mCommandQueue.add(new WaitForEndCollectingSubCommand(desiredState));
+            System.out.println("Queuing WaitForENDCollectingSubCommand - arm will be above collector box");
         }
 
         return true;

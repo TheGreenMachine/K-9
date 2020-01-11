@@ -76,7 +76,7 @@ public class SuperstructureStateManager {
 
         // Push into elevator planner.
         if (!planner.setDesiredState(desiredEndState, currentState)) {
-            System.out.println("Unable to set elevator planner!");
+            System.out.println("Unable to set cargo shooter/collector planner!");
         }
 
         armPosition = desiredEndState.armPosition;

@@ -136,6 +136,7 @@ public class CargoShooter extends Subsystem {
     }
 
     public void setArmEncoderPosition(int ticks) {
+        System.out.println("CargoShooter::setArmPosition called - ticks: " + ticks);
         this.armPositionTicks = ticks;
         outputsChanged = true;
         isPercentOutput = false;
@@ -149,7 +150,7 @@ public class CargoShooter extends Subsystem {
         /* Mask out overflows, keep bottom 12 bits */
         //return armTalon.get
         return armTalon.getSelectedSensorPosition(kPIDLoopIdx) & 0xFFF;
-      //  return armTalon.getSensorCollection().getPulseWidthPosition() & 0xFFF;
+       // return armTalon.getSensorCollection().getPulseWidthPosition() & 0xFFF;
     }
 
     public double getArmEncoderPosition() {

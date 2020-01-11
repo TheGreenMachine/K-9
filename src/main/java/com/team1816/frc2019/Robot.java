@@ -95,7 +95,10 @@ public class Robot extends TimedRobot {
     public static RobotFactory getFactory() {
         if (factory == null) {
             var robotName = System.getenv("ROBOT_NAME");
-            if (robotName == null) robotName = "default";
+            if (robotName == null) {
+                robotName = "default";
+                System.err.println("ROBOT_NAME environment variable not defined! Falling back to default.config.yml!");
+            }
             factory = new RobotFactory(robotName);
         }
         return factory;
@@ -159,9 +162,9 @@ public class Robot extends TimedRobot {
                 createScalar(mControlBoard::getClimberThrottle, climber::setClimberPower),
                 createHoldAction(mControlBoard::getShooterIn, (in) -> cargoShooter.setIntake(in ? 1 : 0)),
                 createHoldAction(mControlBoard::getShooterOut, (out) -> cargoShooter.setIntake(out ? -1 : 0)),
-                createAction(mControlBoard::getShooterPositionUp, mSuperstructure::setShootUpwardsMode),
+               // createAction(mControlBoard::getShooterPositionUp, mSuperstructure::setShootUpwardsMode),
                 createAction(mControlBoard::getShooterPositionRocket, mSuperstructure::setRocketMode),
-                createAction(mControlBoard::getCollectingMode, mSuperstructure::setCollectingMode)
+                createAction(mControlBoard::getShooterPositionUp, mSuperstructure::setCollectingMode)
 
             ); //TODO: Setting cargoshooter down or up needs a parallel action that stops intake for both and shooter and collector
                    //      Also needs to raise the collector arm
