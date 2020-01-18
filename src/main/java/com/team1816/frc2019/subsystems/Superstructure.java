@@ -57,14 +57,14 @@ public class Superstructure extends Subsystem {
     }
 
     private synchronized void updateObservedState(SuperstructureState state) {
-        System.err.println("observed states: arm: " + state.armPosition);
+        System.out.println("observed states: arm: " + state.armPosition);
         state.armPosition = cargoShooter.getArmPositionAbsolute();
         state.isCollectorDown = cargoCollector.isArmDown();
     }
 
     // Update subsystems from planner
     synchronized void setFromCommandState(SuperstructureCommand commandState) {
-        System.err.println("Setting shooter to position: " + commandState.armPosition +
+        System.out.println("Setting shooter to position: " + commandState.armPosition +
             " Cargo collector down:" + commandState.collectorDown);
         cargoShooter.setArmEncoderPosition(commandState.armPosition);
         cargoCollector.setArm(commandState.collectorDown);

@@ -34,7 +34,7 @@ public class SuperstructureStateManager {
         var scoringPositionChanged = !Util.epsilonEquals(desiredEndState.armPosition, armPosition) ||
             desiredEndState.isCollectorDown != isCollectorDown;
 
-        System.out.println("## SuperstructureStateManager::scoringPositionChanged() ############################");
+        System.out.println("######################### SuperstructureStateManager::scoringPositionChanged() ############################");
         System.out.println("---> scoringPositionChanged: " + scoringPositionChanged);
         System.out.println("---> desiredEndState.armPosition: " + desiredEndState.armPosition);
         System.out.println("---> armPosition: " + armPosition);

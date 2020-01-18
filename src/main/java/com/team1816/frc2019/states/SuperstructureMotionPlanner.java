@@ -63,6 +63,8 @@ public class SuperstructureMotionPlanner {
 
         mCommandQueue.clear();
 
+        mCommandQueue.add(new SubCommand(desiredState));
+
 
         if (
             (desiredState.armPosition > CargoShooter.ARM_POSITION_MID)
