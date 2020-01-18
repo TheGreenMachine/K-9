@@ -10,6 +10,7 @@ import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.vision.AimingParameters;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.Optional;
 
@@ -83,6 +84,8 @@ public class Superstructure extends Subsystem {
             public void onLoop(double timestamp) {
                 synchronized (Superstructure.this) {
                     updateObservedState(state);
+
+                    SmartDashboard.setDefaultString("Superstructure/wantedAction", wantedAction.toString());
 
                     command = stateMachine.update(timestamp, wantedAction, state);
                     System.err.println("updating command state");

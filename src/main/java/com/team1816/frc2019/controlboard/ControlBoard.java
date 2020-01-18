@@ -140,6 +140,6 @@ public class ControlBoard implements IControlBoard {
 
     @Override
     public boolean getCollectingMode() {
-        return false;
+        return mButtonControlBoard.getCollectingMode();
     }
 }

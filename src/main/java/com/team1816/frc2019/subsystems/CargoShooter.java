@@ -153,7 +153,7 @@ public class CargoShooter extends Subsystem {
        // return armTalon.getSensorCollection().getPulseWidthPosition() & 0xFFF;
     }
 
-    public double getArmEncoderPosition() {
+    public int getArmEncoderPosition() {
         return armTalon.getSelectedSensorPosition(kPIDLoopIdx);
     }
 
