@@ -27,11 +27,11 @@ public class SuperstructureStateManager {
     private CargoShooter.ArmPosition CARGO_POSITION = CargoShooter.ArmPosition.UP;
     private CargoShooter.ArmPosition INTAKE_POSITION = CargoShooter.ArmPosition.DOWN;
 
-    private int armPosition = CargoShooter.getInstance().getArmEncoderPosition();
+    private int armPosition;
     private boolean isCollectorDown;
 
     public boolean scoringPositionChanged() {
-        var scoringPositionChanged = !Util.epsilonEquals(desiredEndState.armPosition, armPosition) ||
+        var scoringPositionChanged = !Util.epsilonEquals(desiredEndState.armPosition, armPosition, 10) ||
             desiredEndState.isCollectorDown != isCollectorDown;
 
         System.out.println("######################### SuperstructureStateManager::scoringPositionChanged() ############################");
@@ -91,9 +91,6 @@ public class SuperstructureStateManager {
         if (!desiredStateReturnValue) {
             System.out.println("Unable to set cargo shooter/collector planner!");
         }
-
-        armPosition = desiredEndState.armPosition;
-        isCollectorDown = desiredEndState.isCollectorDown;
     }
 
     public synchronized void setArmPosition(int armPosition) {
@@ -116,13 +113,16 @@ public class SuperstructureStateManager {
         if (scoringPositionChanged()) {
             updateMotionPlannerDesired(currentState);
         } else if (planner.isFinished(currentState)) {
+            System.out.println("SubsystemState: " + currentState);
             return SubsystemState.WANTED_POSITION;
         }
+        System.out.println("SubsystemState: " + currentState);
         return SubsystemState.MOVING_TO_POSITION;
     }
 
     // MOVING_TO_POSITION
     private SubsystemState handleMovingToPositionTransitions(SuperstructureState currentState) {
+        scoringPositionChanged();
         if (systemState == SubsystemState.MOVING_TO_POSITION && planner.isFinished(currentState)) {
             return SubsystemState.MOVING_TO_POSITION;
         } else {

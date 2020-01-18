@@ -88,7 +88,9 @@ public class Superstructure extends Subsystem {
                     SmartDashboard.setDefaultString("Superstructure/wantedAction", wantedAction.toString());
 
                     command = stateMachine.update(timestamp, wantedAction, state);
-                    System.err.println("updating command state");
+                    System.out.println("=========== Commanded shooter position: " + command.armPosition + " ===========");
+                    System.out.println("Commanded isCollectorDown: " + command.collectorDown);
+                    System.out.println("=====================================================");
                     setFromCommandState(command);
                 }
             }
@@ -118,7 +120,6 @@ public class Superstructure extends Subsystem {
         stateMachine.setArmPosition(CargoShooter.ARM_POSITION_DOWN);
         this.wantedAction = WantedAction.GO_TO_POSITION;
     }
-
     public void setRocketMode() {
         stateMachine.setArmPosition(CargoShooter.ARM_POSITION_MID);
         stateMachine.setCollectorDown(false);
@@ -130,6 +131,7 @@ public class Superstructure extends Subsystem {
         stateMachine.setCollectorDown(false);
         this.wantedAction = WantedAction.GO_TO_POSITION;
     }
+
 
     @Override
     public void stop() {
