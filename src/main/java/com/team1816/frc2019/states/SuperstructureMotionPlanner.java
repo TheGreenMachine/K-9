@@ -49,8 +49,7 @@ public class SuperstructureMotionPlanner {
     protected Optional<SubCommand> mCurrentCommand = Optional.empty();
 
 
-    public synchronized boolean setDesiredState(SuperstructureState desiredStateIn, SuperstructureState currentState) {
-        SuperstructureState desiredState = new SuperstructureState(desiredStateIn);
+    public synchronized boolean setDesiredState(SuperstructureState desiredState, SuperstructureState currentState) {
 
         // Limit illegal inputs.
         desiredState.armPosition = Util.limit(desiredState.armPosition,

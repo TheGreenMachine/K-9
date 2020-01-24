@@ -19,10 +19,6 @@ public class SuperstructureState {
         this(CargoShooter.ARM_POSITION_UP, false);
     }
 
-    public SuperstructureState(SuperstructureState other) {
-        this.armPosition = other.armPosition;
-    }
-
     public boolean inIllegalZone(boolean allowSmallErrors) {
         int allowableArmPositionError = allowSmallErrors ? 30 : 0;
         // Highest position to be considered "down".
