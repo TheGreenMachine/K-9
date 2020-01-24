@@ -65,10 +65,6 @@ public class Util {
         return epsilonEquals(a, b, kEpsilon);
     }
 
-    public static boolean epsilonEquals(int a, int b, int epsilon) {
-        return (a - epsilon <= b) && (a + epsilon >= b);
-    }
-
     public static boolean allCloseTo(final List<Double> list, double value, double epsilon) {
         boolean result = true;
         for (Double value_in : list) {
