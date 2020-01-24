@@ -29,7 +29,7 @@ subsystems:
         constants:
             canId: 18
     climber:
-        implemented: true
+        implemented: false
         talons:
             climbMaster: 3
             climbSlave: 12

@@ -136,7 +136,7 @@ public class CargoShooter extends Subsystem {
     }
 
     public void setArmEncoderPosition(int ticks) {
-        System.out.println("CargoShooter::setArmPosition called - ticks: " + ticks);
+    //    System.out.println("CargoShooter::setArmPosition called - ticks: " + ticks);
         this.armPositionTicks = ticks;
         outputsChanged = true;
         isPercentOutput = false;
@@ -202,7 +202,7 @@ public class CargoShooter extends Subsystem {
             if (isPercentOutput) {
                 armTalon.set(ControlMode.PercentOutput, armPower);
             } else {
-                System.out.println("Setting Arm to " + armPositionTicks);
+            //    System.out.println("Setting Arm to " + armPositionTicks);
                 armTalon.set(ControlMode.Position, armPositionTicks);
             }
             intakeMotor.set(ControlMode.PercentOutput, intakePower);

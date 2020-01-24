@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.Optional;
 
+import static com.team1816.frc2019.states.SuperstructureStateManager.WantedAction.GO_TO_POSITION;
+
 /**
  * The superstructure subsystem is the overarching class containing all components of the superstructure: the
  * turret, elevator, arm, and wrist. The superstructure subsystem also uses info from the vision system.
@@ -57,15 +59,15 @@ public class Superstructure extends Subsystem {
     }
 
     private synchronized void updateObservedState(SuperstructureState state) {
-        System.out.println("observed states: arm: " + state.armPosition);
+     //   System.out.println("observed states: arm: " + state.armPosition);
         state.armPosition = cargoShooter.getArmPositionAbsolute();
         state.isCollectorDown = cargoCollector.isArmDown();
     }
 
     // Update subsystems from planner
     synchronized void setFromCommandState(SuperstructureCommand commandState) {
-        System.out.println("Setting shooter to position: " + commandState.armPosition +
-            " Cargo collector down:" + commandState.collectorDown);
+//        System.out.println("Setting shooter to position: " + commandState.armPosition +
+//            " Cargo collector down:" + commandState.collectorDown);
         cargoShooter.setArmEncoderPosition(commandState.armPosition);
         cargoCollector.setArm(commandState.collectorDown);
     }
@@ -88,7 +90,8 @@ public class Superstructure extends Subsystem {
                     SmartDashboard.setDefaultString("Superstructure/wantedAction", wantedAction.toString());
 
                     command = stateMachine.update(timestamp, wantedAction, state);
-                    System.err.println("updating command state");
+
+                //    System.err.println("updating command state");
                     setFromCommandState(command);
                 }
             }
@@ -112,23 +115,23 @@ public class Superstructure extends Subsystem {
         this.wantedAction = wantedAction;
     }
 
-    public void setCollectingMode() {
+    public synchronized void setCollectingMode() {
         System.err.println("Setting state to collecting mode!");
         stateMachine.setCollectorDown(true);
         stateMachine.setArmPosition(CargoShooter.ARM_POSITION_DOWN);
-        this.wantedAction = WantedAction.GO_TO_POSITION;
+        setWantedAction(GO_TO_POSITION);
     }
 
-    public void setRocketMode() {
+    public synchronized void setRocketMode() {
         stateMachine.setArmPosition(CargoShooter.ARM_POSITION_MID);
         stateMachine.setCollectorDown(false);
-        this.wantedAction = WantedAction.GO_TO_POSITION;
+        this.wantedAction = GO_TO_POSITION;
     }
 
-    public void setShootUpwardsMode() {
+    public synchronized void setShootUpwardsMode() {
         stateMachine.setArmPosition(CargoShooter.ARM_POSITION_UP);
         stateMachine.setCollectorDown(false);
-        this.wantedAction = WantedAction.GO_TO_POSITION;
+        this.wantedAction = GO_TO_POSITION;
     }
 
     @Override

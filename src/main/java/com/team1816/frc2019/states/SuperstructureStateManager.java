@@ -34,13 +34,13 @@ public class SuperstructureStateManager {
         var scoringPositionChanged = !Util.epsilonEquals(desiredEndState.armPosition, armPosition) ||
             desiredEndState.isCollectorDown != isCollectorDown;
 
-        System.out.println("######################### SuperstructureStateManager::scoringPositionChanged() ############################");
-        System.out.println("---> scoringPositionChanged: " + scoringPositionChanged);
-        System.out.println("---> desiredEndState.armPosition: " + desiredEndState.armPosition);
-        System.out.println("---> armPosition: " + armPosition);
-        System.out.println("---> !Util.epsilonEquals(dES.aP, aP): " + !Util.epsilonEquals(desiredEndState.armPosition, armPosition));
-        System.out.println("---> dES.isCollectorDown != isCollectorDown: " + (desiredEndState.isCollectorDown != isCollectorDown));
-        System.out.println("####################################################################################");
+//        System.out.println("######################### SuperstructureStateManager::scoringPositionChanged() ############################");
+//        System.out.println("---> scoringPositionChanged: " + scoringPositionChanged);
+//        System.out.println("---> desiredEndState.armPosition: " + desiredEndState.armPosition);
+//        System.out.println("---> armPosition: " + armPosition);
+//        System.out.println("---> !Util.epsilonEquals(dES.aP, aP): " + !Util.epsilonEquals(desiredEndState.armPosition, armPosition));
+//        System.out.println("---> dES.isCollectorDown != isCollectorDown: " + (desiredEndState.isCollectorDown != isCollectorDown));
+//        System.out.println("####################################################################################");
 
         return scoringPositionChanged;
     }
@@ -50,12 +50,14 @@ public class SuperstructureStateManager {
         synchronized (SuperstructureStateManager.this) {
             SubsystemState newState;
 
-            switch (wantedAction) {
-                case IDLE:
-                    newState = handleHoldingTransitions(currentState);
+            switch (systemState) {
+                case WANTED_POSITION:
+                    newState = handleDefaultTransitions(wantedAction, currentState);
+                    System.out.println("State in IDLE:" + newState);
                     break;
-                case GO_TO_POSITION:
-                    newState = handleMovingToPositionTransitions(currentState);
+                case MOVING_TO_POSITION:
+                    newState = handleDefaultTransitions(wantedAction, currentState);
+                    System.out.println("State in GO_TO_POSITION:" + newState);
                     break;
                 default:
                     System.out.println("major bruh alert: " + systemState);
@@ -112,18 +114,39 @@ public class SuperstructureStateManager {
         return isCollectorDown;
     }
 
-    private SubsystemState handleHoldingTransitions(SuperstructureState currentState) {
-        if (scoringPositionChanged()) {
-            updateMotionPlannerDesired(currentState);
-        } else if (planner.isFinished(currentState)) {
-            return SubsystemState.WANTED_POSITION;
+
+    private SubsystemState handleDefaultTransitions(WantedAction wantedAction, SuperstructureState currentState) {
+        if (wantedAction == WantedAction.GO_TO_POSITION) {
+            if (scoringPositionChanged()) {
+                updateMotionPlannerDesired(currentState);
+            } else if (planner.isFinished(currentState)) {
+                return SubsystemState.WANTED_POSITION;
+            }
+            return SubsystemState.MOVING_TO_POSITION;
+        } else {
+            if (systemState == SubsystemState.MOVING_TO_POSITION && !planner.isFinished(currentState)) {
+                return SubsystemState.MOVING_TO_POSITION;
+            } else {
+                return SubsystemState.WANTED_POSITION;
+            }
+        }
+    }
+
+    // WANTED_POSITION / IDLE
+    private SubsystemState handleHoldingTransitions(WantedAction wantedAction, SuperstructureState currentState) {
+        if (wantedAction == WantedAction.GO_TO_POSITION) {
+            if (scoringPositionChanged()) {
+                updateMotionPlannerDesired(currentState);
+            } else if (planner.isFinished(currentState)) {
+                return SubsystemState.WANTED_POSITION;
+            }
         }
         return SubsystemState.MOVING_TO_POSITION;
     }
 
     // MOVING_TO_POSITION
     private SubsystemState handleMovingToPositionTransitions(SuperstructureState currentState) {
-        if (systemState == SubsystemState.MOVING_TO_POSITION && planner.isFinished(currentState)) {
+        if (systemState == SubsystemState.MOVING_TO_POSITION  && !planner.isFinished(currentState)) {
             return SubsystemState.MOVING_TO_POSITION;
         } else {
             return SubsystemState.WANTED_POSITION;
