@@ -30,6 +30,8 @@ public class SuperstructureStateManager {
     private int armPosition = CargoShooter.getInstance().getArmEncoderPosition();
     private boolean isCollectorDown;
 
+    private boolean desiredStateReturnValue;
+
     public boolean scoringPositionChanged() {
         var scoringPositionChanged = !Util.epsilonEquals(desiredEndState.armPosition, armPosition) ||
             desiredEndState.isCollectorDown != isCollectorDown;
@@ -65,6 +67,11 @@ public class SuperstructureStateManager {
                     break;
             }
 
+            // If in IllegalZone
+            if (!desiredStateReturnValue) {
+                newState = handleDefaultTransitions(WantedAction.IDLE, currentState);
+            }
+
             if (newState != systemState) {
                 System.out.println(timestamp +": Superstructure changed state: " + systemState + " -> " + newState);
                 systemState = newState;
@@ -86,7 +93,7 @@ public class SuperstructureStateManager {
         System.out.println("Setting motion planner to armPosition: " + desiredEndState.armPosition
             + " || collectorDown: " + desiredEndState.isCollectorDown);
 
-        var desiredStateReturnValue = planner.setDesiredState(desiredEndState, currentState);
+        desiredStateReturnValue = planner.setDesiredState(desiredEndState, currentState);
         System.out.println("SuperstructureStateManager::updateMotionPlannerDesired() -> desiredStateReturnValue: "
             + desiredStateReturnValue);
         // Push into elevator planner.
