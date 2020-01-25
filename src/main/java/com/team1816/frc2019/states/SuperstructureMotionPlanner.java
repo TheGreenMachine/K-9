@@ -94,7 +94,7 @@ public class SuperstructureMotionPlanner {
         return mCurrentCommand.isPresent() && mCommandQueue.isEmpty();
     }
 
-    public SuperstructureState  update(SuperstructureState currentState) {
+    public SuperstructureState update(SuperstructureState currentState) {
         if (mCurrentCommand.isEmpty() && !mCommandQueue.isEmpty()) {
             mCurrentCommand = Optional.of(mCommandQueue.remove());
         }

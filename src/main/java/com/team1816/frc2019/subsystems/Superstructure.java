@@ -66,8 +66,8 @@ public class Superstructure extends Subsystem {
 
     // Update subsystems from planner
     synchronized void setFromCommandState(SuperstructureCommand commandState) {
-//        System.out.println("Setting shooter to position: " + commandState.armPosition +
-//            " Cargo collector down:" + commandState.collectorDown);
+        System.out.println("Setting shooter to position: " + commandState.armPosition +
+            " Cargo collector down:" + commandState.collectorDown);
         cargoShooter.setArmEncoderPosition(commandState.armPosition);
         cargoCollector.setArm(commandState.collectorDown);
     }
@@ -117,21 +117,22 @@ public class Superstructure extends Subsystem {
 
     public synchronized void setCollectingMode() {
         System.err.println("Setting state to collecting mode!");
+        setWantedAction(GO_TO_POSITION);
         stateMachine.setCollectorDown(true);
         stateMachine.setArmPosition(CargoShooter.ARM_POSITION_DOWN);
-        setWantedAction(GO_TO_POSITION);
     }
 
     public synchronized void setRocketMode() {
+        setWantedAction(GO_TO_POSITION);
         stateMachine.setArmPosition(CargoShooter.ARM_POSITION_MID);
         stateMachine.setCollectorDown(false);
-        this.wantedAction = GO_TO_POSITION;
     }
 
     public synchronized void setShootUpwardsMode() {
+        System.out.println("Setting state to normal state!");
+        setWantedAction(GO_TO_POSITION);
         stateMachine.setArmPosition(CargoShooter.ARM_POSITION_UP);
         stateMachine.setCollectorDown(false);
-        this.wantedAction = GO_TO_POSITION;
     }
 
     @Override

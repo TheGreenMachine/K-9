@@ -55,21 +55,16 @@ public class SuperstructureStateManager {
             switch (systemState) {
                 case WANTED_POSITION:
                     newState = handleDefaultTransitions(wantedAction, currentState);
-                    System.out.println("State in IDLE:" + newState);
+                 //   System.out.println("State in IDLE:" + newState);
                     break;
                 case MOVING_TO_POSITION:
                     newState = handleDefaultTransitions(wantedAction, currentState);
-                    System.out.println("State in GO_TO_POSITION:" + newState);
+                 //   System.out.println("State in GO_TO_POSITION:" + newState);
                     break;
                 default:
                     System.out.println("major bruh alert: " + systemState);
                     newState = systemState;
                     break;
-            }
-
-            // If in IllegalZone
-            if (!desiredStateReturnValue) {
-                newState = handleDefaultTransitions(WantedAction.IDLE, currentState);
             }
 
             if (newState != systemState) {
@@ -79,7 +74,7 @@ public class SuperstructureStateManager {
 
             commandedState = planner.update(currentState);
             command.armPosition = Util.limit(commandedState.armPosition,
-                CargoShooter.ARM_POSITION_UP, CargoShooter.ARM_POSITION_DOWN);;
+                CargoShooter.ARM_POSITION_UP, CargoShooter.ARM_POSITION_DOWN);
             command.collectorDown = commandedState.isCollectorDown;
 
             return command;
@@ -103,6 +98,7 @@ public class SuperstructureStateManager {
 
         armPosition = desiredEndState.armPosition;
         isCollectorDown = desiredEndState.isCollectorDown;
+        System.out.println("Collector state: " + isCollectorDown);
     }
 
     public synchronized void setArmPosition(int armPosition) {
