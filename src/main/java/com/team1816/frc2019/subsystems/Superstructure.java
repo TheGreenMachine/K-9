@@ -69,8 +69,16 @@ public class Superstructure extends Subsystem {
     synchronized void setFromCommandState(SuperstructureCommand commandState) {
         System.out.println("Setting shooter to position: " + commandState.armPosition +
             " Cargo collector down:" + commandState.collectorDown);
-        cargoShooter.setArmEncoderPosition(commandState.armPosition);
-        cargoCollector.setArm(commandState.collectorDown);
+
+        if (cargoCollector.isArmDown()) {
+            cargoShooter.setArmEncoderPosition(commandState.armPosition);
+            Timer.delay(1.25);
+            cargoCollector.setArm(commandState.collectorDown);
+        } else {
+            cargoCollector.setArm(commandState.collectorDown);
+            Timer.delay(1.25);
+            cargoShooter.setArmEncoderPosition(commandState.armPosition);
+        }
     }
 
 
@@ -92,7 +100,6 @@ public class Superstructure extends Subsystem {
 
                     command = stateMachine.update(timestamp, wantedAction, state);
 
-                //    System.err.println("updating command state");
                     setFromCommandState(command);
                 }
             }
@@ -120,9 +127,7 @@ public class Superstructure extends Subsystem {
         System.err.println("Setting state to collecting mode!");
         setWantedAction(GO_TO_POSITION);
         stateMachine.setCollectorDown(true);
-        if(cargoCollector.isArmDown()) {
-            stateMachine.setArmPosition(CargoShooter.ARM_POSITION_DOWN);
-        }
+        stateMachine.setArmPosition(CargoShooter.ARM_POSITION_DOWN);
     }
 
     public synchronized void setRocketMode() {
