@@ -9,6 +9,7 @@ import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.vision.AimingParameters;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -119,7 +120,9 @@ public class Superstructure extends Subsystem {
         System.err.println("Setting state to collecting mode!");
         setWantedAction(GO_TO_POSITION);
         stateMachine.setCollectorDown(true);
-        stateMachine.setArmPosition(CargoShooter.ARM_POSITION_DOWN);
+        if(cargoCollector.isArmDown()) {
+            stateMachine.setArmPosition(CargoShooter.ARM_POSITION_DOWN);
+        }
     }
 
     public synchronized void setRocketMode() {
