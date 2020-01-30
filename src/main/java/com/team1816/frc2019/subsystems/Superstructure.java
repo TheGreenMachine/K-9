@@ -38,6 +38,8 @@ public class Superstructure extends Subsystem {
 
     private Optional<AimingParameters> mLatestAimingParameters = Optional.empty();
 
+    public double startTime;
+
 
     public synchronized static Superstructure getInstance() {
         if (mInstance == null) {
@@ -62,7 +64,7 @@ public class Superstructure extends Subsystem {
     private synchronized void updateObservedState(SuperstructureState state) {
      //   System.out.println("observed states: arm: " + state.armPosition);
         state.armPosition = cargoShooter.getArmPositionAbsolute();
-        state.isCollectorDown = cargoCollector.isArmDown();
+        state.isCollectorDown = cargoCollector.isArmDown(startTime);
     }
 
     // Update subsystems from planner
@@ -120,7 +122,8 @@ public class Superstructure extends Subsystem {
         System.err.println("Setting state to collecting mode!");
         setWantedAction(GO_TO_POSITION);
         stateMachine.setCollectorDown(true);
-        if(cargoCollector.isArmDown()) {
+        startTime = Timer.getFPGATimestamp();
+        if(cargoCollector.isArmDown(startTime)) {
             stateMachine.setArmPosition(CargoShooter.ARM_POSITION_DOWN);
         }
     }

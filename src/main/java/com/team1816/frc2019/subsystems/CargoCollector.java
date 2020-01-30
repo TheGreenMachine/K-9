@@ -17,7 +17,6 @@ public class CargoCollector extends Subsystem {
     private IMotorController intake;
 
     private double intakePow;
-    private double startTime;
     private double delay;
 
     private boolean armDown;
@@ -43,7 +42,6 @@ public class CargoCollector extends Subsystem {
 
     public void setArm(boolean down) {
         this.armDown = down;
-        startTime = Timer.getFPGATimestamp();
         outputsChanged = true;
         writePeriodicOutputs();
     }
@@ -53,7 +51,7 @@ public class CargoCollector extends Subsystem {
         outputsChanged = true;
     }
 
-    public boolean isArmDown() {
+    public boolean isArmDown(double startTime) {
         delay = Timer.getFPGATimestamp() - startTime;
         System.out.println("Time delay passed:" + delay);
         return armDown && delay > 0.25;
