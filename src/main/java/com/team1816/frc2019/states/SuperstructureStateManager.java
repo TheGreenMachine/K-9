@@ -23,26 +23,12 @@ public class SuperstructureStateManager {
     private SuperstructureState commandedState = new SuperstructureState();
     private SuperstructureState desiredEndState = new SuperstructureState();
 
-    private CargoShooter.ArmPosition ROCKET_POSITION = CargoShooter.ArmPosition.ROCKET;
-    private CargoShooter.ArmPosition CARGO_POSITION = CargoShooter.ArmPosition.UP;
-    private CargoShooter.ArmPosition INTAKE_POSITION = CargoShooter.ArmPosition.DOWN;
-
     private int armPosition = CargoShooter.getInstance().getArmEncoderPosition();
     private boolean isCollectorDown;
-
-    private boolean desiredStateReturnValue;
 
     public boolean scoringPositionChanged() {
         var scoringPositionChanged = !Util.epsilonEquals(desiredEndState.armPosition, armPosition) ||
             desiredEndState.isCollectorDown != isCollectorDown;
-
-//        System.out.println("######################### SuperstructureStateManager::scoringPositionChanged() ############################");
-//        System.out.println("---> scoringPositionChanged: " + scoringPositionChanged);
-//        System.out.println("---> desiredEndState.armPosition: " + desiredEndState.armPosition);
-//        System.out.println("---> armPosition: " + armPosition);
-//        System.out.println("---> !Util.epsilonEquals(dES.aP, aP): " + !Util.epsilonEquals(desiredEndState.armPosition, armPosition));
-//        System.out.println("---> dES.isCollectorDown != isCollectorDown: " + (desiredEndState.isCollectorDown != isCollectorDown));
-//        System.out.println("####################################################################################");
 
         return scoringPositionChanged;
     }
@@ -88,7 +74,7 @@ public class SuperstructureStateManager {
         System.out.println("Setting motion planner to armPosition: " + desiredEndState.armPosition
             + " || collectorDown: " + desiredEndState.isCollectorDown);
 
-        desiredStateReturnValue = planner.setDesiredState(desiredEndState, currentState);
+        var desiredStateReturnValue = planner.setDesiredState(desiredEndState, currentState);
         System.out.println("SuperstructureStateManager::updateMotionPlannerDesired() -> desiredStateReturnValue: "
             + desiredStateReturnValue);
         // Push into elevator planner.
