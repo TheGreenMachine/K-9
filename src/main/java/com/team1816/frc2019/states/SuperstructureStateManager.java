@@ -2,12 +2,8 @@ package com.team1816.frc2019.states;
 
 
 import com.team1816.frc2019.subsystems.CargoShooter;
-import com.team1816.frc2019.subsystems.Superstructure;
-import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Timer;
-
-import javax.swing.*;
 
 public class SuperstructureStateManager {
     public enum WantedAction {
