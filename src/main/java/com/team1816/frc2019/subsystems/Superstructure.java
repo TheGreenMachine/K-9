@@ -38,7 +38,6 @@ public class Superstructure extends Subsystem {
 
     private Optional<AimingParameters> mLatestAimingParameters = Optional.empty();
 
-
     public synchronized static Superstructure getInstance() {
         if (mInstance == null) {
             mInstance = new Superstructure();
@@ -67,18 +66,11 @@ public class Superstructure extends Subsystem {
 
     // Update subsystems from planner
     synchronized void setFromCommandState(SuperstructureCommand commandState) {
-        System.out.println("Setting shooter to position: " + commandState.armPosition +
-            " Cargo collector down:" + commandState.collectorDown);
+//        System.out.println("Setting shooter to position: " + commandState.armPosition +
+//            " Cargo collector down:" + commandState.collectorDown);
 
-        if (cargoCollector.isArmDown()) {
-            cargoShooter.setArmEncoderPosition(commandState.armPosition);
-            Timer.delay(1.25);
-            cargoCollector.setArm(commandState.collectorDown);
-        } else {
-            cargoCollector.setArm(commandState.collectorDown);
-            Timer.delay(1.25);
-            cargoShooter.setArmEncoderPosition(commandState.armPosition);
-        }
+        cargoShooter.setArmEncoderPosition(commandState.armPosition);
+        cargoCollector.setArm(commandState.collectorDown);
     }
 
 

@@ -2,7 +2,12 @@ package com.team1816.frc2019.states;
 
 
 import com.team1816.frc2019.subsystems.CargoShooter;
+import com.team1816.frc2019.subsystems.Superstructure;
+import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.util.Util;
+import edu.wpi.first.wpilibj.Timer;
+
+import javax.swing.*;
 
 public class SuperstructureStateManager {
     public enum WantedAction {
@@ -24,7 +29,11 @@ public class SuperstructureStateManager {
     private SuperstructureState desiredEndState = new SuperstructureState();
 
     private int armPosition = CargoShooter.getInstance().getArmEncoderPosition();
+
     private boolean isCollectorDown;
+
+    private double start;
+    private boolean timerElapsed;
 
     public boolean scoringPositionChanged() {
         var scoringPositionChanged = !Util.epsilonEquals(desiredEndState.armPosition, armPosition) ||
@@ -68,8 +77,16 @@ public class SuperstructureStateManager {
     }
 
     private void updateMotionPlannerDesired(SuperstructureState currentState) {
-        desiredEndState.armPosition = armPosition;
+
+        handleMotionPlanner(currentState);
         desiredEndState.isCollectorDown = isCollectorDown;
+
+        if (timerElapsed) {
+            desiredEndState.armPosition = armPosition;
+        } else if (!desiredEndState.isCollectorDown) {
+            desiredEndState.armPosition = armPosition;
+        }
+
 
         System.out.println("Setting motion planner to armPosition: " + desiredEndState.armPosition
             + " || collectorDown: " + desiredEndState.isCollectorDown);
@@ -103,13 +120,26 @@ public class SuperstructureStateManager {
         return isCollectorDown;
     }
 
+    private boolean handleMotionPlanner(SuperstructureState currentState) {
+        if (desiredEndState.isCollectorDown && currentState.armPosition != desiredEndState.armPosition) {
+            start = Timer.getFPGATimestamp();
+            return true;
+        }
+        return false;
+    }
 
     private SubsystemState handleDefaultTransitions(WantedAction wantedAction, SuperstructureState currentState) {
         if (wantedAction == WantedAction.GO_TO_POSITION) {
-            if (scoringPositionChanged()) {
+            if (scoringPositionChanged() || timerElapsed) {
                 updateMotionPlannerDesired(currentState);
             } else if (planner.isFinished(currentState)) {
                 return SubsystemState.WANTED_POSITION;
+            }
+
+            if (handleMotionPlanner(currentState)) {
+                timerElapsed = Timer.getFPGATimestamp() - start > 0.25;
+                System.out.println("Start time was : " + start + " ||| Current time is: " +
+                    Timer.getFPGATimestamp() + " ||| Has timer elapsed: " + timerElapsed);
             }
             return SubsystemState.MOVING_TO_POSITION;
         } else {
@@ -118,27 +148,6 @@ public class SuperstructureStateManager {
             } else {
                 return SubsystemState.WANTED_POSITION;
             }
-        }
-    }
-
-    // WANTED_POSITION / IDLE
-    private SubsystemState handleHoldingTransitions(WantedAction wantedAction, SuperstructureState currentState) {
-        if (wantedAction == WantedAction.GO_TO_POSITION) {
-            if (scoringPositionChanged()) {
-                updateMotionPlannerDesired(currentState);
-            } else if (planner.isFinished(currentState)) {
-                return SubsystemState.WANTED_POSITION;
-            }
-        }
-        return SubsystemState.MOVING_TO_POSITION;
-    }
-
-    // MOVING_TO_POSITION
-    private SubsystemState handleMovingToPositionTransitions(SuperstructureState currentState) {
-        if (systemState == SubsystemState.MOVING_TO_POSITION  && !planner.isFinished(currentState)) {
-            return SubsystemState.MOVING_TO_POSITION;
-        } else {
-            return SubsystemState.WANTED_POSITION;
         }
     }
 
