@@ -5,6 +5,10 @@ import com.team1816.frc2019.subsystems.CargoShooter;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Timer;
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> action-manager
 public class SuperstructureStateManager {
     public enum WantedAction {
         IDLE,
@@ -27,9 +31,7 @@ public class SuperstructureStateManager {
     private int armPosition = CargoShooter.getInstance().getArmEncoderPosition();
 
     private boolean isCollectorDown;
-
-    private double start;
-    private boolean timerElapsed;
+    public double start;
 
     public boolean scoringPositionChanged() {
         var scoringPositionChanged = !Util.epsilonEquals(desiredEndState.armPosition, armPosition) ||
@@ -73,19 +75,10 @@ public class SuperstructureStateManager {
     }
 
     private void updateMotionPlannerDesired(SuperstructureState currentState) {
+        start = Timer.getFPGATimestamp();
 
-        handleMotionPlanner(currentState);
         desiredEndState.isCollectorDown = isCollectorDown;
-
-        if (timerElapsed) {
-            desiredEndState.armPosition = armPosition;
-        } else if (!desiredEndState.isCollectorDown) {
-            desiredEndState.armPosition = armPosition;
-        }
-
-
-        System.out.println("Setting motion planner to armPosition: " + desiredEndState.armPosition
-            + " || collectorDown: " + desiredEndState.isCollectorDown);
+        desiredEndState.armPosition = armPosition;
 
         var desiredStateReturnValue = planner.setDesiredState(desiredEndState, currentState);
         System.out.println("SuperstructureStateManager::updateMotionPlannerDesired() -> desiredStateReturnValue: "
@@ -95,8 +88,12 @@ public class SuperstructureStateManager {
             System.out.println("Unable to set cargo shooter/collector planner!");
         }
 
+        System.out.println("Setting motion planner to armPosition: " + desiredEndState.armPosition
+            + " || collectorDown: " + desiredEndState.isCollectorDown);
+
         armPosition = desiredEndState.armPosition;
         isCollectorDown = desiredEndState.isCollectorDown;
+
         System.out.println("Collector state: " + isCollectorDown);
     }
 
@@ -116,26 +113,12 @@ public class SuperstructureStateManager {
         return isCollectorDown;
     }
 
-    private boolean handleMotionPlanner(SuperstructureState currentState) {
-        if (desiredEndState.isCollectorDown && currentState.armPosition != desiredEndState.armPosition) {
-            start = Timer.getFPGATimestamp();
-            return true;
-        }
-        return false;
-    }
-
     private SubsystemState handleDefaultTransitions(WantedAction wantedAction, SuperstructureState currentState) {
         if (wantedAction == WantedAction.GO_TO_POSITION) {
-            if (scoringPositionChanged() || timerElapsed) {
+            if (scoringPositionChanged()) {
                 updateMotionPlannerDesired(currentState);
             } else if (planner.isFinished(currentState)) {
                 return SubsystemState.WANTED_POSITION;
-            }
-
-            if (handleMotionPlanner(currentState)) {
-                timerElapsed = Timer.getFPGATimestamp() - start > 0.25;
-                System.out.println("Start time was : " + start + " ||| Current time is: " +
-                    Timer.getFPGATimestamp() + " ||| Has timer elapsed: " + timerElapsed);
             }
             return SubsystemState.MOVING_TO_POSITION;
         } else {
