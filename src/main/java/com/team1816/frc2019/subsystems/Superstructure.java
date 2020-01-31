@@ -69,8 +69,19 @@ public class Superstructure extends Subsystem {
 //        System.out.println("Setting shooter to position: " + commandState.armPosition +
 //            " Cargo collector down:" + commandState.collectorDown);
 
-        cargoShooter.setArmEncoderPosition(commandState.armPosition);
-        cargoCollector.setArm(commandState.collectorDown);
+        if (!cargoCollector.isArmDown()) {
+            cargoCollector.setArm(commandState.collectorDown);
+            System.out.println("Time elapsed: " + (Timer.getFPGATimestamp() - stateMachine.start));
+            if (Timer.getFPGATimestamp() - stateMachine.start > 1) {
+                cargoShooter.setArmEncoderPosition(commandState.armPosition);
+            }
+        } else {
+            cargoShooter.setArmEncoderPosition(commandState.armPosition);
+            System.out.println("Time elapsed: " + (Timer.getFPGATimestamp() - stateMachine.start));
+            if (Timer.getFPGATimestamp() - stateMachine.start > 1) {
+                cargoCollector.setArm(commandState.collectorDown);
+            }
+        }
     }
 
 
@@ -81,7 +92,8 @@ public class Superstructure extends Subsystem {
 
 
             @Override
-            public void onStart(double timestamp) {}
+            public void onStart(double timestamp) {
+            }
 
             @Override
             public void onLoop(double timestamp) {

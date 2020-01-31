@@ -21,25 +21,39 @@ public class SuperstructureMotionPlanner {
         }
     }
 
-    static class WaitForCollectingSubCommand extends SubCommand {
-        public WaitForCollectingSubCommand(SuperstructureState endState) {
+    static class WaitForCollectorSubCommand extends SubCommand {
+        public WaitForCollectorSubCommand(SuperstructureState endState) {
             super(endState);
         }
 
         @Override
         public boolean isFinished(SuperstructureState currentState) {
-            return super.isFinished(currentState) && currentState.isCollectorDown;
+            return super.isFinished(currentState);
         }
     }
 
-    static class WaitForEndCollectingSubCommand extends SubCommand {
-        public WaitForEndCollectingSubCommand(SuperstructureState endState) {
+    static class WaitForShooterSubCommand extends SubCommand {
+        public WaitForShooterSubCommand(SuperstructureState endState) {
             super(endState);
         }
 
         @Override
         public boolean isFinished(SuperstructureState currentState) {
-            return super.isFinished(currentState) && !currentState.isCollectorDown;
+            return super.isFinished(currentState);
+        }
+    }
+
+    static class WaitForTime extends SubCommand {
+        int waitTime;
+
+        public WaitForTime(SuperstructureState endState ,int waitTime) {
+            super(endState);
+            this.waitTime = waitTime;
+        }
+
+        @Override
+        public boolean isFinished(int timeelapsed) {
+            return
         }
     }
 
