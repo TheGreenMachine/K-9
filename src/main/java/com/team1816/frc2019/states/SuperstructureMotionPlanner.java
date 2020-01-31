@@ -51,9 +51,8 @@ public class SuperstructureMotionPlanner {
             this.waitTime = waitTime;
         }
 
-        @Override
-        public boolean isFinished(int timeelapsed) {
-            return
+        public boolean isFinished(int timeElapsed) {
+            return timeElapsed > waitTime;
         }
     }
 
