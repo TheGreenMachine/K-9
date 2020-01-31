@@ -5,10 +5,6 @@ import com.team1816.frc2019.subsystems.CargoShooter;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Timer;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> action-manager
 public class SuperstructureStateManager {
     public enum WantedAction {
         IDLE,
@@ -31,7 +27,6 @@ public class SuperstructureStateManager {
     private int armPosition = CargoShooter.getInstance().getArmEncoderPosition();
 
     private boolean isCollectorDown;
-    public double start;
 
     public boolean scoringPositionChanged() {
         var scoringPositionChanged = !Util.epsilonEquals(desiredEndState.armPosition, armPosition) ||
@@ -75,7 +70,6 @@ public class SuperstructureStateManager {
     }
 
     private void updateMotionPlannerDesired(SuperstructureState currentState) {
-        start = Timer.getFPGATimestamp();
 
         desiredEndState.isCollectorDown = isCollectorDown;
         desiredEndState.armPosition = armPosition;

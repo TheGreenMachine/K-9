@@ -42,7 +42,8 @@ public class SuperstructureState {
     }
 
     public boolean isInRange(SuperstructureState otherState, int armPositionThreshold) {
-        return Util.epsilonEquals(otherState.armPosition, armPosition, armPositionThreshold);
+        return Util.epsilonEquals(otherState.armPosition, armPosition, armPositionThreshold)
+            || otherState.isCollectorDown == isCollectorDown;
     }
 
 

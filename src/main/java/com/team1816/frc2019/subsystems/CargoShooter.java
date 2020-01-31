@@ -240,6 +240,7 @@ public class CargoShooter extends Subsystem {
         builder.addDoubleProperty("Absolute Arm Position", this::getArmPositionAbsolute, null);
         SmartDashboard.putNumber("max_thresh", ARM_POSITION_DOWN);
         SmartDashboard.putNumber("min_thresh", ARM_POSITION_UP);
+        SmartDashboard.putNumber("Absolute Arm Position", getArmPositionAbsolute());
     }
 
     private static CargoShooter INSTANCE;
