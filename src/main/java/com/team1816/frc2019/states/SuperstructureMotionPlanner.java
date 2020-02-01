@@ -36,7 +36,8 @@ public class SuperstructureMotionPlanner {
     }
 
     static class WaitForCollectorSubCommand extends SubCommand {
-        public WaitForCollectorSubCommand(boolean isCollectorDown) {
+        public WaitForCollectorSubCommand(SuperstructureState endState, boolean isCollectorDown) {
+            super(endState);
             mEndState.isCollectorDown = isCollectorDown;
         }
 
@@ -47,7 +48,8 @@ public class SuperstructureMotionPlanner {
     }
 
     static class WaitForShooterSubCommand extends SubCommand {
-        public WaitForShooterSubCommand(int armPosition) {
+        public WaitForShooterSubCommand(SuperstructureState endState, int armPosition) {
+            super(endState);
             mEndState.armPosition = armPosition;
         }
 
@@ -61,7 +63,8 @@ public class SuperstructureMotionPlanner {
         double waitTime;
         boolean isFinished;
 
-        public WaitForTime(double waitTime) {
+        public WaitForTime(SuperstructureState endState, double waitTime) {
+            super(endState);
             this.waitTime = waitTime;
             double start = Timer.getFPGATimestamp();
             double timeElapsed = Timer.getFPGATimestamp() - start;
@@ -105,18 +108,18 @@ public class SuperstructureMotionPlanner {
         ) {
             // Target or current below mid position - arm will be moving through collector box
             // Ensure collector down
-            mCommandQueue.add(new WaitForCollectorSubCommand(desiredState.isCollectorDown));
-            mCommandQueue.add(new WaitForShooterSubCommand(desiredState.armPosition));
-            mCommandQueue.add(new WaitForTime(1));
+            mCommandQueue.add(new WaitForCollectorSubCommand(mIntermediateCommandState, desiredState.isCollectorDown));
+            mCommandQueue.add(new WaitForShooterSubCommand(mIntermediateCommandState, desiredState.armPosition));
+            mCommandQueue.add(new WaitForTime(mIntermediateCommandState, 1));
             System.out.println("Queuing WaitForCollectingSubCommand - arm will be moving through collector box");
         } else if (
             (desiredState.armPosition <= CargoShooter.ARM_POSITION_MID)
         ) {
             // Lift collector if target position above or equal to mid position
-            mCommandQueue.add(new WaitForShooterSubCommand(desiredState.armPosition));
-            mCommandQueue.add(new WaitForTime(1));
+            mCommandQueue.add(new WaitForShooterSubCommand(mIntermediateCommandState, desiredState.armPosition));
+            mCommandQueue.add(new WaitForTime(mIntermediateCommandState, 1));
             System.out.println("Queuing WaitForENDCollectingSubCommand - arm will be above collector box");
-            mCommandQueue.add(new WaitForCollectorSubCommand(desiredState.isCollectorDown));
+            mCommandQueue.add(new WaitForCollectorSubCommand(mIntermediateCommandState, desiredState.isCollectorDown));
         }
 
          mCurrentCommand = Optional.empty();
