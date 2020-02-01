@@ -3,6 +3,8 @@ package com.team254.frc2019;
 import com.team1816.frc2019.states.SuperstructureMotionPlanner;
 import com.team1816.frc2019.states.SuperstructureState;
 import com.team1816.frc2019.subsystems.CargoShooter;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -20,10 +22,16 @@ public class SuperstructureMotionPlannerTest {
 
     static public double shooterPositionMid = 3230;
 
-    SuperstructureMotionPlanner planner = new SuperstructureMotionPlanner();
-    SuperstructureState desiredState = new SuperstructureState();
-    SuperstructureState simulatedState = new SuperstructureState();
+    SuperstructureMotionPlanner planner;
+    SuperstructureState desiredState;
+    SuperstructureState simulatedState;
 
+    @Before
+    public void initializeVariables() {
+        planner = new SuperstructureMotionPlanner();
+        desiredState = new SuperstructureState();
+        simulatedState = new SuperstructureState();
+    }
 
     @Test
     public void collectorDownTest() {
@@ -46,8 +54,8 @@ public class SuperstructureMotionPlannerTest {
             System.out.println("commanded state collector down: " + commandedState.isCollectorDown +
                 "commanded state arm position: " + commandedState.armPosition);
 
-            assertEquals(shooterPositionDown, commandedState.armPosition, 1012);
-            assertEquals(collectorDown, commandedState.isCollectorDown);
+            assertEquals("Expected shooterPosition to be within 30 ticks of 4027", shooterPositionDown, commandedState.armPosition, 30);
+            assertEquals("Expected collectorDown true", collectorDown, commandedState.isCollectorDown);
 
         }
     }

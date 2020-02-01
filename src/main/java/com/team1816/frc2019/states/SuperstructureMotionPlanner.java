@@ -16,7 +16,9 @@ public class SuperstructureMotionPlanner {
             mEndState = endState;
         }
 
-        public SubCommand() { }
+        public SubCommand() {
+            mEndState = new SuperstructureState();
+        }
 
         public SuperstructureState mEndState;
 
