@@ -11,6 +11,7 @@ public class SuperstructureState {
         this.armPosition = armPosition;
         this.isCollectorDown = isCollectorDown;
     }
+
 //    maxPos: 4027
 //    midPos: 3230
 //    minPos: 3015
@@ -42,8 +43,11 @@ public class SuperstructureState {
     }
 
     public boolean isInRange(SuperstructureState otherState, int armPositionThreshold) {
-        return Util.epsilonEquals(otherState.armPosition, armPosition, armPositionThreshold)
-            || otherState.isCollectorDown == isCollectorDown;
+        return Util.epsilonEquals(otherState.armPosition, armPosition, armPositionThreshold);
+    }
+
+    public boolean isInRange(SuperstructureState otherState) {
+        return otherState.isCollectorDown == isCollectorDown;
     }
 
 
