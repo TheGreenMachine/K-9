@@ -60,26 +60,29 @@ public class SuperstructureMotionPlanner {
     }
 
     static class WaitForTime extends SubCommand {
+        boolean started;
+        double startTime;
         double waitTime;
         boolean isFinished;
+        double elapsedTime;
 
         public WaitForTime(SuperstructureState endState, double waitTime) {
             super(endState);
             this.waitTime = waitTime;
-            double start = Timer.getFPGATimestamp();
-            double timeElapsed = Timer.getFPGATimestamp() - start;
-            while (timeElapsed < waitTime) {
-                timeElapsed = Timer.getFPGATimestamp() - start;
-         //       System.out.println("Time elapsed: " + timeElapsed + "isFinished" + isFinished);
-                isFinished = false;
-            }
-            isFinished = true;
-        //    System.out.println("Time elapsed: " + timeElapsed + "isFinished" + isFinished);
+            System.out.println("WaitForTime INITIALIZED with Wait Time: " + this.waitTime);
         }
 
         @Override
-        public boolean isFinished() {
-            return super.isFinished();
+        public boolean isFinished(SuperstructureState currentState) {
+            System.out.println("isFinished of WaitForTimeSubCommand called");
+            if (!started) {
+                startTime = Timer.getFPGATimestamp();
+                started = true;
+                return false;
+            }
+            elapsedTime = Timer.getFPGATimestamp() - startTime;
+            System.out.println("WaitForTime::elapsedTime: " + elapsedTime);
+            return elapsedTime > waitTime && super.isFinished(currentState);
         }
     }
 
@@ -109,8 +112,8 @@ public class SuperstructureMotionPlanner {
             // Target or current below mid position - arm will be moving through collector box
             // Ensure collector down
             mCommandQueue.add(new WaitForCollectorSubCommand(mIntermediateCommandState, desiredState.isCollectorDown));
-            mCommandQueue.add(new WaitForShooterSubCommand(mIntermediateCommandState, desiredState.armPosition));
             mCommandQueue.add(new WaitForTime(mIntermediateCommandState, 1));
+            mCommandQueue.add(new WaitForShooterSubCommand(mIntermediateCommandState, desiredState.armPosition));
             System.out.println("Queuing WaitForCollectingSubCommand - arm will be moving through collector box");
         } else if (
             (desiredState.armPosition <= CargoShooter.ARM_POSITION_MID)
@@ -134,7 +137,7 @@ public class SuperstructureMotionPlanner {
     }
 
     public boolean isFinished(SuperstructureState currentState) {
-        return mCurrentCommand.isPresent() && mCommandQueue.isEmpty();
+        return mCurrentCommand.isEmpty() && mCommandQueue.isEmpty();
     }
 
     public SuperstructureState update(SuperstructureState currentState) {
@@ -146,7 +149,9 @@ public class SuperstructureMotionPlanner {
             SubCommand subCommand = mCurrentCommand.get();
             System.out.println("Currently on this command: " + mCurrentCommand);
             mIntermediateCommandState = subCommand.mEndState;
-            if (subCommand.isFinished(currentState) && !mCommandQueue.isEmpty()) {
+            boolean finished = subCommand.isFinished(currentState);
+            System.out.println(mCurrentCommand + "finished? :" + finished);
+            if (finished && !mCommandQueue.isEmpty()) {
                 // Let the current command persist until there is something in the queue. or not. desired outcome
                 // unclear.
                 mCurrentCommand = Optional.empty();

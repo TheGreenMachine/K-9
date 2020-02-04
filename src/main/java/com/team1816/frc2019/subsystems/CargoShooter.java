@@ -46,7 +46,7 @@ public class CargoShooter extends Subsystem {
         super(NAME);
         RobotFactory factory = Robot.getFactory();
 
-        this.armTalon = (IMotorControllerEnhanced) factory.getMotor(NAME, "arm");
+        this.armTalon = factory.getMotor(NAME, "arm");
         this.intakeMotor = factory.getMotor(NAME, "intake");
         this.armPower = 0;
         this.intakePower = 0;
@@ -86,7 +86,7 @@ public class CargoShooter extends Subsystem {
         /* Config the peak and nominal outputs, 12V means full */
         armTalon.configNominalOutputForward(0, kTimeoutMs);
         armTalon.configNominalOutputReverse(0, kTimeoutMs);
-        armTalon.configPeakOutputForward(1, kTimeoutMs);
+        armTalon.configPeakOutputForward(0.5, kTimeoutMs);
         armTalon.configPeakOutputReverse(-1, kTimeoutMs);
 
         this.setPid(kP, kI, kD);
