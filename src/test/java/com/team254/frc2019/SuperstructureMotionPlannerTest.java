@@ -46,13 +46,13 @@ public class SuperstructureMotionPlannerTest {
         planner.setDesiredState(desiredState, simulatedState);
 
         SuperstructureState commandedState = planner.update(currentState);
-      //  while (!planner.isFinished(currentState)) {
-        //    commandedState = planner.update(currentState);
+        while (!planner.isFinished(currentState)) {
+            commandedState = planner.update(currentState);
             System.out.println(commandedState);
             currentState = new SuperstructureState(commandedState.armPosition, commandedState.isCollectorDown);
             System.out.println("commanded state collector down: " + commandedState.isCollectorDown +
                 "commanded state arm position: " + commandedState.armPosition);
-       // }
+        }
 
         assertEquals("Expected shooterPosition to be within 30 ticks of 4027", shooterPositionDown, commandedState.armPosition, 30);
         assertEquals("Expected collectorDown true", collectorDown, commandedState.isCollectorDown);
