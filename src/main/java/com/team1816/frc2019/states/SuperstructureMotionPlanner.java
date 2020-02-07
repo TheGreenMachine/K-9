@@ -82,14 +82,14 @@ public class SuperstructureMotionPlanner {
         boolean isFinished;
         double elapsedTime;
 
-        public WaitForTime(double waitTime) {
-           // super();
+        public WaitForTime(SuperstructureState endState, double waitTime) {
+            super(endState);
             this.waitTime = waitTime;
             System.out.println("WaitForTime INITIALIZED with Wait Time: " + this.waitTime);
         }
 
         @Override
-        public boolean isFinished() {
+        public boolean isFinished(SuperstructureState currentState) {
           //  System.out.println("isFinished of WaitForTimeSubCommand called");
             if (!started) {
                 startTime = Timer.getFPGATimestamp();
@@ -128,7 +128,7 @@ public class SuperstructureMotionPlanner {
             // Target or current below mid position - arm will be moving through collector box
             // Ensure collector down
             mCommandQueue.add(new WaitForCollectorSubCommand(mIntermediateCommandState, desiredState.isCollectorDown));
-            mCommandQueue.add(new WaitForTime(1));
+            mCommandQueue.add(new WaitForTime(mIntermediateCommandState,0.01));
             mCommandQueue.add(new WaitForShooterSubCommand(mIntermediateCommandState, desiredState.armPosition));
             System.out.println("Queuing WaitForCollectingSubCommand - arm will be moving through collector box");
         } else if (
@@ -136,7 +136,7 @@ public class SuperstructureMotionPlanner {
         ) {
             // Lift collector if target position above or equal to mid position
             mCommandQueue.add(new WaitForShooterSubCommand(mIntermediateCommandState, desiredState.armPosition));
-            mCommandQueue.add(new WaitForTime(1));
+            mCommandQueue.add(new WaitForTime(mIntermediateCommandState,1));
             System.out.println("Queuing WaitForENDCollectingSubCommand - arm will be above collector box");
             mCommandQueue.add(new WaitForCollectorSubCommand(mIntermediateCommandState, desiredState.isCollectorDown));
         }
