@@ -13,15 +13,11 @@ public class SuperstructureMotionPlanner {
 
     static class SubCommand {
 
-        protected int variable_armPosition;
-        protected boolean variable_collectorDown;
+        protected int commandedArmPosition;
+        protected boolean commandedCollectorDown;
 
         public SubCommand(SuperstructureState endState) {
             mEndState = endState;
-        }
-
-        public SubCommand() {
-
         }
 
         public SuperstructureState mEndState;
@@ -43,7 +39,7 @@ public class SuperstructureMotionPlanner {
     static class WaitForCollectorSubCommand extends SubCommand {
         public WaitForCollectorSubCommand(SuperstructureState endState, boolean isCollectorDown) {
             super(endState);
-            variable_collectorDown = isCollectorDown;
+            commandedCollectorDown = isCollectorDown;
         }
 
         @Override
@@ -53,7 +49,7 @@ public class SuperstructureMotionPlanner {
 
         @Override
         public void update() {
-            mEndState.isCollectorDown = variable_collectorDown;
+            mEndState.isCollectorDown = commandedCollectorDown;
         }
     }
 
@@ -61,7 +57,7 @@ public class SuperstructureMotionPlanner {
 
         public WaitForShooterSubCommand(SuperstructureState endState, int armPosition) {
             super(endState);
-            variable_armPosition = armPosition;
+            commandedArmPosition = armPosition;
         }
 
         @Override
@@ -71,7 +67,7 @@ public class SuperstructureMotionPlanner {
 
         @Override
         public void update() {
-            mEndState.armPosition = variable_armPosition;
+            mEndState.armPosition = commandedArmPosition;
         }
     }
 
@@ -128,7 +124,7 @@ public class SuperstructureMotionPlanner {
             // Target or current below mid position - arm will be moving through collector box
             // Ensure collector down
             mCommandQueue.add(new WaitForCollectorSubCommand(mIntermediateCommandState, desiredState.isCollectorDown));
-            mCommandQueue.add(new WaitForTime(mIntermediateCommandState,0.01));
+            mCommandQueue.add(new WaitForTime(mIntermediateCommandState,1));
             mCommandQueue.add(new WaitForShooterSubCommand(mIntermediateCommandState, desiredState.armPosition));
             System.out.println("Queuing WaitForCollectingSubCommand - arm will be moving through collector box");
         } else if (
