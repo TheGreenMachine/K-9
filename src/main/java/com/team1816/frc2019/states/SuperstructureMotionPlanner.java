@@ -16,10 +16,6 @@ public class SuperstructureMotionPlanner {
             mEndState = endState;
         }
 
-        public SubCommand() {
-            mEndState = new SuperstructureState();
-        }
-
         public SuperstructureState mEndState;
 
         public boolean isFinished(SuperstructureState currentState, int armPositionThreshold) {
@@ -74,14 +70,14 @@ public class SuperstructureMotionPlanner {
 
         @Override
         public boolean isFinished(SuperstructureState currentState) {
-            System.out.println("isFinished of WaitForTimeSubCommand called");
+          //  System.out.println("isFinished of WaitForTimeSubCommand called");
             if (!started) {
                 startTime = Timer.getFPGATimestamp();
                 started = true;
                 return false;
             }
             elapsedTime = Timer.getFPGATimestamp() - startTime;
-            System.out.println("WaitForTime::elapsedTime: " + elapsedTime);
+          //  System.out.println("WaitForTime::elapsedTime: " + elapsedTime);
             return elapsedTime > waitTime && super.isFinished(currentState);
         }
     }
@@ -111,7 +107,7 @@ public class SuperstructureMotionPlanner {
         ) {
             // Target or current below mid position - arm will be moving through collector box
             // Ensure collector down
-            mCommandQueue.add(new WaitForCollectorSubCommand(mIntermediateCommandState, desiredState.isCollectorDown));
+           mCommandQueue.add(new WaitForCollectorSubCommand(mIntermediateCommandState, desiredState.isCollectorDown));
             mCommandQueue.add(new WaitForTime(mIntermediateCommandState, 1));
             mCommandQueue.add(new WaitForShooterSubCommand(mIntermediateCommandState, desiredState.armPosition));
             System.out.println("Queuing WaitForCollectingSubCommand - arm will be moving through collector box");
@@ -141,24 +137,24 @@ public class SuperstructureMotionPlanner {
     }
 
     public SuperstructureState update(SuperstructureState currentState) {
-        if (mCurrentCommand.isEmpty() && !mCommandQueue.isEmpty()) {
+       // if (mCurrentCommand.isEmpty() && !mCommandQueue.isEmpty()) {
             mCurrentCommand = Optional.of(mCommandQueue.remove());
-        }
+        //}
 
-        if (mCurrentCommand.isPresent()) {
+    //    if (mCurrentCommand.isPresent()) {
             SubCommand subCommand = mCurrentCommand.get();
             System.out.println("Currently on this command: " + mCurrentCommand);
             mIntermediateCommandState = subCommand.mEndState;
-            boolean finished = subCommand.isFinished(currentState);
-            System.out.println(mCurrentCommand + "finished? :" + finished);
-            if (finished && !mCommandQueue.isEmpty()) {
-                // Let the current command persist until there is something in the queue. or not. desired outcome
-                // unclear.
-                mCurrentCommand = Optional.empty();
-            }
-        } else {
-            mIntermediateCommandState = currentState;
-        }
+      //      boolean finished = subCommand.isFinished(currentState);
+    //        System.out.println(mCurrentCommand + "finished? :" + finished);
+//            if (finished && !mCommandQueue.isEmpty()) {
+//                // Let the current command persist until there is something in the queue. or not. desired outcome
+//                // unclear.
+//                mCurrentCommand = Optional.empty();
+//            }
+//        } else {
+    //        mIntermediateCommandState = currentState;
+    //    }
 
         mCommandedState.armPosition =
             Util.limit(mIntermediateCommandState.armPosition,
