@@ -11,16 +11,6 @@ import static org.junit.Assert.assertEquals;
 
 public class SuperstructureMotionPlannerTest {
 
-
-    static public double shooterPositionDown = 4027;
-    static public boolean collectorDown = true;
-
-
-    static public double shooterPositionHigh = 3015;
-    static public boolean collectorUp = false;
-
-    static public double shooterPositionMid = 3230;
-
     SuperstructureMotionPlanner planner;
     SuperstructureState desiredState;
     SuperstructureState simulatedState;
@@ -37,10 +27,10 @@ public class SuperstructureMotionPlannerTest {
 
        SuperstructureState currentState = new SuperstructureState();
 
-        desiredState.armPosition = CargoShooter.ARM_POSITION_DOWN;
+        desiredState.armPosition = CargoShooter.ARM_POSITION_UP;
         desiredState.isCollectorDown = true;
 
-        simulatedState.armPosition = CargoShooter.ARM_POSITION_UP;
+        simulatedState.armPosition = CargoShooter.ARM_POSITION_DOWN;
         simulatedState.isCollectorDown = false;
 
         planner.setDesiredState(desiredState, simulatedState);
@@ -54,7 +44,7 @@ public class SuperstructureMotionPlannerTest {
                 "commanded state arm position: " + commandedState.armPosition);
         }
 
-        assertEquals("Expected shooterPosition to be within 30 ticks of 4027", shooterPositionDown, commandedState.armPosition, 30);
-        assertEquals("Expected collectorDown true", collectorDown, commandedState.isCollectorDown);
+        assertEquals("Expected shooterPosition to be within 30 ticks of 2059", desiredState.armPosition, commandedState.armPosition, 30);
+        assertEquals("Expected collectorDown true", desiredState.isCollectorDown, commandedState.isCollectorDown);
     }
 }

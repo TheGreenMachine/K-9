@@ -75,26 +75,30 @@ public class SuperstructureMotionPlanner {
         boolean started;
         double startTime;
         double waitTime;
-        boolean isFinished;
         double elapsedTime;
 
         public WaitForTime(SuperstructureState endState, double waitTime) {
             super(endState);
             this.waitTime = waitTime;
-            System.out.println("WaitForTime INITIALIZED with Wait Time: " + this.waitTime);
+        //    System.out.println("WaitForTime INITIALIZED with Wait Time: " + this.waitTime);
+        }
+
+        @Override
+        public void update() {
+            super.update();
+            if (!started) {
+                startTime = Timer.getFPGATimestamp();
+                started = true;
+            }
+            elapsedTime = Timer.getFPGATimestamp() - startTime;
         }
 
         @Override
         public boolean isFinished(SuperstructureState currentState) {
           //  System.out.println("isFinished of WaitForTimeSubCommand called");
-            if (!started) {
-                startTime = Timer.getFPGATimestamp();
-                started = true;
-                return false;
-            }
-            elapsedTime = Timer.getFPGATimestamp() - startTime;
+
           //  System.out.println("WaitForTime::elapsedTime: " + elapsedTime);
-            return elapsedTime > waitTime;
+            return elapsedTime > waitTime && super.isFinished(currentState);
         }
     }
 
@@ -119,20 +123,20 @@ public class SuperstructureMotionPlanner {
 
         if (
             (desiredState.armPosition > CargoShooter.ARM_POSITION_MID)
-            || (currentState.armPosition > CargoShooter.ARM_POSITION_MID)
+//            && (currentState.armPosition > CargoShooter.ARM_POSITION_MID)
         ) {
+            System.out.println("setDesiredState IF");
             // Target or current below mid position - arm will be moving through collector box
             // Ensure collector down
             mCommandQueue.add(new WaitForCollectorSubCommand(mIntermediateCommandState, desiredState.isCollectorDown));
-            mCommandQueue.add(new WaitForTime(mIntermediateCommandState,1));
+            mCommandQueue.add(new WaitForTime(mIntermediateCommandState,0.15));
             mCommandQueue.add(new WaitForShooterSubCommand(mIntermediateCommandState, desiredState.armPosition));
             System.out.println("Queuing WaitForCollectingSubCommand - arm will be moving through collector box");
-        } else if (
-            (desiredState.armPosition <= CargoShooter.ARM_POSITION_MID)
-        ) {
+        } else {
+            System.out.println("setDesiredState ELSE");
             // Lift collector if target position above or equal to mid position
             mCommandQueue.add(new WaitForShooterSubCommand(mIntermediateCommandState, desiredState.armPosition));
-            mCommandQueue.add(new WaitForTime(mIntermediateCommandState,1));
+            mCommandQueue.add(new WaitForTime(mIntermediateCommandState,0.15));
             System.out.println("Queuing WaitForENDCollectingSubCommand - arm will be above collector box");
             mCommandQueue.add(new WaitForCollectorSubCommand(mIntermediateCommandState, desiredState.isCollectorDown));
         }
@@ -149,7 +153,7 @@ public class SuperstructureMotionPlanner {
     }
 
     public boolean isFinished(SuperstructureState currentState) {
-        return mCurrentCommand.isEmpty() && mCommandQueue.isEmpty();
+        return mCurrentCommand.isPresent() && mCommandQueue.isEmpty();
     }
 
     public SuperstructureState update(SuperstructureState currentState) {
@@ -159,7 +163,7 @@ public class SuperstructureMotionPlanner {
 
         if (mCurrentCommand.isPresent()) {
             SubCommand subCommand = mCurrentCommand.get();
-            System.out.println("Currently on this command: " + mCurrentCommand);
+        //    System.out.println("Currently on this command: " + mCurrentCommand);
             subCommand.update();
             mIntermediateCommandState = subCommand.mEndState;
             boolean finished = subCommand.isFinished(currentState);
@@ -169,8 +173,6 @@ public class SuperstructureMotionPlanner {
                 // unclear.
                 mCurrentCommand = Optional.empty();
             }
-        } else {
-            mIntermediateCommandState = currentState;
         }
 
         mCommandedState.armPosition =
