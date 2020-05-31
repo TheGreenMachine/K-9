@@ -8,6 +8,8 @@ subsystems:
       rightMain: 1
       rightSlaveOne: -1
       rightSlaveTwo: -1
+    invertMotor:
+        - 2
     constants:
       pigeonId: 13
       pigeonOnTalon: 0
@@ -17,7 +19,6 @@ subsystems:
       kF: 0.5383998
       iZone: 30
       encPPR: 4096 # CTRE mag encoder
-      invertMotor: 2
       kShifterSolenoidId: 0
       currentFloorCheck: .3
       currentEpsilonCheck: .2

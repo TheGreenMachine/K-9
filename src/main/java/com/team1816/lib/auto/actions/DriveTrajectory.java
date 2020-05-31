@@ -1,13 +1,13 @@
 package com.team1816.lib.auto.actions;
 
-import com.team1816.frc2019.RobotState;
+import com.team1816.season.RobotState;
+import com.team1816.season.subsystems.Drive;
 import com.team254.lib.geometry.Pose2dWithCurvature;
 import com.team254.lib.trajectory.TimedView;
 import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import edu.wpi.first.wpilibj.Timer;
-import com.team1816.frc2019.subsystems.Drive;
 
 public class DriveTrajectory implements Action {
     private static final Drive mDrive = Drive.getInstance();
@@ -46,7 +46,9 @@ public class DriveTrajectory implements Action {
     public void start() {
         System.out.println("Starting trajectory! (length=" + mTrajectory.getRemainingProgress() + ")");
         if (mResetPose) {
-            mRobotState.reset(Timer.getFPGATimestamp(), mTrajectory.getState().state().getPose());
+            var pose = mTrajectory.getState().state().getPose();
+            mDrive.setHeading(pose.getRotation());
+            mRobotState.reset(Timer.getFPGATimestamp(), pose);
         }
         mDrive.setTrajectory(mTrajectory);
     }
