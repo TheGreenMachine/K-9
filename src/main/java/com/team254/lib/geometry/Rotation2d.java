@@ -183,9 +183,6 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
 
     private void ensureTrigComputed() {
         if (!hasTrig()) {
-            if (Double.isNaN(radians_)) {
-                System.err.println("HEY");
-            }
             sin_angle_ = Math.sin(radians_);
             cos_angle_ = Math.cos(radians_);
         }
@@ -193,9 +190,6 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
 
     private void ensureRadiansComputed() {
         if (!hasRadians()) {
-            if (Double.isNaN(cos_angle_) || Double.isNaN(sin_angle_)) {
-                System.err.println("HEY");
-            }
             radians_ = Math.atan2(sin_angle_, cos_angle_);
         }
     }

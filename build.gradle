@@ -3,9 +3,10 @@ plugins {
     id "idea"
     id "eclipse"
     id "edu.wpi.first.GradleRIO" version "2020.3.2"
+    id "com.snobot.simulator.plugin.SnobotSimulatorPlugin" version "2020-0.0.1" apply false
 }
 
-def ROBOT_MAIN_CLASS = "com.team1816.frc2019.Main"
+def ROBOT_MAIN_CLASS = "com.com.team1816.season.Main"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project EmbeddedTools.
@@ -41,9 +42,13 @@ def includeDesktopSupport = false
 
 // Maven central needed for JUnit
 repositories {
+    mavenLocal()
     mavenCentral()
     maven { url "https://www.jitpack.io" }
 }
+
+apply plugin: com.snobot.simulator.plugin.SnobotSimulatorPlugin
+apply from: "snobotsim/snobot_sim.gradle"
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 4.

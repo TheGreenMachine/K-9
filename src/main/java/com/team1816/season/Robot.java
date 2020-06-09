@@ -2,21 +2,20 @@ package com.team1816.season;
 
 import badlog.lib.BadLog;
 import badlog.lib.DataInferMode;
-import com.team1816.season.controlboard.ActionManager;
-import com.team1816.season.controlboard.ControlBoard;
-import com.team1816.season.paths.TrajectorySet;
-import com.team1816.season.subsystems.*;
 import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.actions.DriveTrajectory;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.controlboard.IControlBoard;
-import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.loops.AsyncTimer;
 import com.team1816.lib.loops.Looper;
 import com.team1816.lib.subsystems.DrivetrainLogger;
 import com.team1816.lib.subsystems.Infrastructure;
 import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
+import com.team1816.season.controlboard.ActionManager;
+import com.team1816.season.controlboard.ControlBoard;
+import com.team1816.season.paths.TrajectorySet;
+import com.team1816.season.subsystems.*;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.CheesyDriveHelper;
@@ -78,7 +77,7 @@ public class Robot extends TimedRobot {
     private PowerDistributionPanel pdp = new PowerDistributionPanel();
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
 
-    Robot() {
+    public Robot() {
         super();
         CrashTracker.logRobotConstruction();
     }
@@ -91,7 +90,13 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         try {
             var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
-            logger = BadLog.init("/home/lvuser/" + System.getenv("ROBOT_NAME") + "_" + logFile + ".bag");
+            var robotName = System.getenv("ROBOT_NAME");
+            if (robotName == null) robotName = "default";
+            var filePath = "/home/lvuser/" + robotName + "_" + logFile + ".bag";
+            if (System.getProperty("os.name").toLowerCase().contains("win")) {
+                filePath = System.getenv("temp") + "\\" + robotName + "_" + logFile + ".bag";
+            }
+            logger = BadLog.init(filePath);
 
             BadLog.createTopic("Shooter/ActVel", "NativeUnits", shooter::getActualVelocity,
                 "hide", "join:Shooter/Velocities");
@@ -194,7 +199,7 @@ public class Robot extends TimedRobot {
                     System.out.println("STARTING FEEDER TO TRENCH");
                     SmartDashboard.putString("Teleop Spline", "FEEDER TO TRENCH");
                     turret.setTurretAngle(Turret.CARDINAL_SOUTH);
-                    var trajectory = new DriveTrajectory(TrajectorySet.getInstance().FEEDER_TO_TRENCH,true);
+                    var trajectory = new DriveTrajectory(TrajectorySet.getInstance().FEEDER_TO_TRENCH, true);
                     trajectory.start();
                 }),
                 createHoldAction(mControlBoard::getSlowMode, mDrive::setSlowMode),
@@ -230,7 +235,7 @@ public class Robot extends TimedRobot {
                 }),
 
                 createHoldAction(mControlBoard::getShoot, (shooting) -> {
-                   // shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
+                    // shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
                     if (shooting) {
                         mDrive.setOpenLoop(DriveSignal.BRAKE);
                         shooter.startShooter(); // Uses ZED distance
@@ -481,7 +486,7 @@ public class Robot extends TimedRobot {
 //            double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
 //            driveSignal = new DriveSignal(left, right);
         // } else {
-         driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, false); // quick turn temporarily eliminated
+        driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, false); // quick turn temporarily eliminated
         // }
         if (mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING) {
             if (driveSignal.getLeft() != 0 || driveSignal.getRight() != 0 || mDrive.isDoneWithTrajectory()) {

@@ -46,8 +46,11 @@ public class CrashTracker {
     }
 
     private static void logMarker(String mark, Throwable nullableException) {
-
-        try (PrintWriter writer = new PrintWriter(new FileWriter("/home/lvuser/crash_tracking.txt", true))) {
+        var filePath = "/home/lvuser/crash_tracking.log";
+        if(System.getProperty("os.name").toLowerCase().contains("win")) {
+            filePath = System.getenv("temp") + "\\crash_tracking.log";
+        }
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath, true))) {
             writer.print(RUN_INSTANCE_UUID.toString());
             writer.print(", ");
             writer.print(mark);

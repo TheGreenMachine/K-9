@@ -54,6 +54,7 @@ public class LedManager extends Subsystem {
     }
 
     private void configureCanifier(CANifier canifier) {
+        if(canifier == null) return;
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_1_General, 255, 10);
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_2_General, 255, 10);
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_3_PwmInputs0, 255, 10);
