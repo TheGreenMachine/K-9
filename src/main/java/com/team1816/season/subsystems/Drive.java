@@ -637,7 +637,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         builder.addStringProperty("Drive/ControlState", () -> this.getDriveControlState().toString(), null);
         builder.addBooleanProperty("Drive/PigeonIMU State", () -> this.mPigeon.getLastError() == ErrorCode.OK, null);
 
-
         SmartDashboard.putNumber("Drive/OpenLoopRampRate", this.openLoopRampRate);
         SmartDashboard.getEntry("Drive/OpenLoopRampRate").addListener(notification -> {
             setOpenLoopRampRate(notification.value.getDouble());

@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.team1816.season.Constants;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Solenoid;
 
 public class RobotFactory {
 
@@ -94,18 +93,18 @@ public class RobotFactory {
         return hardwareId != null && hardwareId > -1;
     }
 
-    public Solenoid getSolenoid(String subsystemName, String name) {
+    public ISolenoid getSolenoid(String subsystemName, String name) {
         var subsystem = getSubsystem(subsystemName);
         Integer solenoidId = subsystem.solenoids.get(name);
         if (isHardwareValid(solenoidId)) {
-            return new Solenoid(config.pcm, solenoidId);
+            return new SolenoidWrapper(config.pcm, solenoidId);
         }
         if(subsystem.implemented) {
             DriverStation.reportError(
                 "Solenoid " + name +
                     " not defined or invalid in config for subsystem " + subsystem, false);
         }
-        return null;
+        return new GhostSolenoid();
     }
 
     public DoubleSolenoid getDoubleSolenoid(String subsystemName, String name) {

@@ -2,9 +2,9 @@ package com.team1816.season.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
+import com.team1816.lib.hardware.ISolenoid;
 import com.team1816.lib.hardware.MotorUtil;
 import com.team1816.lib.subsystems.Subsystem;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 
 
@@ -13,7 +13,7 @@ public class Collector extends Subsystem {
     private static Collector INSTANCE;
 
     // Components
-    private final Solenoid armPiston;
+    private final ISolenoid armPiston;
     private final IMotorControllerEnhanced intake;
 
     // State
