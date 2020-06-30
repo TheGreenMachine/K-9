@@ -6,7 +6,7 @@ plugins {
     id "com.snobot.simulator.plugin.SnobotSimulatorPlugin" version "2020-0.0.1" apply false
 }
 
-def ROBOT_MAIN_CLASS = "com.com.team1816.season.Main"
+def ROBOT_MAIN_CLASS = "com.team1816.season.Main"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project EmbeddedTools.
