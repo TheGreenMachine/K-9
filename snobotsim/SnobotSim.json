@@ -76,7 +76,7 @@
                 "default_version": "5.18.2",
                 "versions": {
                     "5.18.2": {
-                        "version_number": "5.17.2_V0_RC",
+                        "version_number": "5.17.2_V1",
                         "libraries": {
                             "java": ["com.snobot.simulator:ctre_sim_override:${version_number}"],
                             "jni": ["com.snobot.simulator:ctre_sim_override:${version_number}:${nativeclassifier}"]
