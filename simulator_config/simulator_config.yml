@@ -1,52 +1,62 @@
 !!com.snobot.simulator.config.v1.SimulatorConfigV1
-mAccelerometers: []
-mAnalogIn:
-    - mHandle: 0
-      mName: Analog In 0
-      mType: com.snobot.simulator.module_wrapper.wpi.WpiAnalogInWrapper
+mAccelerometers:
+- mHandle: 439
+  mName: Pigeon X
+  mType: com.snobot.simulator.simulator_components.ctre.CtrePigeonImuSim$PigeonAccelWrapper
+- mHandle: 440
+  mName: Pigeon Y
+  mType: com.snobot.simulator.simulator_components.ctre.CtrePigeonImuSim$PigeonAccelWrapper
+- mHandle: 441
+  mName: Pigeon Z
+  mType: com.snobot.simulator.simulator_components.ctre.CtrePigeonImuSim$PigeonAccelWrapper
+mAnalogIn: []
 mAnalogOut: []
 mDefaultI2CWrappers: {}
 mDefaultSpiWrappers: {}
 mDigitalIO:
-    - mHandle: 0
-      mName: Digital IO 0
-      mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
-    - mHandle: 1
-      mName: Digital IO 1
-      mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
-    - mHandle: 2
-      mName: Digital IO 2
-      mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
-    - mHandle: 3
-      mName: Digital IO 3
-      mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
+- mHandle: 4
+  mName: Digital IO 4
+  mType: com.snobot.simulator.module_wrapper.wpi.WpiDigitalIoWrapper
 mEncoders:
-    - mConnectedSpeedControllerHandle: -1
-      mHandle: 0
-      mName: Encoder 0
-      mType: com.snobot.simulator.module_wrapper.wpi.WpiEncoderWrapper
-    - mConnectedSpeedControllerHandle: -1
-      mHandle: 1
-      mName: Encoder 1
-      mType: com.snobot.simulator.module_wrapper.wpi.WpiEncoderWrapper
+- mConnectedSpeedControllerHandle: 101
+  mHandle: 101
+  mName: CAN Encoder (1)
+  mType: com.snobot.simulator.simulator_components.smart_sc.SmartScEncoder
+- mConnectedSpeedControllerHandle: 102
+  mHandle: 102
+  mName: CAN Encoder (2)
+  mType: com.snobot.simulator.simulator_components.smart_sc.SmartScEncoder
 mGyros:
-    - mHandle: 0
-      mName: Analog Gyro
-      mType: com.snobot.simulator.module_wrapper.wpi.WpiAnalogGyroWrapper
+- mHandle: 439
+  mName: Pigeon Yaw
+  mType: com.snobot.simulator.simulator_components.ctre.CtrePigeonImuSim$PigeonGyroWrapper
+- mHandle: 440
+  mName: Pigeon Pitch
+  mType: com.snobot.simulator.simulator_components.ctre.CtrePigeonImuSim$PigeonGyroWrapper
+- mHandle: 441
+  mName: Pigeon Roll
+  mType: com.snobot.simulator.simulator_components.ctre.CtrePigeonImuSim$PigeonGyroWrapper
 mPwm:
-    - mHandle: 0
-      mMotorModelConfig: null
-      mMotorSimConfig: null
-      mName: Speed Controller 0
-      mType: com.snobot.simulator.module_wrapper.wpi.WpiPwmWrapper
-    - mHandle: 1
-      mMotorModelConfig: null
-      mMotorSimConfig: null
-      mName: Speed Controller 1
-      mType: com.snobot.simulator.module_wrapper.wpi.WpiPwmWrapper
+- mHandle: 100
+  mMotorModelConfig: null
+  mMotorSimConfig: null
+  mName: CTRE SC 0
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
+- mHandle: 101
+  mMotorModelConfig: null
+  mMotorSimConfig: null
+  mName: CTRE SC 1
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
+- mHandle: 102
+  mMotorModelConfig: null
+  mMotorSimConfig: null
+  mName: CTRE SC 2
+  mType: com.snobot.simulator.simulator_components.ctre.CtreTalonSrxSpeedControllerSim
 mRelays: []
-mSimulatorComponents: []
-mSolenoids:
-    - mHandle: 0
-      mName: Solenoid 0
-      mType: com.snobot.simulator.module_wrapper.wpi.WpiSolenoidWrapper
+mSimulatorComponents:
+- !!com.snobot.simulator.simulator_components.config.TankDriveConfig
+  mGyroHandle: 439
+  mLeftMotorHandle: 100
+  mRightMotorHandle: 101
+  mTurnKp: 1.0
+mSolenoids: []
