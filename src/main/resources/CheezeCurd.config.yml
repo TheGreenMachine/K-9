@@ -24,10 +24,9 @@ subsystems:
       currentEpsilonCheck: .2
       rpmFloorCheck: 750
       rpmEpsilonCheck: 60
-  canifier:
+  ledmanager:
     implemented: true
-    constants:
-      canId: 12
+    canifier: 12
 constants:
   wheelDiameter: 4.058
   trackWidth: 15.75
