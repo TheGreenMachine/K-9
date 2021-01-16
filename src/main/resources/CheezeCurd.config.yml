@@ -38,3 +38,6 @@ constants:
   kPCMId: 0
   pathKs: .0125
   verbose: 0
+  logAuto: 1
+  logTeleOp: 0
+  badLogEnabled: 1

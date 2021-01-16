@@ -93,6 +93,11 @@ public class RobotFactory {
         return hardwareId != null && hardwareId > -1;
     }
 
+    public boolean isImplemented(String subsystemName){
+        var subsystem = getSubsystem(subsystemName);
+        return subsystem.implemented;
+    }
+
     public ISolenoid getSolenoid(String subsystemName, String name) {
         var subsystem = getSubsystem(subsystemName);
         Integer solenoidId = subsystem.solenoids.get(name);

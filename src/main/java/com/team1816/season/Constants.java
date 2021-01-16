@@ -74,8 +74,8 @@ public class Constants {
     public static final double kPathFollowingProfileKs = factory.getConstant("pathKs");;  // % throttle required to break static friction
 
     public static final boolean kIsBadlogEnabled = factory.getConstant("badLogEnabled") > 0;
-    public static final boolean kIsLoggingTeleOp = factory.getConstant("logTeleOp") > 0;
-    public static final boolean kIsLoggingAutonomous = factory.getConstant("logAuto") > 0;
+    public static final boolean kIsLoggingTeleOp =  kIsBadlogEnabled && factory.getConstant("logTeleOp") > 0;
+    public static final boolean kIsLoggingAutonomous = kIsBadlogEnabled && factory.getConstant("logAuto") > 0;
 
     public static final boolean kUseAutoAim = factory.getConstant("useAutoAim") > 0;
 

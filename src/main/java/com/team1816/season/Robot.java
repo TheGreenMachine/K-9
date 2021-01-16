@@ -1,7 +1,6 @@
 package com.team1816.season;
 
 import badlog.lib.BadLog;
-import badlog.lib.DataInferMode;
 import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.actions.DriveTrajectory;
 import com.team1816.lib.auto.modes.AutoModeBase;
@@ -89,58 +88,55 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         try {
-            var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
-            var robotName = System.getenv("ROBOT_NAME");
-            if (robotName == null) robotName = "default";
-            var filePath = "/home/lvuser/" + robotName + "_" + logFile + ".bag";
-            if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                filePath = System.getenv("temp") + "\\" + robotName + "_" + logFile + ".bag";
-            }
-            logger = BadLog.init(filePath);
-
-            BadLog.createTopic("Shooter/ActVel", "NativeUnits", shooter::getActualVelocity,
-                "hide", "join:Shooter/Velocities");
-            BadLog.createTopic("Shooter/TargetVel", "NativeUnits", shooter::getTargetVelocity,
-                "hide", "join:Shooter/Velocities");
-            BadLog.createTopic("Shooter/Error", "NativeUnits", shooter::getError,
-                "hide", "join:Shooter/Velocities");
-
             if (Constants.kIsBadlogEnabled) {
+                var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
+                var robotName = System.getenv("ROBOT_NAME");
+                if (robotName == null) robotName = "default";
+                var filePath = "/home/lvuser/" + robotName + "_" + logFile + ".bag";
+                if (System.getProperty("os.name").toLowerCase().contains("win")) {
+                    filePath = System.getenv("temp") + "\\" + robotName + "_" + logFile + ".bag";
+                }
+                logger = BadLog.init(filePath);
+
+                shooter.CreateBadLogTopic("Shooter/ActVel", "NativeUnits", shooter::getActualVelocity,
+                    "hide", "join:Shooter/Velocities");
+                shooter.CreateBadLogTopic("Shooter/TargetVel", "NativeUnits", shooter::getTargetVelocity,
+                    "hide", "join:Shooter/Velocities");
+                shooter.CreateBadLogTopic("Shooter/Error", "NativeUnits", shooter::getError,
+                    "hide", "join:Shooter/Velocities");
+
                 BadLog.createTopic("Timings/Looper", "ms", mEnabledLooper::getLastLoop, "hide", "join:Timings");
                 BadLog.createTopic("Timings/RobotLoop", "ms", this::getLastLoop, "hide", "join:Timings");
                 BadLog.createTopic("Timings/Timestamp", "s", Timer::getFPGATimestamp, "xaxis", "hide");
-
                 BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
 
-                BadLog.createTopicSubscriber("Pigeon Error", BadLog.UNITLESS, DataInferMode.DEFAULT);
-
                 DrivetrainLogger.init(mDrive);
+                mDrive.CreateBadLogValue("Drivetrain PID", mDrive.pidToString());
 
-                BadLog.createValue("Drivetrain PID", mDrive.pidToString());
-                BadLog.createValue("Shooter PID", shooter.pidToString());
-                BadLog.createValue("Turret PID", turret.pidToString());
+                shooter.CreateBadLogValue("Shooter PID", shooter.pidToString());
+                turret.CreateBadLogValue("Turret PID", turret.pidToString());
 
-                BadLog.createTopic("Vision/DeltaXAngle", "Degrees", camera::getDeltaXAngle);
-                BadLog.createTopic("Vision/Distance", "inches", camera::getDistance);
-                BadLog.createTopic("Vision/CenterX", "pixels", camera::getRawCenterX);
+                turret.CreateBadLogTopic("Vision/DeltaXAngle", "Degrees", camera::getDeltaXAngle);
+                turret.CreateBadLogTopic("Vision/Distance", "inches", camera::getDistance);
+                turret.CreateBadLogTopic("Vision/CenterX", "pixels", camera::getRawCenterX);
 
-                BadLog.createTopic("Turret/ActPos", "NativeUnits", () -> (double) turret.getTurretPositionTicks(),
+                turret.CreateBadLogTopic("Turret/ActPos", "NativeUnits", () -> (double) turret.getTurretPositionTicks(),
                     "hide", "join:Turret/Positions");
-                BadLog.createTopic("Turret/TargetPos", "NativeUnits", turret::getTargetPosition,
+                turret.CreateBadLogTopic("Turret/TargetPos", "NativeUnits", turret::getTargetPosition,
                     "hide", "join:Turret/Positions");
-                BadLog.createTopic("Turret/ErrorPos", "NativeUnits", turret::getPositionError);
+                turret.CreateBadLogTopic("Turret/ErrorPos", "NativeUnits", turret::getPositionError);
 
-                BadLog.createTopic("Turret/FieldToTurret", "Degrees", mRobotState::getLatestFieldToTurret,
+                turret.CreateBadLogTopic("Turret/FieldToTurret", "Degrees", mRobotState::getLatestFieldToTurret,
                     "hide", "join:Tracking/Angles");
-                BadLog.createTopic("Drive/HeadingRelativeToInitial", "Degrees", () -> mDrive.getHeadingRelativeToInitial().getDegrees(),
+                turret.CreateBadLogTopic("Drive/HeadingRelativeToInitial", "Degrees", () -> mDrive.getHeadingRelativeToInitial().getDegrees(),
                     "hide", "join:Tracking/Angles");
-                BadLog.createTopic("Turret/TurretAngle", "Degrees", turret::getTurretPositionDegrees,
+                turret.CreateBadLogTopic("Turret/TurretAngle", "Degrees", turret::getTurretPositionDegrees,
                     "hide", "join:Tracking/Angles");
 
                 mDrive.setLogger(logger);
-            }
 
-            logger.finishInitialization();
+                logger.finishInitialization();
+            }
 
             CrashTracker.logRobotInit();
 

@@ -28,8 +28,8 @@ public class AutoModeSelector {
     private DesiredMode mCachedDesiredMode = null;
     private StartingPosition mCachedStartingPosition = null;
 
-    private SendableChooser<DesiredMode> mModeChooser;
-    private SendableChooser<StartingPosition> mStartPositionChooser;
+    private final SendableChooser<DesiredMode> mModeChooser;
+    private final SendableChooser<StartingPosition> mStartPositionChooser;
 
     private Optional<AutoModeBase> mAutoMode = Optional.empty();
 
