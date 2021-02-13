@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.team1816.lib.hardware.PigeonChecker;
 import com.team1816.season.AutoModeSelector;
 import com.team1816.season.Constants;
 import com.team1816.season.Kinematics;
@@ -376,7 +377,9 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     }
 
     public synchronized void resetPigeon() {
-        mPigeon.setFusedHeading(0);
+        mPigeon.setYaw(0, Constants.kLongCANTimeoutMs);
+        mPigeon.setFusedHeading(0, Constants.kLongCANTimeoutMs);
+        mPigeon.setAccumZAngle(0, Constants.kLongCANTimeoutMs);
     }
 
     public synchronized void resetEncoders() {
@@ -579,21 +582,21 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
 //        Timer.delay(3);
 
-        boolean leftSide = TalonSRXChecker.checkMotors(this,
+        boolean leftSide = TalonSRXChecker.checkMotors(
             new ArrayList<>() {
                 {
                     add(new TalonSRXChecker.TalonSRXConfig("left_master", mLeftMaster));
                 }
             }, getTalonCheckerConfig(mLeftMaster));
-        boolean rightSide = TalonSRXChecker.checkMotors(this,
+        boolean rightSide = TalonSRXChecker.checkMotors(
             new ArrayList<>() {
                 {
                     add(new TalonSRXChecker.TalonSRXConfig("right_master", mRightMaster));
                 }
             }, getTalonCheckerConfig(mRightMaster));
-        boolean checkPigeon = mPigeon == null;
 
-        System.out.println(leftSide && rightSide && checkPigeon);
+        boolean checkPigeon = PigeonChecker.checkPigeon(mPigeon);
+
         if (leftSide && rightSide && checkPigeon) {
             ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
         } else {
@@ -656,27 +659,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
             }
         }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
 
-
-        // builder.addDoubleProperty("Drive/OpenLoopRampRateSetter", null, this::setOpenLoopRampRate);
-        // builder.addDoubleProperty("Drive/OpenLoopRampRateValue", this::getOpenLoopRampRate, null);
-
-        // SmartDashboard.putNumber("Right Linear Velocity", getRightLinearVelocity());
-        // SmartDashboard.putNumber("Left Linear Velocity", getLeftLinearVelocity());
-
-        // SmartDashboard.putNumber("X Error", mPeriodicIO.error.getTranslation().x());
-        // SmartDashboard.putNumber("Y error", mPeriodicIO.error.getTranslation().y());
-        // SmartDashboard.putNumber("Theta Error", mPeriodicIO.error.getRotation().getDegrees());
-
-        // SmartDashboard.putNumber("Left Voltage Kf", mPeriodicIO.left_voltage / getLeftLinearVelocity());
-        // SmartDashboard.putNumber("Right Voltage Kf", mPeriodicIO.right_voltage / getRightLinearVelocity());
-
-        // if (mPathFollower != null) {
-        //     SmartDashboard.putNumber("Drive LTE", mPathFollower.getAlongTrackError());
-        //     SmartDashboard.putNumber("Drive CTE", mPathFollower.getCrossTrackError());
-        // } else {
-        //     SmartDashboard.putNumber("Drive LTE", 0.0);
-        //     SmartDashboard.putNumber("Drive CTE", 0.0);
-        // }
     }
 
     public synchronized double getTimestamp() {

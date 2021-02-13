@@ -24,9 +24,6 @@ public class DistanceManager {
             this.turretBias = turretBias;
         }
 
-        Entry() {
-            this(0, 0, 0, 0);
-        }
     }
 
     private final Entry[] buckets = new Entry[] {
@@ -48,15 +45,6 @@ public class DistanceManager {
         new Entry(400, 10_600, 1, 2.1)
     };
 
-    public double getShooterVelocity(double distance) {
-        for (Entry bucket : buckets) {
-            if (distance <= bucket.distance) {
-                return bucket.shooterVelocity;
-            }
-        }
-        return Shooter.MAX_VELOCITY;
-    }
-
     public double getTurretBias(double distance) {
         for (Entry bucket : buckets) {
             if (distance <= bucket.distance) {
@@ -66,12 +54,4 @@ public class DistanceManager {
         return 1.25;
     }
 
-    public double getSpindexerOutput(double distance) {
-        for (Entry velocity : buckets) {
-            if (distance <= velocity.distance) {
-                return velocity.spindexerOutput;
-            }
-        }
-        return 1;
-    }
 }

@@ -24,6 +24,9 @@ import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -47,11 +50,7 @@ public class Robot extends TimedRobot {
     private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
     private final Drive mDrive = Drive.getInstance();
     private final LedManager ledManager = LedManager.getInstance();
-    private final Collector collector = Collector.getInstance();
-    private final Shooter shooter = Shooter.getInstance();
     private final Turret turret = Turret.getInstance();
-    private final Hopper hopper = Hopper.getInstance();
-    private final Climber climber = Climber.getInstance();
     private final Camera camera = Camera.getInstance();
 
     // button placed on the robot to allow the drive team to zero the robot right
@@ -92,18 +91,15 @@ public class Robot extends TimedRobot {
                 var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
                 var robotName = System.getenv("ROBOT_NAME");
                 if (robotName == null) robotName = "default";
-                var filePath = "/home/lvuser/" + robotName + "_" + logFile + ".bag";
+                var filePath = " /home/lvuser/" + robotName + "_" + logFile + ".bag";
+                // if there is a usb drive use it
+                if(Files.exists(Path.of("/media/sda1"))) {
+                    filePath = "/media/sda1/" + robotName + "_" + logFile + ".bag";
+                }
                 if (System.getProperty("os.name").toLowerCase().contains("win")) {
                     filePath = System.getenv("temp") + "\\" + robotName + "_" + logFile + ".bag";
                 }
                 logger = BadLog.init(filePath);
-
-                shooter.CreateBadLogTopic("Shooter/ActVel", "NativeUnits", shooter::getActualVelocity,
-                    "hide", "join:Shooter/Velocities");
-                shooter.CreateBadLogTopic("Shooter/TargetVel", "NativeUnits", shooter::getTargetVelocity,
-                    "hide", "join:Shooter/Velocities");
-                shooter.CreateBadLogTopic("Shooter/Error", "NativeUnits", shooter::getError,
-                    "hide", "join:Shooter/Velocities");
 
                 BadLog.createTopic("Timings/Looper", "ms", mEnabledLooper::getLastLoop, "hide", "join:Timings");
                 BadLog.createTopic("Timings/RobotLoop", "ms", this::getLastLoop, "hide", "join:Timings");
@@ -113,14 +109,13 @@ public class Robot extends TimedRobot {
                 DrivetrainLogger.init(mDrive);
                 mDrive.CreateBadLogValue("Drivetrain PID", mDrive.pidToString());
 
-                shooter.CreateBadLogValue("Shooter PID", shooter.pidToString());
                 turret.CreateBadLogValue("Turret PID", turret.pidToString());
 
                 turret.CreateBadLogTopic("Vision/DeltaXAngle", "Degrees", camera::getDeltaXAngle);
                 turret.CreateBadLogTopic("Vision/Distance", "inches", camera::getDistance);
                 turret.CreateBadLogTopic("Vision/CenterX", "pixels", camera::getRawCenterX);
 
-                turret.CreateBadLogTopic("Turret/ActPos", "NativeUnits", () -> (double) turret.getTurretPositionTicks(),
+                turret.CreateBadLogTopic("Turret/ActPos", "NativeUnits", () -> (double) turret.getActualTurretPositionTicks(),
                     "hide", "join:Turret/Positions");
                 turret.CreateBadLogTopic("Turret/TargetPos", "NativeUnits", turret::getTargetPosition,
                     "hide", "join:Turret/Positions");
@@ -130,7 +125,7 @@ public class Robot extends TimedRobot {
                     "hide", "join:Tracking/Angles");
                 turret.CreateBadLogTopic("Drive/HeadingRelativeToInitial", "Degrees", () -> mDrive.getHeadingRelativeToInitial().getDegrees(),
                     "hide", "join:Tracking/Angles");
-                turret.CreateBadLogTopic("Turret/TurretAngle", "Degrees", turret::getTurretPositionDegrees,
+                turret.CreateBadLogTopic("Turret/TurretAngle", "Degrees", turret::getActualTurretPositionDegrees,
                     "hide", "join:Tracking/Angles");
 
                 mDrive.setLogger(logger);
@@ -145,11 +140,7 @@ public class Robot extends TimedRobot {
                 mDrive,
                 mSuperstructure,
                 mInfrastructure,
-                shooter,
-                collector,
-                hopper,
-                turret,
-                climber
+                turret
             );
 
             mDrive.zeroSensors();
@@ -171,20 +162,6 @@ public class Robot extends TimedRobot {
 
             actionManager = new ActionManager(
                 // Driver Gamepad
-                createHoldAction(mControlBoard::getCollectorToggle, (collecting) -> {
-                    System.out.println("Collector toggled!");
-                    collector.setDeployed(collecting);
-                    hopper.setSpindexer(collecting ? -1 : 0);
-                }),
-
-                createScalar(mControlBoard::getDriverClimber, climber::setClimberPower),
-
-                createHoldAction(mControlBoard::getClimberDeploy, (pressed) -> {
-                    if ((DriverStation.getInstance().getMatchTime() <= 30) ||
-                        (DriverStation.getInstance().getMatchTime() == -1)) {
-                        climber.setDeployed(pressed);
-                    }
-                }),
                 createAction(mControlBoard::getTrenchToFeederSpline, () -> {
                     System.out.println("STARTING TRENCH TO FEEDER");
                     SmartDashboard.putString("Teleop Spline", "TRENCH TO FEEDER");
@@ -204,27 +181,12 @@ public class Robot extends TimedRobot {
                 createAction(mControlBoard::getFieldFollowing, () ->
                     turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING)),
 
-                createHoldAction(mControlBoard::getFeederFlapOut, (feeding) -> {
-                    if (mDrive.hasPigeonResetOccurred() && !feeding) {
-                        mDrive.zeroSensors();
-                    }
-                    hopper.setFeederFlap(feeding);
-                }),
-
-                createScalar(mControlBoard::getClimber, power -> {
-                    if ((DriverStation.getInstance().getMatchTime() <= 30) ||
-                        (DriverStation.getInstance().getMatchTime() == -1)) {
-                        climber.setClimberPower(power > 0 ? power : 0);
-                    }
-                }),
-
                 createHoldAction(mControlBoard::getTurretJogLeft, (moving) -> turret.setTurretSpeed(moving ? -Turret.TURRET_JOG_SPEED : 0)),
                 createHoldAction(mControlBoard::getTurretJogRight, (moving) -> turret.setTurretSpeed(moving ? Turret.TURRET_JOG_SPEED : 0)),
                 createHoldAction(mControlBoard::getAutoAim, pressed -> {
                     if (pressed) {
                         prevTurretControlMode = turret.getControlMode();
                         turret.setControlMode(Turret.ControlMode.CAMERA_FOLLOWING);
-                        shooter.startShooter();
                     } else {
                         turret.setControlMode(prevTurretControlMode);
                     }
@@ -234,18 +196,11 @@ public class Robot extends TimedRobot {
                     // shooter.setVelocity(shooting ? Shooter.MID_VELOCITY : 0);
                     if (shooting) {
                         mDrive.setOpenLoop(DriveSignal.BRAKE);
-                        shooter.startShooter(); // Uses ZED distance
                         turret.lockTurret();
                     } else {
                         turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
-                        shooter.stopShooter();
                     }
-                    hopper.lockToShooter(shooting, true);
-                    hopper.setIntake(shooting ? 1 : 0);
-                    collector.setIntakePow(shooting ? 0.5 : 0);
-                }),
-                createHoldAction(mControlBoard::getCollectorBackSpin,
-                    (pressed) -> collector.setIntakePow(pressed ? 0.2 : 0))
+                })
             );
 
             blinkTimer = new AsyncTimer(
@@ -267,9 +222,6 @@ public class Robot extends TimedRobot {
             mEnabledLooper.stop();
 
             ledManager.setDefaultStatus(LedManager.RobotStatus.DISABLED);
-
-            // shooter
-            shooter.setVelocity(0);
 
             // Reset all auto mode state.
             if (mAutoModeExecutor != null) {
@@ -338,7 +290,7 @@ public class Robot extends TimedRobot {
 
             mEnabledLooper.start();
 
-            turret.setTurretAngle(Turret.CARDINAL_SOUTH);
+            turret.setTurretAngle(Turret.CARDINAL_NORTH);
             turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
 
             mInfrastructure.setIsManualControl(true);
@@ -488,8 +440,6 @@ public class Robot extends TimedRobot {
             if (driveSignal.getLeft() != 0 || driveSignal.getRight() != 0 || mDrive.isDoneWithTrajectory()) {
                 mDrive.setOpenLoop(driveSignal);
             }
-        } else if (!(shooter.getTargetVelocity() > 0)) {
-            mDrive.setOpenLoop(driveSignal);
         } else {
             mDrive.setOpenLoop(DriveSignal.BRAKE);
         }

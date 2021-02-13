@@ -60,7 +60,7 @@ public class RobotStateEstimator extends Subsystem {
             final Rotation2d gyro_angle_relative_to_initial = mDrive.getHeadingRelativeToInitial();
 
             Twist2d odometry_twist;
-            /* final */ Rotation2d turret_angle = Rotation2d.fromDegrees(turret.getTurretPositionDegrees() - Turret.CARDINAL_SOUTH); // - Turret.CARDINAL_NORTH);
+            /* final */ Rotation2d turret_angle = Rotation2d.fromDegrees(turret.getActualTurretPositionDegrees() - Turret.CARDINAL_SOUTH); // - Turret.CARDINAL_NORTH);
             synchronized (mRobotState) {
                 final Pose2d last_measurement = mRobotState.getLatestFieldToVehicle().getValue();
                 odometry_twist = Kinematics.forwardKinematics(last_measurement.getRotation(), delta_left,
@@ -98,7 +98,7 @@ public class RobotStateEstimator extends Subsystem {
     }
 
     public synchronized void outputToSmartDashboard() {
-        SmartDashboard.putNumber("turret angle", (turret.getTurretPositionDegrees() - Turret.CARDINAL_SOUTH));// - Turret.CARDINAL_NORTH);
-        SmartDashboard.putNumber("test num",new Rotation2d().fromDegrees(turret.getTurretPositionDegrees()).getDegrees());
+        SmartDashboard.putNumber("turret angle", (turret.getActualTurretPositionDegrees() - Turret.CARDINAL_SOUTH));// - Turret.CARDINAL_NORTH);
+        SmartDashboard.putNumber("test num",new Rotation2d().fromDegrees(turret.getActualTurretPositionDegrees()).getDegrees());
     }
 }

@@ -54,12 +54,9 @@ public class TalonSRXChecker {
         public double mSetValue;
     }
 
-    public static boolean checkMotors(Subsystem subsystem, ArrayList<TalonSRXConfig> talonsToCheck,
+    public static boolean checkMotors(ArrayList<TalonSRXConfig> talonsToCheck,
                                       CheckerConfig checkerConfig) {
         boolean failure = false;
-        System.out.println("////////////////////////////////////////////////");
-        System.out.println("Checking subsystem " + subsystem.getClass() + " for " + talonsToCheck.size() + " talons.");
-
         ArrayList<Double> currents = new ArrayList<>();
         ArrayList<Double> rpms = new ArrayList<>();
         ArrayList<StoredTalonSRXConfiguration> storedConfigurations = new ArrayList<>();
@@ -79,10 +76,10 @@ public class TalonSRXChecker {
         }
 
         for (TalonSRXConfig config : talonsToCheck) {
-            System.out.println("Checking: " + config.mName);
+            System.out.println("Checking: " + config.mName + " " + config.mTalon.getDeviceID());
 
             if (config.mTalon.getDeviceID() < 0) {
-                System.out.println("Talon Disabled Checks Skipped!!");
+                System.out.println("  Talon Disabled Checks Skipped!!");
                 continue;
             }
 
@@ -92,13 +89,13 @@ public class TalonSRXChecker {
             // Now poll the interesting information.
             double current = config.mTalon.getOutputCurrent();
             currents.add(current);
-            System.out.print("Current: " + current);
+            System.out.print("  Current: " + current);
 
             double rpm = Double.NaN;
             if (checkerConfig.mRPMSupplier != null) {
                 rpm = checkerConfig.mRPMSupplier.getAsDouble();
                 rpms.add(rpm);
-                System.out.print(" RPM: " + rpm);
+                System.out.print("  RPM: " + rpm);
             }
             System.out.print('\n');
 

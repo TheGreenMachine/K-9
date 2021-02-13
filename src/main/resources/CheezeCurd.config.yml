@@ -20,13 +20,32 @@ subsystems:
       iZone: 30
       encPPR: 4096 # CTRE mag encoder
       kShifterSolenoidId: 0
-      currentFloorCheck: .3
+      currentFloorCheck: .1
       currentEpsilonCheck: .2
-      rpmFloorCheck: 750
+      rpmFloorCheck: 250
       rpmEpsilonCheck: 60
   ledmanager:
     implemented: true
     canifier: 12
+  turret:
+    implemented: true
+    talons:
+      turret: 3
+    constants:
+      kP: 2
+      kI: 0
+      kD: 10
+      kF: 0 # Should be 0 for position control
+      iZone: 200
+      encPPR: 4096
+      minPos: 1
+      maxPos: 3274
+      currentFloorCheck: .1
+      currentEpsilonCheck: .2
+      rpmFloorCheck: 250
+      absPosTicksSouth: 3685
+      invert_sensor_phase: 0
+      rpmEpsilonCheck: 60
 constants:
   wheelDiameter: 4.058
   trackWidth: 15.75
@@ -39,5 +58,7 @@ constants:
   pathKs: .0125
   verbose: 0
   logAuto: 1
-  logTeleOp: 0
+  logTeleOp: 1
   badLogEnabled: 1
+  useAutoAim: 1
+  compressorEnabled: 0

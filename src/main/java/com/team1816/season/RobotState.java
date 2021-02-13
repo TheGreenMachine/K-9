@@ -165,7 +165,7 @@ public class RobotState {
     }
 
     /**
-     * Rotation of robot relative to initial position,
+     * Rotation of robot relative to initial position, i.e. raw sensor
      * unaffected by calls to {@link #reset()}
      */
     public Rotation2d getHeadingRelativeToInitial() {

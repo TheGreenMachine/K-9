@@ -94,7 +94,7 @@ public class Infrastructure extends Subsystem {
 
     @Override
     public boolean checkSystem() {
-        return false;
+        return true;
     }
 
     @Override
