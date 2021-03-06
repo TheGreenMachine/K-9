@@ -52,7 +52,8 @@ public class Turret extends Subsystem implements PidProvider {
     private final double kD;
     private final double kF;
 
-    private static final int TURRET_ENCODER_PPR = (int) factory.getConstant(NAME, "encPPR") - 1;
+    private static final int TURRET_ENCODER_PPR = (int) factory.getConstant(NAME, "encPPR");
+    private static final int TURRET_ENCODER_MASK = TURRET_ENCODER_PPR - 1;
     private static final int ALLOWABLE_ERROR_TICKS = 5;
     private static final double TURRET_JOG_DEGREES = 1;
     public static final double TURRET_JOG_SPEED = 0.35;
@@ -110,7 +111,7 @@ public class Turret extends Subsystem implements PidProvider {
     public synchronized void zeroSensors() {
         if (turret instanceof TalonSRX) {
             var sensors = ((TalonSRX) turret).getSensorCollection();
-            sensors.setQuadraturePosition(sensors.getPulseWidthPosition() & TURRET_ENCODER_PPR, Constants.kLongCANTimeoutMs);
+            sensors.setQuadraturePosition(sensors.getPulseWidthPosition() & TURRET_ENCODER_MASK, Constants.kLongCANTimeoutMs);
         }
     }
 
@@ -168,7 +169,7 @@ public class Turret extends Subsystem implements PidProvider {
 
     public synchronized void setTurretPosition(double position) {
         //Since we are using position we need ensure value stays in one rotation
-        int adjPos = (int) position & TURRET_ENCODER_PPR;
+        int adjPos = (int) position & TURRET_ENCODER_MASK;
         if(desiredTurretPos != adjPos) {
             desiredTurretPos = adjPos;
             outputsChanged = true;
@@ -210,7 +211,7 @@ public class Turret extends Subsystem implements PidProvider {
 
     public int getTurretPosAbsolute() {
         if (turret instanceof TalonSRX) {
-            int rawValue = ((TalonSRX) turret).getSensorCollection().getPulseWidthPosition() & TURRET_ENCODER_PPR;
+            int rawValue = ((TalonSRX) turret).getSensorCollection().getPulseWidthPosition() & TURRET_ENCODER_MASK;
             return (TURRET_SENSOR_PHASE ? -1 : 1) * rawValue;
         }
         return 0;
