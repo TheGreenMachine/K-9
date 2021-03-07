@@ -18,13 +18,11 @@ import com.team1816.season.subsystems.*;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.CheesyDriveHelper;
-import com.team254.lib.util.CrashTracker;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -67,17 +65,16 @@ public class Robot extends TimedRobot {
 
     private boolean mDriveByCameraInAuto = false;
     private double loopStart;
+    private boolean faulted;
 
     private ActionManager actionManager;
     private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
-    private AsyncTimer blinkTimer;
 
     private PowerDistributionPanel pdp = new PowerDistributionPanel();
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
 
     public Robot() {
         super();
-        CrashTracker.logRobotConstruction();
     }
 
     private Double getLastLoop() {
@@ -132,8 +129,6 @@ public class Robot extends TimedRobot {
 
                 logger.finishInitialization();
             }
-
-            CrashTracker.logRobotInit();
 
             mSubsystemManager.setSubsystems(
                 mRobotStateEstimator,
@@ -202,23 +197,15 @@ public class Robot extends TimedRobot {
                     }
                 })
             );
-
-            blinkTimer = new AsyncTimer(
-                3, // (3 s)
-                () -> ledManager.blinkStatus(LedManager.RobotStatus.ERROR),
-                () -> ledManager.indicateStatus(LedManager.RobotStatus.OFF)
-            );
-
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
-            throw t;
+            faulted = true;
+            DriverStation.reportError(t.getMessage(),true);
         }
     }
 
     @Override
     public void disabledInit() {
         try {
-            CrashTracker.logDisabledInit();
             mEnabledLooper.stop();
 
             ledManager.setDefaultStatus(LedManager.RobotStatus.DISABLED);
@@ -236,16 +223,16 @@ public class Robot extends TimedRobot {
             mDisabledLooper.start();
 
             mDrive.setBrakeMode(false);
+
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
-            throw t;
+            faulted = true;
+            DriverStation.reportError(t.getMessage(),true);
         }
     }
 
     @Override
     public void autonomousInit() {
         try {
-            CrashTracker.logAutoInit();
             mDisabledLooper.stop();
             ledManager.setDefaultStatus(LedManager.RobotStatus.AUTONOMOUS);
 
@@ -268,15 +255,14 @@ public class Robot extends TimedRobot {
             mEnabledLooper.start();
 
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
-            throw t;
+            faulted = true;
+            DriverStation.reportError(t.getMessage(),true);
         }
     }
 
     @Override
     public void teleopInit() {
         try {
-            CrashTracker.logTeleopInit();
             mDisabledLooper.stop();
             ledManager.setDefaultStatus(LedManager.RobotStatus.ENABLED);
 
@@ -297,19 +283,17 @@ public class Robot extends TimedRobot {
             mControlBoard.reset();
 
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
-            throw t;
+            faulted = true;
+            DriverStation.reportError(t.getMessage(),true);
         }
     }
 
     @Override
     public void testInit() {
         try {
-            CrashTracker.logTestInit();
-
             double initTime = System.currentTimeMillis();
 
-            ledManager.setLedColorBlink(255, 255, 0, 1000);
+            ledManager.blinkStatus(LedManager.RobotStatus.DRIVETRAIN_FLIPPED);
             // Warning - blocks thread - intended behavior?
             while (System.currentTimeMillis() - initTime <= 3000) {
                 ledManager.writePeriodicOutputs();
@@ -318,18 +302,18 @@ public class Robot extends TimedRobot {
             mEnabledLooper.stop();
             mDisabledLooper.start();
 
-            blinkTimer.reset();
-
             ledManager.blinkStatus(LedManager.RobotStatus.DISABLED);
 
             if (mSubsystemManager.checkSubsystems()) {
                 System.out.println("ALL SYSTEMS PASSED");
+                ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
             } else {
                 System.err.println("CHECK ABOVE OUTPUT SOME SYSTEMS FAILED!!!");
+                ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
             }
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
-            throw t;
+            faulted = true;
+            DriverStation.reportError(t.getMessage(),true);
         }
     }
 
@@ -341,8 +325,8 @@ public class Robot extends TimedRobot {
             mAutoModeSelector.outputToSmartDashboard();
             mRobotStateEstimator.outputToSmartDashboard();
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
-            throw t;
+            faulted = true;
+            DriverStation.reportError(t.getMessage(),true);
         }
     }
 
@@ -358,7 +342,11 @@ public class Robot extends TimedRobot {
                 mDrive.setHeading(Rotation2d.identity());
                 ledManager.indicateStatus(LedManager.RobotStatus.SEEN_TARGET);
             } else {
-                ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
+                if(faulted) {
+                    ledManager.blinkStatus(LedManager.RobotStatus.ERROR);
+                } else {
+                    ledManager.indicateStatus(LedManager.RobotStatus.DISABLED);
+                }
             }
 
             // Update auto modes
@@ -371,8 +359,8 @@ public class Robot extends TimedRobot {
                 mAutoModeExecutor.setAutoMode(autoMode.get());
             }
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
-            throw t;
+            faulted = true;
+            DriverStation.reportError(t.getMessage(),true);
         }
     }
 
@@ -409,8 +397,8 @@ public class Robot extends TimedRobot {
         try {
             manualControl();
         } catch (Throwable t) {
-            CrashTracker.logThrowableCrash(t);
-            throw t;
+            faulted = true;
+            DriverStation.reportError(t.getMessage(),true);
         }
 
         if (Constants.kIsLoggingTeleOp) {

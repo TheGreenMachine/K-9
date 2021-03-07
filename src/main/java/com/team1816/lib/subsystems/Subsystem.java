@@ -63,7 +63,7 @@ public abstract class Subsystem implements Sendable {
     @Override
     public void initSendable(SendableBuilder builder) {}
 
-    public String getSubsytemName() {
-        return name;
+    public String getSubsystemName() {
+        return SendableRegistry.getName(this);
     }
 }

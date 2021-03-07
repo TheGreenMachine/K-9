@@ -84,7 +84,7 @@ public class LedManager extends Subsystem {
      * @param b      LED color blue value (0-255)
      * @param period milliseconds
      */
-    public void setLedColorBlink(int r, int g, int b, int period) {
+    private void setLedColorBlink(int r, int g, int b, int period) {
         // Period is in milliseconds
         setLedColor(r, g, b);
         blinkMode = true;
@@ -92,7 +92,7 @@ public class LedManager extends Subsystem {
         outputsChanged = true;
     }
 
-    public void setLedColorBlink(int r, int g, int b) {
+    private void setLedColorBlink(int r, int g, int b) {
         // Default period of 1 second
         setLedColorBlink(r, g, b, 1000);
     }
@@ -209,7 +209,7 @@ public class LedManager extends Subsystem {
     public void initSendable(SendableBuilder builder) {
     }
 
-    private static final int MAX = 25;
+    private static final int MAX = (int) factory.getConstant(NAME, "maxLevel");
     public enum RobotStatus {
         ENABLED(0, MAX, 0), // green
         DISABLED(MAX, MAX/5, 0), // orange

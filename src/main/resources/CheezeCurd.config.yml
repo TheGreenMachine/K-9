@@ -27,6 +27,8 @@ subsystems:
   ledmanager:
     implemented: true
     canifier: 12
+    constants:
+        maxLevel: 25
   turret:
     implemented: true
     talons:
@@ -40,9 +42,9 @@ subsystems:
       encPPR: 4096
       minPos: 960
       maxPos: 2990
-      currentFloorCheck: .1
+      currentFloorCheck: 0
       currentEpsilonCheck: .2
-      rpmFloorCheck: 250
+      rpmFloorCheck: 0
       absPosTicksSouth: 4035
       invert_sensor_phase: 0
       rpmEpsilonCheck: 60

@@ -3,40 +3,44 @@ package com.team1816.season.subsystems;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.team1816.lib.hardware.TalonSRXChecker;
-import com.team1816.season.Constants;
-import com.team1816.season.RobotState;
+import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
+import com.team1816.season.Constants;
+import com.team1816.season.RobotState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import java.util.ArrayList;
-
 public class Turret extends Subsystem implements PidProvider {
+    public static final double TURRET_JOG_SPEED = 0.35;
+    public static final double CARDINAL_SOUTH = 0; // deg
+    public static final double CARDINAL_WEST = 90; // deg
+    public static final double CARDINAL_NORTH = 180; // deg
+    public static final double CARDINAL_EAST = 270; // deg
     private static final String NAME = "turret";
+    public static final int TURRET_LIMIT_REVERSE = ((int) factory.getConstant(NAME, "minPos"));
+    public static final int TURRET_LIMIT_FORWARD = ((int) factory.getConstant(NAME, "maxPos"));
+    public static final int ABS_TICKS_SOUTH = ((int) factory.getConstant(NAME, "absPosTicksSouth"));
+    // Constants
+    private static final int kPIDLoopIDx = 0;
+    private static final int TURRET_ENCODER_PPR = (int) factory.getConstant(NAME, "encPPR");
+    public static final double MAX_ANGLE = convertTurretTicksToDegrees(TURRET_LIMIT_FORWARD - TURRET_LIMIT_REVERSE);
+    private static final int TURRET_ENCODER_MASK = TURRET_ENCODER_PPR - 1;
+    private static final int ALLOWABLE_ERROR_TICKS = 5;
+    private static final double TURRET_JOG_DEGREES = 1;
+    private static final double TURRET_JOG_TICKS = convertTurretDegreesToTicks(TURRET_JOG_DEGREES);
+    private static final boolean TURRET_SENSOR_PHASE = factory.getConstant(NAME, "invert_sensor_phase") >= 1;
     private static Turret INSTANCE;
-
-    public static Turret getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new Turret();
-        }
-        return INSTANCE;
-    }
-
-    public enum ControlMode {
-        FIELD_FOLLOWING,
-        CAMERA_FOLLOWING,
-        POSITION,
-        MANUAL
-    }
-
     // Components
     private final IMotorControllerEnhanced turret;
     private final Camera camera = Camera.getInstance();
     private final RobotState robotState = RobotState.getInstance();
     private final LedManager led = LedManager.getInstance();
     private final DistanceManager distanceManager = DistanceManager.getInstance();
-
+    private final double kP;
+    private final double kI;
+    private final double kD;
+    private final double kF;
     // State
     private int desiredTurretPos = 0;
     private int followingTurretPos = 0;
@@ -45,38 +49,14 @@ public class Turret extends Subsystem implements PidProvider {
     private double turretAngleRelativeToField;
     private ControlMode controlMode = ControlMode.MANUAL;
 
-    // Constants
-    private static final int kPIDLoopIDx = 0;
-    private final double kP;
-    private final double kI;
-    private final double kD;
-    private final double kF;
-
-    private static final int TURRET_ENCODER_PPR = (int) factory.getConstant(NAME, "encPPR");
-    private static final int TURRET_ENCODER_MASK = TURRET_ENCODER_PPR - 1;
-    private static final int ALLOWABLE_ERROR_TICKS = 5;
-    private static final double TURRET_JOG_DEGREES = 1;
-    public static final double TURRET_JOG_SPEED = 0.35;
-    private static final double TURRET_JOG_TICKS = convertTurretDegreesToTicks(TURRET_JOG_DEGREES);
-    public static final int TURRET_POSITION_MIN = ((int) factory.getConstant(NAME, "minPos"));
-    public static final int TURRET_POSITION_MAX = ((int) factory.getConstant(NAME, "maxPos"));
-    public static final int ABS_TICKS_SOUTH = ((int) factory.getConstant(NAME, "absPosTicksSouth"));
-    private static final boolean TURRET_SENSOR_PHASE = factory.getConstant(NAME, "invert_sensor_phase") >= 1;
-
-    public static final double CARDINAL_SOUTH = 0; // deg
-    public static final double CARDINAL_WEST = 90; // deg
-    public static final double CARDINAL_NORTH = 180; // deg
-    public static final double CARDINAL_EAST = 270; // deg
-    public static final double MAX_ANGLE = convertTurretTicksToDegrees(TURRET_POSITION_MAX - TURRET_POSITION_MIN);
-
     public Turret() {
         super(NAME);
         this.turret = factory.getMotor(NAME, "turret");
 
         turret.setNeutralMode(NeutralMode.Brake);
 
-        SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_POSITION_MIN);
-        SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_POSITION_MAX);
+        SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_LIMIT_REVERSE);
+        SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_LIMIT_FORWARD);
 
         this.kP = factory.getConstant(NAME, "kP");
         this.kI = factory.getConstant(NAME, "kI");
@@ -98,13 +78,29 @@ public class Turret extends Subsystem implements PidProvider {
             // Soft Limits
             turret.configForwardSoftLimitEnable(true, Constants.kCANTimeoutMs);
             turret.configReverseSoftLimitEnable(true, Constants.kCANTimeoutMs);
-            turret.configForwardSoftLimitThreshold(TURRET_POSITION_MAX, Constants.kCANTimeoutMs); // Forward = MAX
-            turret.configReverseSoftLimitThreshold(TURRET_POSITION_MIN, Constants.kCANTimeoutMs); // Reverse = MIN
+            turret.configForwardSoftLimitThreshold(TURRET_LIMIT_FORWARD, Constants.kCANTimeoutMs); // Forward = MAX
+            turret.configReverseSoftLimitThreshold(TURRET_LIMIT_REVERSE, Constants.kCANTimeoutMs); // Reverse = MIN
             turret.overrideLimitSwitchesEnable(true);
             turret.overrideSoftLimitsEnable(true);
 
             turretAngleRelativeToField = robotState.getHeadingRelativeToInitial().getDegrees();
         }
+    }
+
+    public static Turret getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new Turret();
+        }
+        return INSTANCE;
+    }
+
+    public static int convertTurretDegreesToTicks(double degrees) {
+        return (int) (((degrees) / 360.0) * TURRET_ENCODER_PPR) + ABS_TICKS_SOUTH;
+    }
+
+    public static double convertTurretTicksToDegrees(double ticks) {
+        var adjTicks = (ticks - ABS_TICKS_SOUTH);
+        return adjTicks / TURRET_ENCODER_PPR * 360;
     }
 
     @Override
@@ -113,6 +109,10 @@ public class Turret extends Subsystem implements PidProvider {
             var sensors = ((TalonSRX) turret).getSensorCollection();
             sensors.setQuadraturePosition(sensors.getPulseWidthPosition() & TURRET_ENCODER_MASK, Constants.kLongCANTimeoutMs);
         }
+    }
+
+    public ControlMode getControlMode() {
+        return controlMode;
     }
 
     public void setControlMode(ControlMode controlMode) {
@@ -133,10 +133,6 @@ public class Turret extends Subsystem implements PidProvider {
                 }
             }
         }
-    }
-
-    public ControlMode getControlMode() {
-        return controlMode;
     }
 
     @Override
@@ -161,7 +157,7 @@ public class Turret extends Subsystem implements PidProvider {
 
     public void setTurretSpeed(double speed) {
         setControlMode(ControlMode.MANUAL);
-        if(turretSpeed != speed) {
+        if (turretSpeed != speed) {
             turretSpeed = speed;
             outputsChanged = true;
         }
@@ -170,7 +166,7 @@ public class Turret extends Subsystem implements PidProvider {
     public synchronized void setTurretPosition(double position) {
         //Since we are using position we need ensure value stays in one rotation
         int adjPos = (int) position & TURRET_ENCODER_MASK;
-        if(desiredTurretPos != adjPos) {
+        if (desiredTurretPos != adjPos) {
             desiredTurretPos = adjPos;
             outputsChanged = true;
         }
@@ -183,14 +179,6 @@ public class Turret extends Subsystem implements PidProvider {
 
     private synchronized void setTurretAngleInternal(double angle) {
         setTurretPosition(convertTurretDegreesToTicks(angle));
-        if (angle < MAX_ANGLE - 360) {
-            //setTurretPosition(convertTurretDegreesToTicks(angle + 360));
-        } else if (angle > 360) {
-            //setTurretPosition(convertTurretDegreesToTicks(angle - 360));
-        } else if (angle >= 0 && angle <= MAX_ANGLE) {
-            //setTurretPosition(convertTurretDegreesToTicks(angle));
-        }
-        // do nothing if angle in deadzone
     }
 
     public synchronized void lockTurret() {
@@ -229,18 +217,9 @@ public class Turret extends Subsystem implements PidProvider {
         return turret.getClosedLoopError(kPIDLoopIDx);
     }
 
-    public static int convertTurretDegreesToTicks(double degrees) {
-        return (int)(((degrees) / 360.0) * TURRET_ENCODER_PPR) + ABS_TICKS_SOUTH;
-    }
-
-    public static double convertTurretTicksToDegrees(double ticks) {
-        var adjTicks = (ticks - ABS_TICKS_SOUTH);
-        return adjTicks / TURRET_ENCODER_PPR * 360;
-    }
-
     @Override
     public void readPeriodicInputs() {
-        turretAngleRelativeToField =  robotState.getHeadingRelativeToInitial().getDegrees();
+        turretAngleRelativeToField = robotState.getHeadingRelativeToInitial().getDegrees();
     }
 
     @Override
@@ -273,8 +252,8 @@ public class Turret extends Subsystem implements PidProvider {
         int fieldTickOffset = convertTurretDegreesToTicks(turretAngleRelativeToField) - ABS_TICKS_SOUTH;
         int adj = desiredTurretPos + fieldTickOffset;
         // Valid positions are 0 to encoder max ticks if we go negative adjust
-        if(adj < 0) adj += TURRET_ENCODER_PPR;
-        if(adj != followingTurretPos) {
+        if (adj < 0) adj += TURRET_ENCODER_PPR;
+        if (adj != followingTurretPos) {
             followingTurretPos = adj;
             outputsChanged = true;
         }
@@ -305,16 +284,31 @@ public class Turret extends Subsystem implements PidProvider {
 
     @Override
     public boolean checkSystem() {
-        return TalonSRXChecker.checkMotors(
-            new ArrayList<>() {
-                {
-                    add(new TalonSRXChecker.TalonSRXConfig("turret", turret));
-                }
-            }, getTalonCheckerConfig(turret));
+        boolean passed;
+        turret.set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, .2);
+        Timer.delay(2);
+        var ticks = getActualTurretPositionTicks();
+        var diff = Math.abs(ticks - TURRET_LIMIT_FORWARD);
+        System.out.println(" + TICKS: " + ticks + "  ERROR: " + diff);
+        passed = diff <= 50;
+        turret.set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, -.2);
+        Timer.delay(2);
+        ticks = getActualTurretPositionTicks();
+        diff = Math.abs(ticks - TURRET_LIMIT_REVERSE);
+        System.out.println(" - TICKS: " + ticks + "  ERROR: " + diff);
+        passed = passed & diff <= 50;
+        turret.set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, 0);
+        return passed;
     }
 
-    private TalonSRXChecker.CheckerConfig getTalonCheckerConfig(IMotorControllerEnhanced talon) {
-        return TalonSRXChecker.CheckerConfig.getForSubsystemMotor(this, talon);
+    private EnhancedMotorChecker.CheckerConfig getTalonCheckerConfig(IMotorControllerEnhanced talon) {
+        return EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, talon);
     }
 
+    public enum ControlMode {
+        FIELD_FOLLOWING,
+        CAMERA_FOLLOWING,
+        POSITION,
+        MANUAL
+    }
 }

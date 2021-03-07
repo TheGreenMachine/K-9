@@ -8,13 +8,13 @@ import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.hardware.PigeonChecker;
 import com.team1816.season.AutoModeSelector;
 import com.team1816.season.Constants;
 import com.team1816.season.Kinematics;
 import com.team1816.season.RobotState;
 import com.team1816.season.planners.DriveMotionPlanner;
-import com.team1816.lib.hardware.TalonSRXChecker;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.PidProvider;
@@ -580,33 +580,23 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
         setBrakeMode(false);
 
-//        Timer.delay(3);
-
-        boolean leftSide = TalonSRXChecker.checkMotors(
-            new ArrayList<>() {
-                {
-                    add(new TalonSRXChecker.TalonSRXConfig("left_master", mLeftMaster));
-                }
-            }, getTalonCheckerConfig(mLeftMaster));
-        boolean rightSide = TalonSRXChecker.checkMotors(
-            new ArrayList<>() {
-                {
-                    add(new TalonSRXChecker.TalonSRXConfig("right_master", mRightMaster));
-                }
-            }, getTalonCheckerConfig(mRightMaster));
+        boolean leftSide = EnhancedMotorChecker.checkMotors(
+            this,
+            getTalonCheckerConfig(mLeftMaster),
+            new EnhancedMotorChecker.NamedMotor("left_master", mLeftMaster)
+        );
+        boolean rightSide = EnhancedMotorChecker.checkMotors(
+            this,
+            getTalonCheckerConfig(mRightMaster),
+            new EnhancedMotorChecker.NamedMotor("right_master", mRightMaster)
+        );
 
         boolean checkPigeon = PigeonChecker.checkPigeon(mPigeon);
-
-        if (leftSide && rightSide && checkPigeon) {
-            ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
-        } else {
-            ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
-        }
-        return leftSide && rightSide;
+        return leftSide && rightSide && checkPigeon;
     }
 
-    private TalonSRXChecker.CheckerConfig getTalonCheckerConfig(IMotorControllerEnhanced talon) {
-        return TalonSRXChecker.CheckerConfig.getForSubsystemMotor(this, talon);
+    private EnhancedMotorChecker.CheckerConfig getTalonCheckerConfig(IMotorControllerEnhanced talon) {
+        return EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, talon);
     }
 
     @Override
