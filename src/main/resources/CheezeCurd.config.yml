@@ -38,12 +38,12 @@ subsystems:
       kF: 0 # Should be 0 for position control
       iZone: 200
       encPPR: 4096
-      minPos: 1
-      maxPos: 3274
+      minPos: 960
+      maxPos: 2990
       currentFloorCheck: .1
       currentEpsilonCheck: .2
       rpmFloorCheck: 250
-      absPosTicksSouth: 3685
+      absPosTicksSouth: 4035
       invert_sensor_phase: 0
       rpmEpsilonCheck: 60
 constants:

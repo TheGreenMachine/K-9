@@ -166,10 +166,13 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
 
     protected double WrapRadians(double radians) {
         final double k2Pi = 2.0 * Math.PI;
+        var orgRad = radians;
         radians = radians % k2Pi;
         radians = (radians + k2Pi) % k2Pi;
         if (radians > Math.PI)
             radians -= k2Pi;
+        // for 180 degrees we want the direction to match rotation
+        if(orgRad < 0 && radians == Math.PI) return -radians;
         return radians;
     }
 
