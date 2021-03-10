@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Turret extends Subsystem implements PidProvider {
-    public static final double TURRET_JOG_SPEED = 0.35;
+    public static final double TURRET_JOG_SPEED = 0.15;
     public static final double CARDINAL_SOUTH = 0; // deg
     public static final double CARDINAL_WEST = 90; // deg
     public static final double CARDINAL_NORTH = 180; // deg
@@ -185,24 +185,8 @@ public class Turret extends Subsystem implements PidProvider {
         setTurretAngle(getActualTurretPositionDegrees());
     }
 
-    public void jogLeft() {
-        setTurretPosition(getActualTurretPositionTicks() - TURRET_JOG_TICKS);
-    }
-
-    public void jogRight() {
-        setTurretPosition(getActualTurretPositionTicks() + TURRET_JOG_TICKS);
-    }
-
     public double getActualTurretPositionDegrees() {
         return convertTurretTicksToDegrees(getActualTurretPositionTicks());
-    }
-
-    public int getTurretPosAbsolute() {
-        if (turret instanceof TalonSRX) {
-            int rawValue = ((TalonSRX) turret).getSensorCollection().getPulseWidthPosition() & TURRET_ENCODER_MASK;
-            return (TURRET_SENSOR_PHASE ? -1 : 1) * rawValue;
-        }
-        return 0;
     }
 
     public int getActualTurretPositionTicks() {
@@ -244,8 +228,14 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     private void autoHome() {
-        setTurretAngleInternal(getActualTurretPositionDegrees() +
-            camera.getDeltaXAngle() + distanceManager.getTurretBias(camera.getDistance()));
+        var angle = camera.getDeltaXAngle();
+        // TODO: take this multiplier and convert to a real PID setting in talon slot!
+        int adj = convertTurretDegreesToTicks(angle * .14) + followingTurretPos - ABS_TICKS_SOUTH;
+        System.out.println(angle + " " + adj + " " + followingTurretPos);
+        if (adj != followingTurretPos) {
+            followingTurretPos = adj;
+            outputsChanged = true;
+        }
     }
 
     private void trackGyro() {

@@ -1,5 +1,6 @@
 package com.team1816.season.controlboard;
 
+import com.team1816.lib.controlboard.XboxController;
 import com.team1816.season.Constants;
 import com.team1816.lib.controlboard.Controller;
 import com.team1816.lib.controlboard.IButtonControlBoard;
@@ -26,7 +27,7 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     private final Controller mController;
 
     private GamepadButtonControlBoard() {
-        mController = new LogitechController(Constants.kButtonGamepadPort);
+        mController = new XboxController(Constants.kButtonGamepadPort);
         reset();
     }
 
