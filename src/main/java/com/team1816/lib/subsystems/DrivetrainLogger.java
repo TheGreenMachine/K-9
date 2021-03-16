@@ -2,7 +2,7 @@ package com.team1816.lib.subsystems;
 
 public class DrivetrainLogger {
     public static void init(TrackableDrivetrain drivetrain) {
-        var subsystem = (Subsystem)drivetrain;
+        var subsystem = (Subsystem) drivetrain;
         subsystem.CreateBadLogTopic("Drivetrain/LeftActVel", "NativeUnits", drivetrain::getLeftVelocityNativeUnits, "hide",
             "join:Drivetrain/Velocities");
         subsystem.CreateBadLogTopic("Drivetrain/RightActVel", "NativeUnits", drivetrain::getRightVelocityNativeUnits, "hide",

@@ -190,7 +190,7 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     public int getActualTurretPositionTicks() {
-        return turret.getSelectedSensorPosition(kPIDLoopIDx);
+        return (int) turret.getSelectedSensorPosition(kPIDLoopIDx);
     }
 
     public double getTargetPosition() {

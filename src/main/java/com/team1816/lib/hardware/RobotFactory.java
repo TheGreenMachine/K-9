@@ -3,6 +3,9 @@ package com.team1816.lib.hardware;
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
+import com.team1816.lib.hardware.components.pcm.GhostSolenoid;
+import com.team1816.lib.hardware.components.pcm.ISolenoid;
+import com.team1816.lib.hardware.components.pcm.SolenoidImpl;
 import com.team1816.season.Constants;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -102,7 +105,7 @@ public class RobotFactory {
         var subsystem = getSubsystem(subsystemName);
         Integer solenoidId = subsystem.solenoids.get(name);
         if (isHardwareValid(solenoidId)) {
-            return new SolenoidWrapper(config.pcm, solenoidId);
+            return new SolenoidImpl(config.pcm, solenoidId);
         }
         if(subsystem.implemented) {
             DriverStation.reportError(
