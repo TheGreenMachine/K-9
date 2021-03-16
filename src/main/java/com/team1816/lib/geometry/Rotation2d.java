@@ -1,5 +1,9 @@
 package com.team1816.lib.geometry;
 
+// This is based from 254 class got rid of some weird system out prints
+
+import com.team254.lib.geometry.IRotation2d;
+import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.util.Util;
 
 import java.text.DecimalFormat;
@@ -231,7 +235,7 @@ public class Rotation2d implements IRotation2d<Rotation2d> {
 
 
     @Override
-    public Rotation2d getRotation() {
+    public com.team254.lib.geometry.Rotation2d getRotation() {
         return null;
     }
 }
