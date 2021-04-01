@@ -38,6 +38,10 @@ subsystems:
       kI: 0
       kD: 10
       kF: 0 # Should be 0 for position control
+      kP_slot1: 1
+      kI_slot1: 0
+      kD_slot1: 20
+      kF_slot1: 0 # Should be 0 for position control
       iZone: 200
       encPPR: 4096
       minPos: 960

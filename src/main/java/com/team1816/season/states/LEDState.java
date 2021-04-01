@@ -1,6 +1,7 @@
 package com.team1816.season.states;
 
 public class LEDState {
+
     public static final LEDState kOff = new LEDState(0.0, 0.0, 0.0);
 
     public static final LEDState kIntakeIntakingDisc = new LEDState(0.0, 1.0, 0.0);

@@ -1,7 +1,6 @@
 package com.team1816.lib.paths;
 
 import com.team1816.lib.hardware.RobotFactory;
-import com.team1816.season.Robot;
 import com.team1816.season.planners.DriveMotionPlanner;
 import com.team254.lib.control.Path;
 import com.team254.lib.geometry.Pose2d;
@@ -10,7 +9,6 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryUtil;
 import com.team254.lib.trajectory.timing.CentripetalAccelerationConstraint;
 import com.team254.lib.trajectory.timing.TimedState;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +18,6 @@ import java.util.stream.Collectors;
  * whether or not the robot should drive in reverse along the path.
  */
 public interface PathContainer {
-
     // velocities are in/sec
     double kMaxVelocity = RobotFactory.getInstance().getConstant("maxVel");
     double kMaxAccel = RobotFactory.getInstance().getConstant("maxAccel");
@@ -42,18 +39,34 @@ public interface PathContainer {
     }
 
     private Trajectory<TimedState<Pose2dWithCurvature>> generateBaseTrajectory(
-        boolean isReversed, List<Pose2d> waypoints) {
-        return DriveMotionPlanner.getInstance().generateTrajectory(
-            isReversed,
-            waypoints,
-            Arrays.asList(new CentripetalAccelerationConstraint(kMaxCentripetalAccel)),
-            getMaxVelocity(), kMaxAccel, kMaxVoltage);
+        boolean isReversed,
+        List<Pose2d> waypoints
+    ) {
+        return DriveMotionPlanner
+            .getInstance()
+            .generateTrajectory(
+                isReversed,
+                waypoints,
+                Arrays.asList(
+                    new CentripetalAccelerationConstraint(kMaxCentripetalAccel)
+                ),
+                getMaxVelocity(),
+                kMaxAccel,
+                kMaxVoltage
+            );
     }
 
     private List<Pose2d> reverseWaypoints(List<Pose2d> waypoints) {
         return waypoints
             .stream()
-            .map(pose -> new Pose2d(-pose.getTranslation().x(), pose.getTranslation().y(), pose.getRotation()))
+            .map(
+                pose ->
+                    new Pose2d(
+                        -pose.getTranslation().x(),
+                        pose.getTranslation().y(),
+                        pose.getRotation()
+                    )
+            )
             .collect(Collectors.toList());
     }
 

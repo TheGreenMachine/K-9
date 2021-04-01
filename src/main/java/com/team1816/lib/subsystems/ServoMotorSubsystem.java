@@ -2,11 +2,11 @@ package com.team1816.lib.subsystems;
 
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.team1816.season.Constants;
 import com.team1816.lib.hardware.CtreMotorFactory;
 import com.team1816.lib.hardware.MotorUtil;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
+import com.team1816.season.Constants;
 import com.team254.lib.motion.MotionProfileConstraints;
 import com.team254.lib.motion.MotionProfileGoal;
 import com.team254.lib.motion.MotionState;

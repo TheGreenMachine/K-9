@@ -10,16 +10,16 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.hardware.PigeonChecker;
-import com.team1816.season.AutoModeSelector;
-import com.team1816.season.Constants;
-import com.team1816.season.Kinematics;
-import com.team1816.season.RobotState;
-import com.team1816.season.planners.DriveMotionPlanner;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team1816.lib.subsystems.TrackableDrivetrain;
+import com.team1816.season.AutoModeSelector;
+import com.team1816.season.Constants;
+import com.team1816.season.Kinematics;
+import com.team1816.season.RobotState;
+import com.team1816.season.planners.DriveMotionPlanner;
 import com.team254.lib.control.Lookahead;
 import com.team254.lib.control.Path;
 import com.team254.lib.control.PathFollower;
@@ -35,9 +35,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import java.util.ArrayList;
-
 public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider {
+
     private static Drive mInstance;
     private static final String NAME = "drivetrain";
     private static double DRIVE_ENCODER_PPR;
@@ -69,7 +68,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     private boolean isSlowMode;
 
-    public synchronized static Drive getInstance() {
+    public static synchronized Drive getInstance() {
         if (mInstance == null) {
             mInstance = new Drive();
         }
@@ -108,7 +107,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
             if (master != null) {
                 mPigeon = new PigeonIMU((TalonSRX) master);
             } else {
-                mPigeon = new PigeonIMU(new TalonSRX((int) factory.getConstant(NAME, "pigeonId")));
+                mPigeon =
+                    new PigeonIMU(
+                        new TalonSRX((int) factory.getConstant(NAME, "pigeonId"))
+                    );
             }
         } else {
             mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId"));
@@ -156,6 +158,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     }
 
     public static class PeriodicIO {
+
         // INPUTS
         public double timestamp;
         public double left_position_ticks;
@@ -177,7 +180,9 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         public double left_feedforward;
         public double right_feedforward;
         public Rotation2d desired_heading = Rotation2d.identity();
-        TimedState<Pose2dWithCurvature> path_setpoint = new TimedState<>(Pose2dWithCurvature.identity());
+        TimedState<Pose2dWithCurvature> path_setpoint = new TimedState<>(
+            Pose2dWithCurvature.identity()
+        );
     }
 
     @Override
@@ -186,14 +191,18 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         double prevRightTicks = mPeriodicIO.right_position_ticks;
         mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
         mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);
-        mPeriodicIO.left_velocity_ticks_per_100ms = mLeftMaster.getSelectedSensorVelocity(0);
-        mPeriodicIO.right_velocity_ticks_per_100ms = mRightMaster.getSelectedSensorVelocity(0);
+        mPeriodicIO.left_velocity_ticks_per_100ms =
+            mLeftMaster.getSelectedSensorVelocity(0);
+        mPeriodicIO.right_velocity_ticks_per_100ms =
+            mRightMaster.getSelectedSensorVelocity(0);
         if (mPigeon.getLastError() != ErrorCode.OK) {
             ledManager.indicateStatus(LedManager.RobotStatus.ERROR);
             System.out.println("Pigeon error detected, maybe reinitialized");
         }
-        mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(mPigeon.getFusedHeading());
-        mPeriodicIO.gyro_heading = mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
+        mPeriodicIO.gyro_heading_no_offset =
+            Rotation2d.fromDegrees(mPigeon.getFusedHeading());
+        mPeriodicIO.gyro_heading =
+            mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             mPeriodicIO.left_error = 0;
             mPeriodicIO.right_error = 0;
@@ -208,7 +217,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             if (isSlowMode) {
                 mLeftMaster.set(ControlMode.PercentOutput, mPeriodicIO.left_demand * 0.5);
-                mRightMaster.set(ControlMode.PercentOutput, mPeriodicIO.right_demand * 0.5);
+                mRightMaster.set(
+                    ControlMode.PercentOutput,
+                    mPeriodicIO.right_demand * 0.5
+                );
             } else {
                 mLeftMaster.set(ControlMode.PercentOutput, mPeriodicIO.left_demand);
                 mRightMaster.set(ControlMode.PercentOutput, mPeriodicIO.right_demand);
@@ -221,49 +233,53 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     @Override
     public void registerEnabledLoops(ILooper in) {
-        in.register(new Loop() {
-            @Override
-            public void onStart(double timestamp) {
-                synchronized (Drive.this) {
-                    stop();
-                    setBrakeMode(false);
+        in.register(
+            new Loop() {
+                @Override
+                public void onStart(double timestamp) {
+                    synchronized (Drive.this) {
+                        stop();
+                        setBrakeMode(false);
+                    }
                 }
-            }
 
-            @Override
-            public void onLoop(double timestamp) {
-                synchronized (Drive.this) {
-                    switch (mDriveControlState) {
-                        case OPEN_LOOP:
-                            break;
-                        case PATH_FOLLOWING:
-                            if (mPathFollower != null) {
+                @Override
+                public void onLoop(double timestamp) {
+                    synchronized (Drive.this) {
+                        switch (mDriveControlState) {
+                            case OPEN_LOOP:
+                                break;
+                            case PATH_FOLLOWING:
+                                if (mPathFollower != null) {
+                                    if (Constants.kIsBadlogEnabled) {
+                                        mLogger.updateTopics();
+                                        mLogger.log();
+                                    }
+                                    updatePathFollower(timestamp);
+                                }
+                            case TRAJECTORY_FOLLOWING:
                                 if (Constants.kIsBadlogEnabled) {
                                     mLogger.updateTopics();
                                     mLogger.log();
                                 }
                                 updatePathFollower(timestamp);
-                            }
-                        case TRAJECTORY_FOLLOWING:
-                            if (Constants.kIsBadlogEnabled) {
-                                mLogger.updateTopics();
-                                mLogger.log();
-                            }
-                            updatePathFollower(timestamp);
-                            break;
-
-                        default:
-                            System.out.println("unexpected drive control state: " + mDriveControlState);
-                            break;
+                                break;
+                            default:
+                                System.out.println(
+                                    "unexpected drive control state: " +
+                                    mDriveControlState
+                                );
+                                break;
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onStop(double timestamp) {
-                stop();
+                @Override
+                public void onStop(double timestamp) {
+                    stop();
+                }
             }
-        });
+        );
     }
 
     private static double rotationsToInches(double rotations) {
@@ -370,7 +386,8 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     public synchronized void setHeading(Rotation2d heading) {
         System.out.println("set heading: " + heading.getDegrees());
 
-        mGyroOffset = heading.rotateBy(Rotation2d.fromDegrees(mPigeon.getFusedHeading()).inverse());
+        mGyroOffset =
+            heading.rotateBy(Rotation2d.fromDegrees(mPigeon.getFusedHeading()).inverse());
         System.out.println("gyro offset: " + mGyroOffset.getDegrees());
 
         mPeriodicIO.desired_heading = heading;
@@ -416,7 +433,9 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     }
 
     public double getRightLinearVelocity() {
-        return rotationsToInches(getRightVelocityNativeUnits() * 10.0 / DRIVE_ENCODER_PPR);
+        return rotationsToInches(
+            getRightVelocityNativeUnits() * 10.0 / DRIVE_ENCODER_PPR
+        );
     }
 
     @Override
@@ -433,11 +452,16 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     }
 
     public double getAverageDriveVelocityMagnitude() {
-        return Math.abs(getLeftLinearVelocity()) + Math.abs(getRightLinearVelocity()) / 2.0;
+        return (
+            Math.abs(getLeftLinearVelocity()) + Math.abs(getRightLinearVelocity()) / 2.0
+        );
     }
 
     public double getAngularVelocity() {
-        return (getRightLinearVelocity() - getLeftLinearVelocity()) / Constants.kDriveWheelTrackWidthInches;
+        return (
+            (getRightLinearVelocity() - getLeftLinearVelocity()) /
+            Constants.kDriveWheelTrackWidthInches
+        );
     }
 
     /**
@@ -446,17 +470,35 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
      * @see Path
      */
     public synchronized void setWantDrivePath(Path path, boolean reversed) {
-        if (mCurrentPath != path || mDriveControlState != DriveControlState.PATH_FOLLOWING) {
+        if (
+            mCurrentPath != path || mDriveControlState != DriveControlState.PATH_FOLLOWING
+        ) {
             RobotState.getInstance().resetDistanceDriven();
-            mPathFollower = new PathFollower(path, reversed, new PathFollower.Parameters(
-                new Lookahead(Constants.kMinLookAhead, Constants.kMaxLookAhead, Constants.kMinLookAheadSpeed,
-                    Constants.kMaxLookAheadSpeed),
-                Constants.kInertiaSteeringGain, Constants.kPathFollowingProfileKp,
-                Constants.kPathFollowingProfileKi, Constants.kPathFollowingProfileKv,
-                Constants.kPathFollowingProfileKffv, Constants.kPathFollowingProfileKffa,
-                Constants.kPathFollowingProfileKs, Constants.kPathFollowingMaxVel,
-                Constants.kPathFollowingMaxAccel, Constants.kPathFollowingGoalPosTolerance,
-                Constants.kPathFollowingGoalVelTolerance, Constants.kPathStopSteeringDistance));
+            mPathFollower =
+                new PathFollower(
+                    path,
+                    reversed,
+                    new PathFollower.Parameters(
+                        new Lookahead(
+                            Constants.kMinLookAhead,
+                            Constants.kMaxLookAhead,
+                            Constants.kMinLookAheadSpeed,
+                            Constants.kMaxLookAheadSpeed
+                        ),
+                        Constants.kInertiaSteeringGain,
+                        Constants.kPathFollowingProfileKp,
+                        Constants.kPathFollowingProfileKi,
+                        Constants.kPathFollowingProfileKv,
+                        Constants.kPathFollowingProfileKffv,
+                        Constants.kPathFollowingProfileKffa,
+                        Constants.kPathFollowingProfileKs,
+                        Constants.kPathFollowingMaxVel,
+                        Constants.kPathFollowingMaxAccel,
+                        Constants.kPathFollowingGoalPosTolerance,
+                        Constants.kPathFollowingGoalVelTolerance,
+                        Constants.kPathStopSteeringDistance
+                    )
+                );
             mDriveControlState = DriveControlState.PATH_FOLLOWING;
             mCurrentPath = path;
         } else {
@@ -464,7 +506,9 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         }
     }
 
-    public synchronized void setTrajectory(TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory) {
+    public synchronized void setTrajectory(
+        TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory
+    ) {
         if (mMotionPlanner != null) {
             System.out.println("Now setting trajectory");
             setBrakeMode(true);
@@ -476,15 +520,20 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     }
 
     public boolean isDoneWithTrajectory() {
-        if (mMotionPlanner == null || mDriveControlState != DriveControlState.TRAJECTORY_FOLLOWING) {
+        if (
+            mMotionPlanner == null ||
+            mDriveControlState != DriveControlState.TRAJECTORY_FOLLOWING
+        ) {
             return false;
         }
         return mMotionPlanner.isDone() || mOverrideTrajectory;
     }
 
-
     public synchronized boolean isDoneWithPath() {
-        if (mDriveControlState == DriveControlState.PATH_FOLLOWING && mPathFollower != null) {
+        if (
+            mDriveControlState == DriveControlState.PATH_FOLLOWING &&
+            mPathFollower != null
+        ) {
             return mPathFollower.isFinished();
         } else {
             System.out.println("Robot is not in path following mode");
@@ -493,7 +542,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     }
 
     public synchronized void forceDoneWithPath() {
-        if (mDriveControlState == DriveControlState.PATH_FOLLOWING && mPathFollower != null) {
+        if (
+            mDriveControlState == DriveControlState.PATH_FOLLOWING &&
+            mPathFollower != null
+        ) {
             mPathFollower.forceFinish();
         } else {
             System.out.println("Robot is not in path following mode");
@@ -504,28 +556,51 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         if (mDriveControlState == DriveControlState.PATH_FOLLOWING) {
             RobotState robot_state = RobotState.getInstance();
             Pose2d field_to_vehicle = robot_state.getLatestFieldToVehicle().getValue();
-            Twist2d command = mPathFollower.update(timestamp, field_to_vehicle, robot_state.getDistanceDriven(),
-                robot_state.getPredictedVelocity().dx);
+            Twist2d command = mPathFollower.update(
+                timestamp,
+                field_to_vehicle,
+                robot_state.getDistanceDriven(),
+                robot_state.getPredictedVelocity().dx
+            );
             if (!mPathFollower.isFinished()) {
                 DriveSignal setpoint = Kinematics.inverseKinematics(command);
-                setVelocity(new DriveSignal(inchesPerSecondToTicksPer100ms(setpoint.getLeft()), inchesPerSecondToTicksPer100ms(setpoint.getRight())), new DriveSignal(0, 0));
+                setVelocity(
+                    new DriveSignal(
+                        inchesPerSecondToTicksPer100ms(setpoint.getLeft()),
+                        inchesPerSecondToTicksPer100ms(setpoint.getRight())
+                    ),
+                    new DriveSignal(0, 0)
+                );
             } else {
                 if (!mPathFollower.isForceFinished()) {
                     setVelocity(new DriveSignal(0, 0), new DriveSignal(0, 0));
                 }
             }
         } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
-            DriveMotionPlanner.Output output = mMotionPlanner.update(timestamp, RobotState.getInstance().getFieldToVehicle(timestamp));
+            DriveMotionPlanner.Output output = mMotionPlanner.update(
+                timestamp,
+                RobotState.getInstance().getFieldToVehicle(timestamp)
+            );
 
             mPeriodicIO.error = mMotionPlanner.error();
             mPeriodicIO.path_setpoint = mMotionPlanner.setpoint();
 
             if (!mOverrideTrajectory) {
-                setVelocity(new DriveSignal(radiansPerSecondToTicksPer100ms(output.left_velocity), radiansPerSecondToTicksPer100ms(output.right_velocity)),
-                    new DriveSignal(output.left_feedforward_voltage / 12.0, output.right_feedforward_voltage / 12.0));
+                setVelocity(
+                    new DriveSignal(
+                        radiansPerSecondToTicksPer100ms(output.left_velocity),
+                        radiansPerSecondToTicksPer100ms(output.right_velocity)
+                    ),
+                    new DriveSignal(
+                        output.left_feedforward_voltage / 12.0,
+                        output.right_feedforward_voltage / 12.0
+                    )
+                );
 
-                mPeriodicIO.left_accel = radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
-                mPeriodicIO.right_accel = radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
+                mPeriodicIO.left_accel =
+                    radiansPerSecondToTicksPer100ms(output.left_accel) / 1000.0;
+                mPeriodicIO.right_accel =
+                    radiansPerSecondToTicksPer100ms(output.right_accel) / 1000.0;
             } else {
                 setVelocity(DriveSignal.BRAKE, DriveSignal.BRAKE);
                 mPeriodicIO.left_accel = mPeriodicIO.right_accel = 0.0;
@@ -536,7 +611,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     }
 
     public synchronized boolean hasPassedMarker(String marker) {
-        if (mDriveControlState == DriveControlState.PATH_FOLLOWING && mPathFollower != null) {
+        if (
+            mDriveControlState == DriveControlState.PATH_FOLLOWING &&
+            mPathFollower != null
+        ) {
             return mPathFollower.hasPassedMarker(marker);
         } else {
             System.out.println("Robot is not in path following mode");
@@ -547,7 +625,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     public enum DriveControlState {
         OPEN_LOOP, // open loop voltage control
         PATH_FOLLOWING, // velocity PID control
-        TRAJECTORY_FOLLOWING
+        TRAJECTORY_FOLLOWING,
     }
 
     @Override
@@ -557,8 +635,9 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         setHeading(Rotation2d.identity());
         resetEncoders();
         if (mPigeon.getLastError() != ErrorCode.OK) {
-            // BadLog.createValue("PigeonErrorDetected", "true");
-            System.out.println("Error detected with Pigeon IMU - check if the sensor is present and plugged in!");
+            System.out.println(
+                "Error detected with Pigeon IMU - check if the sensor is present and plugged in!"
+            );
             System.out.println("Defaulting to drive straight mode");
             AutoModeSelector.getInstance().setHardwareFailure(true);
         } else {
@@ -577,7 +656,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     @Override
     public boolean checkSystem() {
-
         setBrakeMode(false);
 
         boolean leftSide = EnhancedMotorChecker.checkMotors(
@@ -595,7 +673,9 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         return leftSide && rightSide && checkPigeon;
     }
 
-    private EnhancedMotorChecker.CheckerConfig getTalonCheckerConfig(IMotorControllerEnhanced talon) {
+    private EnhancedMotorChecker.CheckerConfig getTalonCheckerConfig(
+        IMotorControllerEnhanced talon
+    ) {
         return EnhancedMotorChecker.CheckerConfig.getForSubsystemMotor(this, talon);
     }
 
@@ -629,26 +709,51 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addDoubleProperty("Right Drive Distance", this::getRightEncoderDistance, null);
+        builder.addDoubleProperty(
+            "Right Drive Distance",
+            this::getRightEncoderDistance,
+            null
+        );
         builder.addDoubleProperty("Right Drive Ticks", this::getRightDriveTicks, null);
-        builder.addDoubleProperty("Left Drive Distance", this::getLeftEncoderDistance, null);
+        builder.addDoubleProperty(
+            "Left Drive Distance",
+            this::getLeftEncoderDistance,
+            null
+        );
         builder.addDoubleProperty("Left Drive Ticks", this::getLeftDriveTicks, null);
-        builder.addStringProperty("Drive/ControlState", () -> this.getDriveControlState().toString(), null);
-        builder.addBooleanProperty("Drive/PigeonIMU State", () -> this.mPigeon.getLastError() == ErrorCode.OK, null);
+        builder.addStringProperty(
+            "Drive/ControlState",
+            () -> this.getDriveControlState().toString(),
+            null
+        );
+        builder.addBooleanProperty(
+            "Drive/PigeonIMU State",
+            () -> this.mPigeon.getLastError() == ErrorCode.OK,
+            null
+        );
 
         SmartDashboard.putNumber("Drive/OpenLoopRampRate", this.openLoopRampRate);
-        SmartDashboard.getEntry("Drive/OpenLoopRampRate").addListener(notification -> {
-            setOpenLoopRampRate(notification.value.getDouble());
-        }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
+        SmartDashboard
+            .getEntry("Drive/OpenLoopRampRate")
+            .addListener(
+                notification -> {
+                    setOpenLoopRampRate(notification.value.getDouble());
+                },
+                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
+            );
 
         SmartDashboard.putBoolean("Drive/Zero Sensors", false);
-        SmartDashboard.getEntry("Drive/Zero Sensors").addListener(entryNotification -> {
-            if (entryNotification.value.getBoolean()) {
-                zeroSensors();
-                entryNotification.getEntry().setBoolean(false);
-            }
-        }, EntryListenerFlags.kNew | EntryListenerFlags.kUpdate);
-
+        SmartDashboard
+            .getEntry("Drive/Zero Sensors")
+            .addListener(
+                entryNotification -> {
+                    if (entryNotification.value.getBoolean()) {
+                        zeroSensors();
+                        entryNotification.getEntry().setBoolean(false);
+                    }
+                },
+                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
+            );
     }
 
     public synchronized double getTimestamp() {

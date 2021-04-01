@@ -1,9 +1,10 @@
 package com.team1816.season.auto.actions;
 
-import com.team1816.season.subsystems.Turret;
 import com.team1816.lib.auto.actions.Action;
+import com.team1816.season.subsystems.Turret;
 
 public class TurretAction implements Action {
+
     private final Turret turret = Turret.getInstance();
     private double turretAngle;
 
@@ -18,9 +19,7 @@ public class TurretAction implements Action {
     }
 
     @Override
-    public void update() {
-
-    }
+    public void update() {}
 
     @Override
     public boolean isFinished() {
@@ -28,7 +27,5 @@ public class TurretAction implements Action {
     }
 
     @Override
-    public void done() {
-
-    }
+    public void done() {}
 }

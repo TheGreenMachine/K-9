@@ -6,7 +6,6 @@ import com.team1816.lib.subsystems.Subsystem;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
@@ -144,7 +143,7 @@ public class EnhancedMotorChecker {
         // Now run aggregate checks.
 
         if (currents.size() > 0) {
-           double average = currents
+            double average = currents
                 .stream()
                 .mapToDouble(val -> val)
                 .average()
@@ -157,7 +156,7 @@ public class EnhancedMotorChecker {
         }
 
         if (rpms.size() > 0) {
-           double average = rpms
+            double average = rpms
                 .stream()
                 .mapToDouble(val -> val)
                 .average()

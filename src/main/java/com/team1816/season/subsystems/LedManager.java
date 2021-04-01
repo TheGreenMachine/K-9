@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
 public class LedManager extends Subsystem {
+
     public static final String NAME = "ledmanager";
 
     private static LedManager INSTANCE;
@@ -54,7 +55,7 @@ public class LedManager extends Subsystem {
     }
 
     private void configureCanifier(CANifier canifier) {
-        if(canifier == null) return;
+        if (canifier == null) return;
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_1_General, 255, 10);
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_2_General, 255, 10);
         canifier.setStatusFramePeriod(CANifierStatusFrame.Status_3_PwmInputs0, 255, 10);
@@ -120,7 +121,7 @@ public class LedManager extends Subsystem {
     }
 
     public int[] getLedColor() {
-        return new int[]{ledR, ledG, ledB};
+        return new int[] { ledR, ledG, ledB };
     }
 
     public boolean isBlinkMode() {
@@ -141,7 +142,10 @@ public class LedManager extends Subsystem {
     public void writePeriodicOutputs() {
         if (cameraCanifier != null) {
             if (outputsChanged) {
-                cameraCanifier.setLEDOutput(cameraLedOn ? 1 : 0, CANifier.LEDChannel.LEDChannelB);
+                cameraCanifier.setLEDOutput(
+                    cameraLedOn ? 1 : 0,
+                    CANifier.LEDChannel.LEDChannelB
+                );
             }
         }
         if (canifier != null) {
@@ -164,29 +168,25 @@ public class LedManager extends Subsystem {
     }
 
     @Override
-    public void stop() {
-
-    }
+    public void stop() {}
 
     @Override
     public void registerEnabledLoops(ILooper mEnabledLooper) {
         super.registerEnabledLoops(mEnabledLooper);
-        mEnabledLooper.register(new Loop() {
-            @Override
-            public void onStart(double timestamp) {
+        mEnabledLooper.register(
+            new Loop() {
+                @Override
+                public void onStart(double timestamp) {}
 
+                @Override
+                public void onLoop(double timestamp) {
+                    LedManager.this.writePeriodicOutputs();
+                }
+
+                @Override
+                public void onStop(double timestamp) {}
             }
-
-            @Override
-            public void onLoop(double timestamp) {
-                LedManager.this.writePeriodicOutputs();
-            }
-
-            @Override
-            public void onStop(double timestamp) {
-
-            }
-        });
+        );
     }
 
     @Override
@@ -206,13 +206,13 @@ public class LedManager extends Subsystem {
     }
 
     @Override
-    public void initSendable(SendableBuilder builder) {
-    }
+    public void initSendable(SendableBuilder builder) {}
 
     private static final int MAX = (int) factory.getConstant(NAME, "maxLevel");
+
     public enum RobotStatus {
         ENABLED(0, MAX, 0), // green
-        DISABLED(MAX, MAX/5, 0), // orange
+        DISABLED(MAX, MAX / 5, 0), // orange
         ERROR(MAX, 0, 0), // red
         AUTONOMOUS(0, MAX, MAX), // cyan
         ENDGAME(0, 0, MAX), // blue

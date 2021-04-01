@@ -1,6 +1,5 @@
 package com.team1816.lib.hardware;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,14 +20,12 @@ public class RobotFactoryTest {
 
     @Test
     public void testGetMotor() {
-        Assert.assertTrue(factory.getMotor("fooDrive","left") instanceof GhostTalonSRX);
+        Assert.assertTrue(factory.getMotor("fooDrive", "left") instanceof GhostTalonSRX);
     }
 
-    public void testGetSolenoid() {
-    }
+    public void testGetSolenoid() {}
 
-    public void testGetDoubleSolenoid() {
-    }
+    public void testGetDoubleSolenoid() {}
 
     @Test
     public void testGetCanifier() {
@@ -37,10 +34,10 @@ public class RobotFactoryTest {
 
     @Test
     public void testGetConstant() {
-        Assert.assertEquals(0,factory.getConstant("foo"),0);
-        Assert.assertEquals(2,factory.getConstant("foo",2),0);
-        Assert.assertEquals(0,factory.getConstant( "subFoo","foo"),0);
-        Assert.assertEquals(3,factory.getConstant("subFoo","foo",3),0);
+        Assert.assertEquals(0, factory.getConstant("foo"), 0);
+        Assert.assertEquals(2, factory.getConstant("foo", 2), 0);
+        Assert.assertEquals(0, factory.getConstant("subFoo", "foo"), 0);
+        Assert.assertEquals(3, factory.getConstant("subFoo", "foo", 3), 0);
     }
 
     @Test

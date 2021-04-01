@@ -6,7 +6,6 @@ import com.team1816.lib.loops.ILooper;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableRegistry;
-
 import java.util.function.Supplier;
 
 /**
@@ -20,6 +19,7 @@ import java.util.function.Supplier;
  * initializing all member components at the start of the match.
  */
 public abstract class Subsystem implements Sendable {
+
     private final String name;
     protected static final RobotFactory factory = RobotFactory.getInstance();
 
@@ -44,7 +44,12 @@ public abstract class Subsystem implements Sendable {
 
     public abstract boolean checkSystem();
 
-    public void CreateBadLogTopic(String topicName, String unit, Supplier<Double> supplier, String... attrs) {
+    public void CreateBadLogTopic(
+        String topicName,
+        String unit,
+        Supplier<Double> supplier,
+        String... attrs
+    ) {
         if (factory.isImplemented(name)) {
             BadLog.createTopic(topicName, unit, supplier, attrs);
         }
@@ -54,7 +59,6 @@ public abstract class Subsystem implements Sendable {
         if (factory.isImplemented(name)) {
             BadLog.createValue(badLogName, value);
         }
-
     }
 
     @Deprecated

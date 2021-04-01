@@ -4,6 +4,7 @@ plugins {
     id "eclipse"
     id "edu.wpi.first.GradleRIO" version "2021.2.2"
     id "com.snobot.simulator.plugin.SnobotSimulatorPlugin" version "2020-0.0.1" apply false
+    id "com.diffplug.spotless" version "5.8.2"
 }
 
 def ROBOT_MAIN_CLASS = "com.team1816.season.Main"
@@ -64,6 +65,22 @@ dependencies {
     implementation 'gov.nist.math:jama:1.0.3'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.hamcrest:hamcrest:2.1'
+}
+
+spotless {
+    java {
+        target 'src/*/java/com/team1816/**/*.java'
+        importOrder()
+        removeUnusedImports()
+        prettier(['prettier': '2.2.1', 'prettier-plugin-java': '1.0.1'])
+            .config([
+                'parser': 'java',
+                'tabWidth': 4,
+                'printWidth': 90
+            ])
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
