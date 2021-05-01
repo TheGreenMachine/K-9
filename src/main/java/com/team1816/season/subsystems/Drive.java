@@ -30,9 +30,11 @@ import com.team254.lib.geometry.Twist2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.Units;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -59,16 +61,18 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     // hardware states
     private boolean mIsBrakeMode;
     private Rotation2d mGyroOffset = Rotation2d.identity();
-    private double mLastDriveCurrentSwitchTime = -1;
     private double openLoopRampRate;
     private BadLog mLogger;
 
     private PeriodicIO mPeriodicIO;
-    private DriveMotionPlanner mMotionPlanner;
+    private final DriveMotionPlanner mMotionPlanner;
     private boolean mOverrideTrajectory = false;
 
     private boolean isSlowMode;
 
+    private final RobotState mRobotState = RobotState.getInstance();
+
+    private final Field2d fieldSim = new Field2d();
     private double leftEncoderSimPosition = 0, rightEncoderSimPosition = 0;
     private final double tickRatioPerLoop = Constants.kLooperDt/.1d;
 
@@ -128,6 +132,8 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         setBrakeMode(mIsBrakeMode);
 
         mMotionPlanner = new DriveMotionPlanner();
+
+        SmartDashboard.putData("Field", fieldSim);
     }
 
     public double getHeadingDegrees() {
@@ -199,6 +205,8 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
             mPeriodicIO.left_velocity_ticks_per_100ms = mPeriodicIO.left_demand;
             mPeriodicIO.right_velocity_ticks_per_100ms = mPeriodicIO.right_demand;
             mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(getDesiredHeading());
+            var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(mPeriodicIO.gyro_heading_no_offset.getRadians());
+            fieldSim.setRobotPose(Units.inches_to_meters(mRobotState.getEstimatedX()), Units.inches_to_meters(mRobotState.getEstimatedY())+3.5, rot2d);
         } else {
             mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
             mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);
@@ -479,7 +487,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         if (
             mCurrentPath != path || mDriveControlState != DriveControlState.PATH_FOLLOWING
         ) {
-            RobotState.getInstance().resetDistanceDriven();
+            mRobotState.resetDistanceDriven();
             mPathFollower =
                 new PathFollower(
                     path,
@@ -560,13 +568,12 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     private void updatePathFollower(double timestamp) {
         if (mDriveControlState == DriveControlState.PATH_FOLLOWING) {
-            RobotState robot_state = RobotState.getInstance();
-            Pose2d field_to_vehicle = robot_state.getLatestFieldToVehicle().getValue();
+            Pose2d field_to_vehicle = mRobotState.getLatestFieldToVehicle().getValue();
             Twist2d command = mPathFollower.update(
                 timestamp,
                 field_to_vehicle,
-                robot_state.getDistanceDriven(),
-                robot_state.getPredictedVelocity().dx
+                mRobotState.getDistanceDriven(),
+                mRobotState.getPredictedVelocity().dx
             );
             if (!mPathFollower.isFinished()) {
                 DriveSignal setpoint = Kinematics.inverseKinematics(command);
@@ -585,7 +592,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         } else if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
             DriveMotionPlanner.Output output = mMotionPlanner.update(
                 timestamp,
-                RobotState.getInstance().getFieldToVehicle(timestamp)
+                mRobotState.getFieldToVehicle(timestamp)
             );
 
             mPeriodicIO.error = mMotionPlanner.error();
