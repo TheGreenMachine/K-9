@@ -198,6 +198,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
             mPeriodicIO.right_position_ticks = rightEncoderSimPosition;
             mPeriodicIO.left_velocity_ticks_per_100ms = mPeriodicIO.left_demand;
             mPeriodicIO.right_velocity_ticks_per_100ms = mPeriodicIO.right_demand;
+            mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(getDesiredHeading());
         } else {
             mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
             mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);
@@ -205,11 +206,9 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
                 mLeftMaster.getSelectedSensorVelocity(0);
             mPeriodicIO.right_velocity_ticks_per_100ms =
                 mRightMaster.getSelectedSensorVelocity(0);
+            mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(mPigeon.getFusedHeading());
         }
-        mPeriodicIO.gyro_heading_no_offset =
-            Rotation2d.fromDegrees(mPigeon.getFusedHeading());
-        mPeriodicIO.gyro_heading =
-            mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
+        mPeriodicIO.gyro_heading = mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             mPeriodicIO.left_error = 0;
             mPeriodicIO.right_error = 0;
