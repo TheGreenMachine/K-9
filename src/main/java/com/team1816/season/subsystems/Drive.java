@@ -70,7 +70,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     private boolean isSlowMode;
 
     private double leftEncoderSimPosition = 0, rightEncoderSimPosition = 0;
-    private double tickRatioPerLoop = Constants.kLooperDt/.1d;
+    private final double tickRatioPerLoop = Constants.kLooperDt/.1d;
 
     public static synchronized Drive getInstance() {
         if (mInstance == null) {
@@ -641,7 +641,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         resetPigeon();
         setHeading(Rotation2d.identity());
         resetEncoders();
-        if (mPigeon.getLastError() != ErrorCode.OK) {
+        if (mPigeon.getLastError() != ErrorCode.OK && RobotBase.isReal()) {
             System.out.println(
                 "Error detected with Pigeon IMU - check if the sensor is present and plugged in!"
             );
