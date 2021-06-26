@@ -47,16 +47,30 @@ public class DrivetrainLogger {
             "join:Drivetrain/VelocityError"
         );
         subsystem.CreateBadLogTopic(
-            "Drivetrain/LeftDistance",
+            "Drivetrain/X Desired",
             "Inches",
-            drivetrain::getLeftEncoderDistance,
+            drivetrain::getFieldDesiredXDistance,
             "hide",
             "join:Drivetrain/Distance"
         );
         subsystem.CreateBadLogTopic(
-            "Drivetrain/RightDistance",
+            "Drivetrain/Y Desired",
             "Inches",
-            drivetrain::getRightEncoderDistance,
+            drivetrain::getFieldYDesiredYDistance,
+            "hide",
+            "join:Drivetrain/Distance"
+        );
+        subsystem.CreateBadLogTopic(
+            "Drivetrain/X Actual",
+            "Inches",
+            drivetrain::getFieldXDistance,
+            "hide",
+            "join:Drivetrain/Distance"
+        );
+        subsystem.CreateBadLogTopic(
+            "Drivetrain/Y Actual",
+            "Inches",
+            drivetrain::getFieldYDistance,
             "hide",
             "join:Drivetrain/Distance"
         );

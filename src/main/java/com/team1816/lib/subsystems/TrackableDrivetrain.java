@@ -10,8 +10,11 @@ public interface TrackableDrivetrain {
     double getLeftVelocityError();
     double getRightVelocityError();
 
-    double getLeftEncoderDistance();
-    double getRightEncoderDistance();
+    double getFieldXDistance();
+    double getFieldYDistance();
+
+    double getFieldDesiredXDistance();
+    double getFieldYDesiredYDistance();
 
     double getHeadingDegrees();
     double getDesiredHeading();

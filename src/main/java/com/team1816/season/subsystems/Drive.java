@@ -44,8 +44,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     private static final String NAME = "drivetrain";
     private static double DRIVE_ENCODER_PPR;
 
-    private LedManager ledManager = LedManager.getInstance();
-
     // hardware
     private final IMotorControllerEnhanced mLeftMaster, mRightMaster;
     private final IMotorController mLeftSlaveA, mRightSlaveA, mLeftSlaveB, mRightSlaveB;
@@ -56,7 +54,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     // control states
     private DriveControlState mDriveControlState;
-    private PigeonIMU mPigeon;
+    private final PigeonIMU mPigeon;
 
     // hardware states
     private boolean mIsBrakeMode;
@@ -129,7 +127,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
         // force a CAN message across
         mIsBrakeMode = false;
-        setBrakeMode(mIsBrakeMode);
+        setBrakeMode(false);
 
         mMotionPlanner = new DriveMotionPlanner();
 
@@ -423,20 +421,18 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         return mDriveControlState;
     }
 
-    public double getLeftEncoderRotations() {
+    private double getLeftEncoderRotations() {
         return mPeriodicIO.left_position_ticks / DRIVE_ENCODER_PPR;
     }
 
-    public double getRightEncoderRotations() {
+    private double getRightEncoderRotations() {
         return mPeriodicIO.right_position_ticks / DRIVE_ENCODER_PPR;
     }
 
-    @Override
     public double getLeftEncoderDistance() {
         return rotationsToInches(getLeftEncoderRotations());
     }
 
-    @Override
     public double getRightEncoderDistance() {
         return rotationsToInches(getRightEncoderRotations());
     }
@@ -712,6 +708,26 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         return mPeriodicIO.right_error;
     }
 
+    @Override
+    public double getFieldXDistance() {
+        return mRobotState.getEstimatedX();
+    }
+
+    @Override
+    public double getFieldYDistance() {
+        return mRobotState.getEstimatedY();
+    }
+
+    @Override
+    public double getFieldDesiredXDistance() {
+        return mPeriodicIO.path_setpoint.state().getTranslation().x();
+    }
+
+    @Override
+    public double getFieldYDesiredYDistance() {
+        return mPeriodicIO.path_setpoint.state().getTranslation().y();
+    }
+
     public double getRightDriveTicks() {
         return mPeriodicIO.right_position_ticks;
     }
@@ -722,17 +738,9 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addDoubleProperty(
-            "Right Drive Distance",
-            this::getRightEncoderDistance,
-            null
-        );
+
         builder.addDoubleProperty("Right Drive Ticks", this::getRightDriveTicks, null);
-        builder.addDoubleProperty(
-            "Left Drive Distance",
-            this::getLeftEncoderDistance,
-            null
-        );
+
         builder.addDoubleProperty("Left Drive Ticks", this::getLeftDriveTicks, null);
         builder.addStringProperty(
             "Drive/ControlState",

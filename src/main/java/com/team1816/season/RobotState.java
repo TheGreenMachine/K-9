@@ -132,19 +132,6 @@ public class RobotState {
         return field_to_vehicle_.lastEntry().getValue().getTranslation().y();
     }
 
-    public synchronized double getPoseX(double timestamp) {
-        return field_to_vehicle_
-            .getInterpolated(new InterpolatingDouble(timestamp))
-            .getTranslation()
-            .x();
-    }
-
-    public synchronized double getPoseY(double timestamp) {
-        return field_to_vehicle_
-            .getInterpolated(new InterpolatingDouble(timestamp))
-            .getTranslation()
-            .y();
-    }
 
     public synchronized Pose2d getFieldToVehicle(double timestamp) {
         return field_to_vehicle_.getInterpolated(new InterpolatingDouble(timestamp));

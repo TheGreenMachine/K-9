@@ -23,6 +23,7 @@ import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -120,48 +121,51 @@ public class Robot extends TimedRobot {
                     "xaxis",
                     "hide"
                 );
-                BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
+
+                if (RobotBase.isReal()) {
+                    BadLog.createTopic("PDP/Current", "Amps", pdp::getTotalCurrent);
+                }
 
                 DrivetrainLogger.init(mDrive);
                 mDrive.CreateBadLogValue("Drivetrain PID", mDrive.pidToString());
 
-                turret.CreateBadLogValue("Turret PID", turret.pidToString());
-
-                turret.CreateBadLogTopic(
-                    "Vision/DeltaXAngle",
-                    "Degrees",
-                    camera::getDeltaXAngle
-                );
-                turret.CreateBadLogTopic(
-                    "Vision/Distance",
-                    "inches",
-                    camera::getDistance
-                );
-                turret.CreateBadLogTopic(
-                    "Vision/CenterX",
-                    "pixels",
-                    camera::getRawCenterX
-                );
-
-                turret.CreateBadLogTopic(
-                    "Turret/ActPos",
-                    "NativeUnits",
-                    () -> (double) turret.getActualTurretPositionTicks(),
-                    "hide",
-                    "join:Turret/Positions"
-                );
-                turret.CreateBadLogTopic(
-                    "Turret/TargetPos",
-                    "NativeUnits",
-                    turret::getTargetPosition,
-                    "hide",
-                    "join:Turret/Positions"
-                );
-                turret.CreateBadLogTopic(
-                    "Turret/ErrorPos",
-                    "NativeUnits",
-                    turret::getPositionError
-                );
+                if (RobotBase.isReal()) {
+                    turret.CreateBadLogValue("Turret PID", turret.pidToString());
+                    turret.CreateBadLogTopic(
+                        "Vision/DeltaXAngle",
+                        "Degrees",
+                        camera::getDeltaXAngle
+                    );
+                    turret.CreateBadLogTopic(
+                        "Vision/Distance",
+                        "inches",
+                        camera::getDistance
+                    );
+                    turret.CreateBadLogTopic(
+                        "Vision/CenterX",
+                        "pixels",
+                        camera::getRawCenterX
+                    );
+                    turret.CreateBadLogTopic(
+                        "Turret/ActPos",
+                        "NativeUnits",
+                        () -> (double) turret.getActualTurretPositionTicks(),
+                        "hide",
+                        "join:Turret/Positions"
+                    );
+                    turret.CreateBadLogTopic(
+                        "Turret/TargetPos",
+                        "NativeUnits",
+                        turret::getTargetPosition,
+                        "hide",
+                        "join:Turret/Positions"
+                    );
+                    turret.CreateBadLogTopic(
+                        "Turret/ErrorPos",
+                        "NativeUnits",
+                        turret::getPositionError
+                    );
+                }
 
                 turret.CreateBadLogTopic(
                     "Turret/FieldToTurret",
@@ -530,8 +534,8 @@ public class Robot extends TimedRobot {
         ) {
             if (
                 driveSignal.getLeft() != 0 ||
-                driveSignal.getRight() != 0 ||
-                mDrive.isDoneWithTrajectory()
+                    driveSignal.getRight() != 0 ||
+                    mDrive.isDoneWithTrajectory()
             ) {
                 mDrive.setOpenLoop(driveSignal);
             }
@@ -541,5 +545,6 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void testPeriodic() {}
+    public void testPeriodic() {
+    }
 }
