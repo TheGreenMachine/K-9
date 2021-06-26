@@ -70,9 +70,12 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     private final RobotState mRobotState = RobotState.getInstance();
 
+    // simulator
     private final Field2d fieldSim = new Field2d();
     private double leftEncoderSimPosition = 0, rightEncoderSimPosition = 0;
+    private double gyroDrift;
     private final double tickRatioPerLoop = Constants.kLooperDt/.1d;
+    private double robotWidthTicks;
 
     public static synchronized Drive getInstance() {
         if (mInstance == null) {
@@ -85,6 +88,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     private Drive() {
         super(NAME);
         DRIVE_ENCODER_PPR = factory.getConstant(NAME, "encPPR");
+        robotWidthTicks = inchesPerSecondToTicksPer100ms(Constants.kDriveWheelTrackWidthInches) * Math.PI;
         mPeriodicIO = new PeriodicIO();
 
         // start all Talons in open loop mode
@@ -139,10 +143,14 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     }
 
     public double getDesiredHeading() {
+        return getDesiredRotation2d().getDegrees();
+    }
+
+    public Rotation2d getDesiredRotation2d() {
         if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
-            return mPeriodicIO.path_setpoint.state().getRotation().getDegrees();
+            return mPeriodicIO.path_setpoint.state().getRotation();
         }
-        return mPeriodicIO.desired_heading.getDegrees();
+        return mPeriodicIO.desired_heading;
     }
 
     @Override
@@ -196,13 +204,17 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     @Override
     public synchronized void readPeriodicInputs() {
         if(RobotBase.isSimulation()) {
-            leftEncoderSimPosition += mPeriodicIO.left_demand * tickRatioPerLoop;
+            var driveTrainErrorPercent = .05;
+            mPeriodicIO.left_error = mPeriodicIO.left_demand * driveTrainErrorPercent;
+            leftEncoderSimPosition += (mPeriodicIO.left_demand - mPeriodicIO.left_error) * tickRatioPerLoop;
             rightEncoderSimPosition += mPeriodicIO.right_demand * tickRatioPerLoop;
             mPeriodicIO.left_position_ticks = leftEncoderSimPosition;
             mPeriodicIO.right_position_ticks = rightEncoderSimPosition;
-            mPeriodicIO.left_velocity_ticks_per_100ms = mPeriodicIO.left_demand;
+            mPeriodicIO.left_velocity_ticks_per_100ms = mPeriodicIO.left_demand - mPeriodicIO.left_error;
             mPeriodicIO.right_velocity_ticks_per_100ms = mPeriodicIO.right_demand;
-            mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(getDesiredHeading());
+            // calculate rotation based on left/right vel differences
+            gyroDrift -= (mPeriodicIO.left_velocity_ticks_per_100ms-mPeriodicIO.right_velocity_ticks_per_100ms)/robotWidthTicks;
+            mPeriodicIO.gyro_heading_no_offset = getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
             var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(mPeriodicIO.gyro_heading_no_offset.getRadians());
             fieldSim.setRobotPose(Units.inches_to_meters(mRobotState.getEstimatedX()), Units.inches_to_meters(mRobotState.getEstimatedY())+3.5, rot2d);
         } else {
@@ -213,15 +225,15 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
             mPeriodicIO.right_velocity_ticks_per_100ms =
                 mRightMaster.getSelectedSensorVelocity(0);
             mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(mPigeon.getFusedHeading());
+            if (mDriveControlState == DriveControlState.OPEN_LOOP) {
+                mPeriodicIO.left_error = 0;
+                mPeriodicIO.right_error = 0;
+            } else {
+                mPeriodicIO.left_error = mLeftMaster.getClosedLoopError(0);
+                mPeriodicIO.right_error = mRightMaster.getClosedLoopError(0);
+            }
         }
         mPeriodicIO.gyro_heading = mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
-        if (mDriveControlState == DriveControlState.OPEN_LOOP) {
-            mPeriodicIO.left_error = 0;
-            mPeriodicIO.right_error = 0;
-        } else {
-            mPeriodicIO.left_error = mLeftMaster.getClosedLoopError(0);
-            mPeriodicIO.right_error = mRightMaster.getClosedLoopError(0);
-        }
     }
 
     @Override
