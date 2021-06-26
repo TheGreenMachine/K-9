@@ -61,9 +61,6 @@ public abstract class Subsystem implements Sendable {
         }
     }
 
-    @Deprecated
-    public void outputTelemetry() {}
-
     @Override
     public void initSendable(SendableBuilder builder) {}
 

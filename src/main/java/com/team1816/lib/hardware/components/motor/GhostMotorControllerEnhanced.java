@@ -112,6 +112,7 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
     }
 
     @Override
+    @Deprecated
     public double getOutputCurrent() {
         return 0;
     }

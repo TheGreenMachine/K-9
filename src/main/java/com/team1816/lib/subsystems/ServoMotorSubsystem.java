@@ -381,9 +381,6 @@ public abstract class ServoMotorSubsystem extends Subsystem {
         public double active_trajectory_position; // ticks
         public double active_trajectory_velocity; // ticks/100ms
         public double active_trajectory_acceleration; // ticks/100ms/s
-        public double output_percent;
-        public double output_voltage;
-        public double master_current;
         public double error_ticks;
         public int encoder_wraps;
         public int absolute_pulse_offset;
@@ -478,9 +475,6 @@ public abstract class ServoMotorSubsystem extends Subsystem {
         } else {
             mPeriodicIO.error_ticks = 0;
         }
-        mPeriodicIO.master_current = mMaster.getOutputCurrent();
-        mPeriodicIO.output_voltage = mMaster.getMotorOutputVoltage();
-        mPeriodicIO.output_percent = mMaster.getMotorOutputPercent();
         mPeriodicIO.position_ticks = mMaster.getSelectedSensorPosition(0);
         mPeriodicIO.position_units = ticksToHomedUnits(mPeriodicIO.position_ticks);
         mPeriodicIO.velocity_ticks_per_100ms = mMaster.getSelectedSensorVelocity(0);
@@ -822,20 +816,4 @@ public abstract class ServoMotorSubsystem extends Subsystem {
         return estimate_position_ticks;
     }
 
-    @Override
-    public void outputTelemetry() {
-        SmartDashboard.putNumber(
-            mConstants.kName + ": Position (units)",
-            mPeriodicIO.position_units
-        );
-        SmartDashboard.putBoolean(
-            mConstants.kName + ": Homing Location",
-            atHomingLocation()
-        );
-        // synchronized (this) {
-        //     if (mCSVWriter != null) {
-        //         mCSVWriter.write();
-        //     }
-        // }
-    }
 }

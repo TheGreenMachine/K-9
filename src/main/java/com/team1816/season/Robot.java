@@ -417,7 +417,6 @@ public class Robot extends TimedRobot {
     @Override
     public void robotPeriodic() {
         try {
-            mSubsystemManager.outputToSmartDashboard();
             mRobotState.outputToSmartDashboard();
             mAutoModeSelector.outputToSmartDashboard();
             mRobotStateEstimator.outputToSmartDashboard();

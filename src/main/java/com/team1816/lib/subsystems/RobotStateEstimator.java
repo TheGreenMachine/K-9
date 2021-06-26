@@ -117,11 +117,6 @@ public class RobotStateEstimator extends Subsystem {
         return true;
     }
 
-    @Override
-    public void outputTelemetry() {
-        mRobotState.outputToSmartDashboard();
-    }
-
     public synchronized void outputToSmartDashboard() {
         SmartDashboard.putNumber(
             "turret angle",
