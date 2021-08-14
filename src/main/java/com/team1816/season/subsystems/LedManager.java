@@ -8,6 +8,8 @@ import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 
+import java.awt.*;
+
 public class LedManager extends Subsystem {
 
     public static final String NAME = "ledmanager";
@@ -19,7 +21,6 @@ public class LedManager extends Subsystem {
     private final CANifier cameraCanifier;
 
     // State
-    private boolean blinkMode;
     private boolean blinkLedOn = false;
     private boolean outputsChanged = true;
 
@@ -30,8 +31,15 @@ public class LedManager extends Subsystem {
 
     private int period; // ms
     private long lastWriteTime = System.currentTimeMillis();
+    private float raveHue = 0f;
+    private LedControlState controlState = LedControlState.STANDARD;
     private RobotStatus defaultStatus = RobotStatus.DISABLED;
 
+    public enum LedControlState {
+        RAVE,
+        BLINK,
+        STANDARD,
+    }
     private LedManager() {
         super(NAME);
         this.canifier = factory.getCanifier(NAME);
@@ -88,7 +96,7 @@ public class LedManager extends Subsystem {
     private void setLedColorBlink(int r, int g, int b, int period) {
         // Period is in milliseconds
         setLedColor(r, g, b);
-        blinkMode = true;
+        controlState = LedControlState.BLINK;
         this.period = period;
         outputsChanged = true;
     }
@@ -99,12 +107,20 @@ public class LedManager extends Subsystem {
     }
 
     public void indicateStatus(RobotStatus status) {
-        blinkMode = false;
+        controlState = LedControlState.STANDARD;
         setLedColor(status.getRed(), status.getGreen(), status.getBlue());
     }
 
+    public void setControlState(LedControlState controlState) {
+        this.controlState = controlState;
+    }
+
     public void indicateDefaultStatus() {
-        indicateStatus(defaultStatus);
+        if (RAVE_ENABLED && defaultStatus != RobotStatus.DISABLED) {
+            setControlState(LedControlState.RAVE);
+        } else {
+            indicateStatus(defaultStatus);
+        }
     }
 
     public void blinkStatus(RobotStatus status) {
@@ -114,18 +130,6 @@ public class LedManager extends Subsystem {
     public void setDefaultStatus(RobotStatus defaultStatus) {
         this.defaultStatus = defaultStatus;
         indicateDefaultStatus();
-    }
-
-    public RobotStatus getDefaultStatus() {
-        return defaultStatus;
-    }
-
-    public int[] getLedColor() {
-        return new int[] { ledR, ledG, ledB };
-    }
-
-    public boolean isBlinkMode() {
-        return blinkMode;
     }
 
     public double getPeriod() {
@@ -149,7 +153,13 @@ public class LedManager extends Subsystem {
             }
         }
         if (canifier != null) {
-            if (blinkMode) {
+            switch (controlState) {
+                case RAVE:
+                    var color = Color.getHSBColor(raveHue, 1.0f, MAX / 255.0f);
+                    writeLedHardware(color.getRed(), color.getGreen(), color.getBlue());
+                    raveHue += RAVE_SPEED;
+                    break;
+            case BLINK:
                 if (System.currentTimeMillis() >= lastWriteTime + (period / 2)) {
                     if (blinkLedOn) {
                         writeLedHardware(0, 0, 0);
@@ -160,9 +170,11 @@ public class LedManager extends Subsystem {
                     }
                     lastWriteTime = System.currentTimeMillis();
                 }
-            } else if (outputsChanged) {
+                break;
+                case STANDARD:
                 writeLedHardware(ledR, ledG, ledB);
                 outputsChanged = false;
+                break;
             }
         }
     }
@@ -208,6 +220,8 @@ public class LedManager extends Subsystem {
     @Override
     public void initSendable(SendableBuilder builder) {}
 
+    private static final boolean RAVE_ENABLED = factory.getConstant(NAME, "raveEnabled") > 0;
+    private static final double RAVE_SPEED = factory.getConstant(NAME, "raveSpeed", 0.01);
     private static final int MAX = (int) factory.getConstant(NAME, "maxLevel");
 
     public enum RobotStatus {

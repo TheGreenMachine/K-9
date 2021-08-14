@@ -2,11 +2,11 @@ package com.team1816.season.controlboard;
 
 import com.team1816.lib.controlboard.Controller;
 import com.team1816.lib.controlboard.IButtonControlBoard;
-import com.team1816.lib.controlboard.LogitechController;
-import com.team1816.lib.controlboard.XboxController;
 import com.team1816.season.Constants;
 import com.team254.lib.util.DelayedBoolean;
 import edu.wpi.first.wpilibj.Timer;
+
+import static com.team1816.season.controlboard.ControlUtils.PressAction.getControllerInstance;
 
 public class GamepadButtonControlBoard implements IButtonControlBoard {
 
@@ -28,7 +28,7 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     private final Controller mController;
 
     private GamepadButtonControlBoard() {
-        mController = new XboxController(Constants.kButtonGamepadPort);
+        mController = getControllerInstance(Constants.kButtonGamepadPort);
         reset();
     }
 
@@ -45,17 +45,17 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     // Spinner
     @Override
     public boolean getSpinnerReset() {
-        return mController.getButton(LogitechController.Button.START);
+        return mController.getButton(Controller.Button.START);
     }
 
     @Override
     public boolean getSpinnerColor() {
-        return mController.getButton(LogitechController.Button.X);
+        return mController.getButton(Controller.Button.X);
     }
 
     @Override
     public boolean getSpinnerThreeTimes() {
-        return mController.getButton(LogitechController.Button.B);
+        return mController.getButton(Controller.Button.B);
     }
 
     // Turret
@@ -77,12 +77,12 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     // Feeder Flap
     @Override
     public boolean getFeederFlapOut() {
-        return mController.getButton(LogitechController.Button.Y);
+        return mController.getButton(Controller.Button.Y);
     }
 
     @Override
     public boolean getFeederFlapIn() {
-        return mController.getButton(LogitechController.Button.A);
+        return mController.getButton(Controller.Button.A);
     }
 
     @Override
@@ -97,12 +97,12 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
 
     @Override
     public boolean getAutoAim() {
-        return mController.getButton(LogitechController.Button.LB);
+        return mController.getButton(Controller.Button.LB);
     }
 
     @Override
     public boolean getCollectorBackSpin() {
-        return mController.getButton(LogitechController.Button.RB);
+        return mController.getButton(Controller.Button.RB);
     }
 
     @Override

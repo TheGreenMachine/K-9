@@ -517,7 +517,6 @@ public class Robot extends TimedRobot {
 
         double throttle = mControlBoard.getThrottle();
         double turn = mControlBoard.getTurn();
-
         DriveSignal driveSignal;
 
         // if (arcadeDrive) {
@@ -528,9 +527,8 @@ public class Robot extends TimedRobot {
         // } else {
         driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, false); // quick turn temporarily eliminated
         // }
-        if (
-            mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING
-        ) {
+        if (mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING)
+        {
             if (
                 driveSignal.getLeft() != 0 ||
                     driveSignal.getRight() != 0 ||
@@ -539,7 +537,7 @@ public class Robot extends TimedRobot {
                 mDrive.setOpenLoop(driveSignal);
             }
         } else {
-            mDrive.setOpenLoop(DriveSignal.BRAKE);
+            mDrive.setOpenLoop(driveSignal);
         }
     }
 

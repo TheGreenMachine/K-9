@@ -75,7 +75,8 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     private double leftEncoderSimPosition = 0, rightEncoderSimPosition = 0;
     private double gyroDrift;
     private final double tickRatioPerLoop = Constants.kLooperDt/.1d;
-    private double robotWidthTicks;
+    private final double robotWidthTicks;
+    private final double maxVelTicksPer100ms;
 
     public static synchronized Drive getInstance() {
         if (mInstance == null) {
@@ -89,6 +90,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         super(NAME);
         DRIVE_ENCODER_PPR = factory.getConstant(NAME, "encPPR");
         robotWidthTicks = inchesPerSecondToTicksPer100ms(Constants.kDriveWheelTrackWidthInches) * Math.PI;
+        maxVelTicksPer100ms = factory.getConstant("maxTicks");
         mPeriodicIO = new PeriodicIO();
 
         // start all Talons in open loop mode
@@ -199,19 +201,37 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         TimedState<Pose2dWithCurvature> path_setpoint = new TimedState<>(
             Pose2dWithCurvature.identity()
         );
+
+        @Override
+        public String toString() {
+            return "PeriodicIO{" +
+                "LD:" + left_demand +
+                ", RD:" + right_demand +
+                ", LVT:" + left_velocity_ticks_per_100ms +
+                ", RVT:" + right_velocity_ticks_per_100ms +
+                ", LPT:" + left_position_ticks +
+                ", RPT:" + right_position_ticks +
+                '}';
+        }
     }
 
     @Override
     public synchronized void readPeriodicInputs() {
         if(RobotBase.isSimulation()) {
+            double leftAdjDemand = mPeriodicIO.left_demand;
+            double  rightAdjDemand = mPeriodicIO.right_demand;
+            if(mDriveControlState == DriveControlState.OPEN_LOOP) {
+                leftAdjDemand = mPeriodicIO.left_demand * maxVelTicksPer100ms;
+                rightAdjDemand = mPeriodicIO.right_demand * maxVelTicksPer100ms;
+            }
             var driveTrainErrorPercent = .05;
-            mPeriodicIO.left_error = mPeriodicIO.left_demand * driveTrainErrorPercent;
-            leftEncoderSimPosition += (mPeriodicIO.left_demand - mPeriodicIO.left_error) * tickRatioPerLoop;
-            rightEncoderSimPosition += mPeriodicIO.right_demand * tickRatioPerLoop;
+            mPeriodicIO.left_error = leftAdjDemand * driveTrainErrorPercent;
+            leftEncoderSimPosition += (leftAdjDemand - mPeriodicIO.left_error) * tickRatioPerLoop;
+            rightEncoderSimPosition += rightAdjDemand * tickRatioPerLoop;
             mPeriodicIO.left_position_ticks = leftEncoderSimPosition;
             mPeriodicIO.right_position_ticks = rightEncoderSimPosition;
-            mPeriodicIO.left_velocity_ticks_per_100ms = mPeriodicIO.left_demand - mPeriodicIO.left_error;
-            mPeriodicIO.right_velocity_ticks_per_100ms = mPeriodicIO.right_demand;
+            mPeriodicIO.left_velocity_ticks_per_100ms = leftAdjDemand - mPeriodicIO.left_error;
+            mPeriodicIO.right_velocity_ticks_per_100ms = rightAdjDemand;
             // calculate rotation based on left/right vel differences
             gyroDrift -= (mPeriodicIO.left_velocity_ticks_per_100ms-mPeriodicIO.right_velocity_ticks_per_100ms)/robotWidthTicks;
             mPeriodicIO.gyro_heading_no_offset = getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
@@ -342,6 +362,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         mPeriodicIO.left_feedforward = 0.0;
         mPeriodicIO.right_feedforward = 0.0;
     }
+
 
     public void setOpenLoopRampRate(double openLoopRampRate) {
         this.openLoopRampRate = openLoopRampRate;
