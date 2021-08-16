@@ -62,6 +62,8 @@ dependencies {
     implementation "com.github.dominikwin:badlog:v0.1.1"
     implementation 'org.yaml:snakeyaml:1.23'
     implementation 'gov.nist.math:jama:1.0.3'
+    implementation 'com.google.inject:guice:5.0.1'
+    implementation 'com.google.inject.extensions:guice-assistedinject:5.0.1'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.hamcrest:hamcrest:2.1'
     simulation wpi.deps.sim.gui(wpi.platforms.desktop, false)

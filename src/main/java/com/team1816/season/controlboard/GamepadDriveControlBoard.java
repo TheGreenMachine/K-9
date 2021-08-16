@@ -1,28 +1,19 @@
 package com.team1816.season.controlboard;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.team1816.lib.controlboard.Controller;
 import com.team1816.lib.controlboard.IDriveControlBoard;
-import com.team1816.lib.controlboard.LogitechController;
 import com.team1816.season.Constants;
 
-import static com.team1816.season.controlboard.ControlUtils.PressAction.getControllerInstance;
-
+@Singleton
 public class GamepadDriveControlBoard implements IDriveControlBoard {
-
-    private static GamepadDriveControlBoard mInstance = null;
-
-    public static GamepadDriveControlBoard getInstance() {
-        if (mInstance == null) {
-            mInstance = new GamepadDriveControlBoard();
-        }
-
-        return mInstance;
-    }
 
     private final Controller mController;
 
-    private GamepadDriveControlBoard() {
-        mController = getControllerInstance(Constants.kDriveGamepadPort);
+    @Inject
+    private GamepadDriveControlBoard(Controller.Factory controller) {
+        mController = controller.getControllerInstance(Constants.kDriveGamepadPort);
     }
 
     @Override

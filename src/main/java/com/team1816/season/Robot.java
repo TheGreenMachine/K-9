@@ -3,6 +3,10 @@ package com.team1816.season;
 import static com.team1816.season.controlboard.ControlUtils.*;
 
 import badlog.lib.BadLog;
+import com.google.inject.Guice;
+import com.google.inject.Inject;
+import com.google.inject.Injector;
+import com.team1816.lib.LibModule;
 import com.team1816.lib.auto.AutoModeExecutor;
 import com.team1816.lib.auto.actions.DriveTrajectory;
 import com.team1816.lib.auto.modes.AutoModeBase;
@@ -13,7 +17,6 @@ import com.team1816.lib.subsystems.Infrastructure;
 import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
 import com.team1816.season.controlboard.ActionManager;
-import com.team1816.season.controlboard.ControlBoard;
 import com.team1816.season.paths.TrajectorySet;
 import com.team1816.season.subsystems.*;
 import com.team254.lib.geometry.Pose2d;
@@ -23,7 +26,6 @@ import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -37,7 +39,7 @@ public class Robot extends TimedRobot {
     private final Looper mEnabledLooper = new Looper();
     private final Looper mDisabledLooper = new Looper();
 
-    private final IControlBoard mControlBoard = ControlBoard.getInstance();
+    private final IControlBoard mControlBoard;
 
     private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
 
@@ -75,6 +77,9 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         super();
+        // initialize injector
+        Injector injector = Guice.createInjector(new LibModule(), new SeasonModule());
+        mControlBoard = injector.getInstance(IControlBoard.class);
     }
 
     private Double getLastLoop() {
@@ -527,12 +532,13 @@ public class Robot extends TimedRobot {
         // } else {
         driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, false); // quick turn temporarily eliminated
         // }
-        if (mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING)
-        {
+        if (
+            mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING
+        ) {
             if (
                 driveSignal.getLeft() != 0 ||
-                    driveSignal.getRight() != 0 ||
-                    mDrive.isDoneWithTrajectory()
+                driveSignal.getRight() != 0 ||
+                mDrive.isDoneWithTrajectory()
             ) {
                 mDrive.setOpenLoop(driveSignal);
             }
@@ -542,6 +548,5 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void testPeriodic() {
-    }
+    public void testPeriodic() {}
 }

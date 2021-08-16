@@ -1,13 +1,14 @@
 package com.team1816.season.controlboard;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.team1816.lib.controlboard.Controller;
 import com.team1816.lib.controlboard.IButtonControlBoard;
 import com.team1816.season.Constants;
 import com.team254.lib.util.DelayedBoolean;
 import edu.wpi.first.wpilibj.Timer;
 
-import static com.team1816.season.controlboard.ControlUtils.PressAction.getControllerInstance;
-
+@Singleton
 public class GamepadButtonControlBoard implements IButtonControlBoard {
 
     private final double kDeadband = 0.15;
@@ -15,20 +16,11 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     private final double kDPadDelay = 0.02;
     private DelayedBoolean mDPadValid;
 
-    private static GamepadButtonControlBoard mInstance = null;
-
-    public static GamepadButtonControlBoard getInstance() {
-        if (mInstance == null) {
-            mInstance = new GamepadButtonControlBoard();
-        }
-
-        return mInstance;
-    }
-
     private final Controller mController;
 
-    private GamepadButtonControlBoard() {
-        mController = getControllerInstance(Constants.kButtonGamepadPort);
+    @Inject
+    private GamepadButtonControlBoard(Controller.Factory controller) {
+        mController = controller.getControllerInstance(Constants.kButtonGamepadPort);
         reset();
     }
 

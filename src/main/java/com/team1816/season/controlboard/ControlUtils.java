@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
-public class ControlUtils {
+public class ControlUtils  implements Controller.Factory{
 
     public static PressAction createAction(BooleanSupplier input, Runnable action) {
         return new PressAction(input, action);
@@ -29,6 +29,23 @@ public class ControlUtils {
         return new ScalarAction(input, output);
     }
 
+    @Override
+    public Controller getControllerInstance(int port) {
+        var hid = new Joystick(port);
+        var axisCount = hid.getAxisCount();
+        if(axisCount <= 3) {
+            System.out.println("Using Wasd Controller for port: " + port);
+            return new WasdController(port);
+        }
+        else if (axisCount == 4) {
+            System.out.println("Using Logitech Controller for port: " + port);
+            return new LogitechController(port);
+        } else {
+            System.out.println("Using XboxController Controller for port: " + port);
+            return new XboxController(port);
+        }
+    }
+
     public interface ButtonAction {
         void update();
     }
@@ -43,22 +60,6 @@ public class ControlUtils {
         private PressAction(BooleanSupplier input, Runnable action) {
             this.input = input;
             this.action = action;
-        }
-
-        public static Controller getControllerInstance(int port) {
-            var hid = new Joystick(port);
-            var axisCount = hid.getAxisCount();
-            if(axisCount <= 3) {
-                System.out.println("Using Wasd Controller for port: " + port);
-                return new WasdController(port);
-            }
-            else if (axisCount == 4) {
-                System.out.println("Using Logitech Controller for port: " + port);
-                return new LogitechController(port);
-            } else {
-                System.out.println("Using XboxController Controller for port: " + port);
-                return new XboxController(port);
-            }
         }
 
         @Override
