@@ -11,7 +11,10 @@ public class ControlBoard implements IControlBoard {
     private final IButtonControlBoard mButtonControlBoard;
 
     @Inject
-    private ControlBoard( IDriveControlBoard driveControlBoard, IButtonControlBoard buttonControlBoard) {
+    private ControlBoard(
+        IDriveControlBoard driveControlBoard,
+        IButtonControlBoard buttonControlBoard
+    ) {
         mDriveControlBoard = driveControlBoard;
         mButtonControlBoard = buttonControlBoard;
     }

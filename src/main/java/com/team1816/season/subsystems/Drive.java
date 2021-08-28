@@ -74,7 +74,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     private final Field2d fieldSim = new Field2d();
     private double leftEncoderSimPosition = 0, rightEncoderSimPosition = 0;
     private double gyroDrift;
-    private final double tickRatioPerLoop = Constants.kLooperDt/.1d;
+    private final double tickRatioPerLoop = Constants.kLooperDt / .1d;
     private final double robotWidthTicks;
     private final double maxVelTicksPer100ms;
 
@@ -89,7 +89,9 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     private Drive() {
         super(NAME);
         DRIVE_ENCODER_PPR = factory.getConstant(NAME, "encPPR");
-        robotWidthTicks = inchesPerSecondToTicksPer100ms(Constants.kDriveWheelTrackWidthInches) * Math.PI;
+        robotWidthTicks =
+            inchesPerSecondToTicksPer100ms(Constants.kDriveWheelTrackWidthInches) *
+            Math.PI;
         maxVelTicksPer100ms = factory.getConstant("maxTicks");
         mPeriodicIO = new PeriodicIO();
 
@@ -204,39 +206,61 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
         @Override
         public String toString() {
-            return "PeriodicIO{" +
-                "LD:" + left_demand +
-                ", RD:" + right_demand +
-                ", LVT:" + left_velocity_ticks_per_100ms +
-                ", RVT:" + right_velocity_ticks_per_100ms +
-                ", LPT:" + left_position_ticks +
-                ", RPT:" + right_position_ticks +
-                '}';
+            return (
+                "PeriodicIO{" +
+                "LD:" +
+                left_demand +
+                ", RD:" +
+                right_demand +
+                ", LVT:" +
+                left_velocity_ticks_per_100ms +
+                ", RVT:" +
+                right_velocity_ticks_per_100ms +
+                ", LPT:" +
+                left_position_ticks +
+                ", RPT:" +
+                right_position_ticks +
+                '}'
+            );
         }
     }
 
     @Override
     public synchronized void readPeriodicInputs() {
-        if(RobotBase.isSimulation()) {
+        if (RobotBase.isSimulation()) {
             double leftAdjDemand = mPeriodicIO.left_demand;
-            double  rightAdjDemand = mPeriodicIO.right_demand;
-            if(mDriveControlState == DriveControlState.OPEN_LOOP) {
+            double rightAdjDemand = mPeriodicIO.right_demand;
+            if (mDriveControlState == DriveControlState.OPEN_LOOP) {
                 leftAdjDemand = mPeriodicIO.left_demand * maxVelTicksPer100ms;
                 rightAdjDemand = mPeriodicIO.right_demand * maxVelTicksPer100ms;
             }
             var driveTrainErrorPercent = .05;
             mPeriodicIO.left_error = leftAdjDemand * driveTrainErrorPercent;
-            leftEncoderSimPosition += (leftAdjDemand - mPeriodicIO.left_error) * tickRatioPerLoop;
+            leftEncoderSimPosition +=
+                (leftAdjDemand - mPeriodicIO.left_error) * tickRatioPerLoop;
             rightEncoderSimPosition += rightAdjDemand * tickRatioPerLoop;
             mPeriodicIO.left_position_ticks = leftEncoderSimPosition;
             mPeriodicIO.right_position_ticks = rightEncoderSimPosition;
-            mPeriodicIO.left_velocity_ticks_per_100ms = leftAdjDemand - mPeriodicIO.left_error;
+            mPeriodicIO.left_velocity_ticks_per_100ms =
+                leftAdjDemand - mPeriodicIO.left_error;
             mPeriodicIO.right_velocity_ticks_per_100ms = rightAdjDemand;
             // calculate rotation based on left/right vel differences
-            gyroDrift -= (mPeriodicIO.left_velocity_ticks_per_100ms-mPeriodicIO.right_velocity_ticks_per_100ms)/robotWidthTicks;
-            mPeriodicIO.gyro_heading_no_offset = getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
-            var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(mPeriodicIO.gyro_heading_no_offset.getRadians());
-            fieldSim.setRobotPose(Units.inches_to_meters(mRobotState.getEstimatedX()), Units.inches_to_meters(mRobotState.getEstimatedY())+3.5, rot2d);
+            gyroDrift -=
+                (
+                    mPeriodicIO.left_velocity_ticks_per_100ms -
+                    mPeriodicIO.right_velocity_ticks_per_100ms
+                ) /
+                robotWidthTicks;
+            mPeriodicIO.gyro_heading_no_offset =
+                getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
+            var rot2d = new edu.wpi.first.wpilibj.geometry.Rotation2d(
+                mPeriodicIO.gyro_heading_no_offset.getRadians()
+            );
+            fieldSim.setRobotPose(
+                Units.inches_to_meters(mRobotState.getEstimatedX()),
+                Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5,
+                rot2d
+            );
         } else {
             mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
             mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);
@@ -244,7 +268,8 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
                 mLeftMaster.getSelectedSensorVelocity(0);
             mPeriodicIO.right_velocity_ticks_per_100ms =
                 mRightMaster.getSelectedSensorVelocity(0);
-            mPeriodicIO.gyro_heading_no_offset = Rotation2d.fromDegrees(mPigeon.getFusedHeading());
+            mPeriodicIO.gyro_heading_no_offset =
+                Rotation2d.fromDegrees(mPigeon.getFusedHeading());
             if (mDriveControlState == DriveControlState.OPEN_LOOP) {
                 mPeriodicIO.left_error = 0;
                 mPeriodicIO.right_error = 0;
@@ -253,7 +278,8 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
                 mPeriodicIO.right_error = mRightMaster.getClosedLoopError(0);
             }
         }
-        mPeriodicIO.gyro_heading = mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
+        mPeriodicIO.gyro_heading =
+            mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
     }
 
     @Override
@@ -362,7 +388,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         mPeriodicIO.left_feedforward = 0.0;
         mPeriodicIO.right_feedforward = 0.0;
     }
-
 
     public void setOpenLoopRampRate(double openLoopRampRate) {
         this.openLoopRampRate = openLoopRampRate;
@@ -771,7 +796,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     @Override
     public void initSendable(SendableBuilder builder) {
-
         builder.addDoubleProperty("Right Drive Ticks", this::getRightDriveTicks, null);
 
         builder.addDoubleProperty("Left Drive Ticks", this::getLeftDriveTicks, null);

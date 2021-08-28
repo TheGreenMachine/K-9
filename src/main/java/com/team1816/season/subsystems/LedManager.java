@@ -7,7 +7,6 @@ import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-
 import java.awt.*;
 
 public class LedManager extends Subsystem {
@@ -40,6 +39,7 @@ public class LedManager extends Subsystem {
         BLINK,
         STANDARD,
     }
+
     private LedManager() {
         super(NAME);
         this.canifier = factory.getCanifier(NAME);
@@ -159,22 +159,22 @@ public class LedManager extends Subsystem {
                     writeLedHardware(color.getRed(), color.getGreen(), color.getBlue());
                     raveHue += RAVE_SPEED;
                     break;
-            case BLINK:
-                if (System.currentTimeMillis() >= lastWriteTime + (period / 2)) {
-                    if (blinkLedOn) {
-                        writeLedHardware(0, 0, 0);
-                        blinkLedOn = false;
-                    } else {
-                        writeLedHardware(ledR, ledG, ledB);
-                        blinkLedOn = true;
+                case BLINK:
+                    if (System.currentTimeMillis() >= lastWriteTime + (period / 2)) {
+                        if (blinkLedOn) {
+                            writeLedHardware(0, 0, 0);
+                            blinkLedOn = false;
+                        } else {
+                            writeLedHardware(ledR, ledG, ledB);
+                            blinkLedOn = true;
+                        }
+                        lastWriteTime = System.currentTimeMillis();
                     }
-                    lastWriteTime = System.currentTimeMillis();
-                }
-                break;
+                    break;
                 case STANDARD:
-                writeLedHardware(ledR, ledG, ledB);
-                outputsChanged = false;
-                break;
+                    writeLedHardware(ledR, ledG, ledB);
+                    outputsChanged = false;
+                    break;
             }
         }
     }
@@ -220,7 +220,8 @@ public class LedManager extends Subsystem {
     @Override
     public void initSendable(SendableBuilder builder) {}
 
-    private static final boolean RAVE_ENABLED = factory.getConstant(NAME, "raveEnabled") > 0;
+    private static final boolean RAVE_ENABLED =
+        factory.getConstant(NAME, "raveEnabled") > 0;
     private static final double RAVE_SPEED = factory.getConstant(NAME, "raveSpeed", 0.01);
     private static final int MAX = (int) factory.getConstant(NAME, "maxLevel");
 

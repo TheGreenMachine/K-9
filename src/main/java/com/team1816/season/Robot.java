@@ -4,7 +4,6 @@ import static com.team1816.season.controlboard.ControlUtils.*;
 
 import badlog.lib.BadLog;
 import com.google.inject.Guice;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.team1816.lib.LibModule;
 import com.team1816.lib.auto.AutoModeExecutor;
@@ -29,6 +28,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 
@@ -507,7 +507,8 @@ public class Robot extends TimedRobot {
             manualControl();
         } catch (Throwable t) {
             faulted = true;
-            DriverStation.reportError(t.getMessage(), true);
+            DriverStation.reportError(t.getMessage(), false);
+            t.printStackTrace();
         }
 
         if (Constants.kIsLoggingTeleOp) {

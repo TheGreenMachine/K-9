@@ -16,7 +16,6 @@ import com.team254.lib.util.ReflectingCSVWriter;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Abstract base class for a subsystem with a single sensored servo-mechanism.
@@ -815,5 +814,4 @@ public abstract class ServoMotorSubsystem extends Subsystem {
             (estimated_pulse_pos - mPeriodicIO.absolute_pulse_offset);
         return estimate_position_ticks;
     }
-
 }

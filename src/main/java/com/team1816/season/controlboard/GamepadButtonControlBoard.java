@@ -3,6 +3,8 @@ package com.team1816.season.controlboard;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.lib.controlboard.Controller;
+import com.team1816.lib.controlboard.Controller.Axis;
+import com.team1816.lib.controlboard.Controller.Button;
 import com.team1816.lib.controlboard.IButtonControlBoard;
 import com.team1816.season.Constants;
 import com.team254.lib.util.DelayedBoolean;
@@ -37,17 +39,17 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     // Spinner
     @Override
     public boolean getSpinnerReset() {
-        return mController.getButton(Controller.Button.START);
+        return mController.getButton(Button.START);
     }
 
     @Override
     public boolean getSpinnerColor() {
-        return mController.getButton(Controller.Button.X);
+        return mController.getButton(Button.X);
     }
 
     @Override
     public boolean getSpinnerThreeTimes() {
-        return mController.getButton(Controller.Button.B);
+        return mController.getButton(Button.B);
     }
 
     // Turret
@@ -69,32 +71,32 @@ public class GamepadButtonControlBoard implements IButtonControlBoard {
     // Feeder Flap
     @Override
     public boolean getFeederFlapOut() {
-        return mController.getButton(Controller.Button.Y);
+        return mController.getButton(Button.Y);
     }
 
     @Override
     public boolean getFeederFlapIn() {
-        return mController.getButton(Controller.Button.A);
+        return mController.getButton(Button.A);
     }
 
     @Override
     public double getClimber() {
-        return -mController.getJoystick(Controller.Side.LEFT, Controller.Axis.Y);
+        return -mController.getJoystick(Axis.LEFT_X);
     }
 
     @Override
     public boolean getShoot() {
-        return mController.getTrigger(Controller.Side.RIGHT);
+        return mController.getTrigger(Axis.RIGHT_TRIGGER);
     }
 
     @Override
     public boolean getAutoAim() {
-        return mController.getButton(Controller.Button.LB);
+        return mController.getButton(Button.LEFT_BUMPER);
     }
 
     @Override
     public boolean getCollectorBackSpin() {
-        return mController.getButton(Controller.Button.RB);
+        return mController.getButton(Button.RIGHT_BUMPER);
     }
 
     @Override

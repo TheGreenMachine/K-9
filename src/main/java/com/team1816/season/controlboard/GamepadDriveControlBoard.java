@@ -3,6 +3,8 @@ package com.team1816.season.controlboard;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.lib.controlboard.Controller;
+import com.team1816.lib.controlboard.Controller.Axis;
+import com.team1816.lib.controlboard.Controller.Button;
 import com.team1816.lib.controlboard.IDriveControlBoard;
 import com.team1816.season.Constants;
 
@@ -18,58 +20,52 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
 
     @Override
     public double getThrottle() {
-        return mController.getJoystick(
-            Controller.Side.LEFT,
-            Controller.Axis.Y
-        );
+        return mController.getJoystick(Axis.LEFT_Y);
     }
 
     @Override
     public double getTurn() {
-        return mController.getJoystick(
-            Controller.Side.RIGHT,
-            Controller.Axis.X
-        );
+        return mController.getJoystick(Axis.RIGHT_X);
     }
 
     @Override
     public boolean getSlowMode() {
-        return mController.getTrigger(Controller.Side.RIGHT);
+        return mController.getTrigger(Axis.RIGHT_TRIGGER);
     }
 
     @Override
     public boolean getDrivetrainFlipped() {
-        return mController.getButton(Controller.Button.Y);
+        return mController.getButton(Button.Y);
     }
 
     @Override
     public boolean getQuickTurn() {
-        return mController.getButton(Controller.Button.R_JOYSTICK);
+        return mController.getButton(Button.R_JOYSTICK);
     }
 
     @Override
     public boolean getCollectorToggle() {
-        return mController.getButton(Controller.Button.LB);
+        return mController.getButton(Button.LEFT_BUMPER);
     }
 
     @Override
     public boolean getCollectorUp() {
-        return mController.getButton(Controller.Button.RB);
+        return mController.getButton(Button.RIGHT_BUMPER);
     }
 
     @Override
     public boolean getFeederToTrenchSpline() {
-        return mController.getButton(Controller.Button.X);
+        return mController.getButton(Button.X);
     }
 
     @Override
     public boolean getTrenchToFeederSpline() {
-        return mController.getButton(Controller.Button.B);
+        return mController.getButton(Button.B);
     }
 
     @Override
     public boolean getBrakeMode() {
-        return mController.getButton(Controller.Button.A);
+        return mController.getButton(Button.A);
     }
 
     @Override
