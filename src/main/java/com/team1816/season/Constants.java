@@ -31,7 +31,7 @@ public class Constants {
     // Control Board
     public static final boolean kUseDriveGamepad = true;
     public static final int kDriveGamepadPort = 0;
-    public static final int kButtonGamepadPort = 0;
+    public static final int kButtonGamepadPort = 1;
     public static final int kMainThrottleJoystickPort = 0;
     public static final int kMainTurnJoystickPort = 0;
     public static final double kJoystickThreshold = 0.04; // deadband

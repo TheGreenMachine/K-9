@@ -9,7 +9,7 @@ subsystems:
       rightSlaveOne: -1
       rightSlaveTwo: -1
     invertMotor:
-        - 2
+        - leftMain
     constants:
       pigeonId: 13
       pigeonOnTalon: 0

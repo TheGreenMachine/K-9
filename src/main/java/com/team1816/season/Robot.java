@@ -15,12 +15,12 @@ import com.team1816.lib.subsystems.DrivetrainLogger;
 import com.team1816.lib.subsystems.Infrastructure;
 import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
+import com.team1816.lib.util.GreenDriveHelper;
 import com.team1816.season.controlboard.ActionManager;
 import com.team1816.season.paths.TrajectorySet;
 import com.team1816.season.subsystems.*;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
-import com.team254.lib.util.CheesyDriveHelper;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.*;
@@ -28,7 +28,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 
@@ -59,10 +58,10 @@ public class Robot extends TimedRobot {
 
     private boolean mHasBeenEnabled = false;
 
-    private LatchedBoolean mWantsAutoExecution = new LatchedBoolean();
-    private LatchedBoolean mWantsAutoInterrupt = new LatchedBoolean();
+    private final LatchedBoolean mWantsAutoExecution = new LatchedBoolean();
+    private final LatchedBoolean mWantsAutoInterrupt = new LatchedBoolean();
 
-    private AutoModeSelector mAutoModeSelector = AutoModeSelector.getInstance();
+    private final AutoModeSelector mAutoModeSelector = AutoModeSelector.getInstance();
     private AutoModeExecutor mAutoModeExecutor;
 
     private boolean mDriveByCameraInAuto = false;
@@ -70,7 +69,7 @@ public class Robot extends TimedRobot {
     private boolean faulted;
 
     private ActionManager actionManager;
-    private CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
+    private final GreenDriveHelper greenDriveHelper = new GreenDriveHelper();
 
     private PowerDistributionPanel pdp = new PowerDistributionPanel();
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
@@ -523,16 +522,7 @@ public class Robot extends TimedRobot {
 
         double throttle = mControlBoard.getThrottle();
         double turn = mControlBoard.getTurn();
-        DriveSignal driveSignal;
-
-        // if (arcadeDrive) {
-        //            var filteredThrottle = Math.signum(throttle) * (throttle * throttle);
-        //            double left = Util.limit(filteredThrottle + (turn * 0.55), 1);
-        //            double right = Util.limit(filteredThrottle - (turn * 0.55), 1);
-        //            driveSignal = new DriveSignal(left, right);
-        // } else {
-        driveSignal = cheesyDriveHelper.cheesyDrive(throttle, turn, false); // quick turn temporarily eliminated
-        // }
+        DriveSignal driveSignal = greenDriveHelper.cheesyDrive(throttle, turn, false, false);
         if (
             mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING
         ) {

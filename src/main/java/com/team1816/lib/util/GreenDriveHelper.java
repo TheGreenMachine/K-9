@@ -1,12 +1,18 @@
-package com.team254.lib.util;
+package com.team1816.lib.util;
+
+import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.Util;
 
 /**
  * Helper class to implement "Cheesy Drive". "Cheesy Drive" simply means that the "turning" stick controls the curvature
  * of the robot's path rather than its rate of heading change. This helps make the robot more controllable at high
  * speeds. Also handles the robot's quick turn functionality - "quick turn" overrides constant-curvature turning for
  * turn-in-place maneuvers.
+ *
+ * This is based off of the team 254 code with 2 changes.  Added auto quick turn when not commanding throttle
+ * and fixed the quickTurn code to not exceed += 1.0
  */
-public class CheesyDriveHelper {
+public class GreenDriveHelper {
 
     private static final double kThrottleDeadband = 0.02;
     private static final double kWheelDeadband = 0.02;
@@ -22,8 +28,8 @@ public class CheesyDriveHelper {
     private static final double kLowNegInertiaCloseScalar = 4.0;
     private static final double kLowNegInertiaFarScalar = 5.0;
 
-    private static final double kHighSensitivity = 0.65;
-    private static final double kLowSensitiity = 0.65;
+    private static final double kHighSensitivity = 0.6;
+    private static final double kLowSensitiity = 1.0;
 
     private static final double kQuickStopDeadband = 0.5;
     private static final double kQuickStopWeight = 0.1;
@@ -33,11 +39,17 @@ public class CheesyDriveHelper {
     private double mQuickStopAccumlator = 0.0;
     private double mNegInertiaAccumlator = 0.0;
 
-    public DriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn,
-                                   boolean isHighGear) {
-
+    public DriveSignal cheesyDrive(
+        double throttle,
+        double wheel,
+        boolean isQuickTurn,
+        boolean isHighGear
+    ) {
         wheel = handleDeadband(wheel, kWheelDeadband);
         throttle = handleDeadband(throttle, kThrottleDeadband);
+
+        // Auto quickTurn
+        isQuickTurn = isQuickTurn || Math.abs(throttle) < kThrottleDeadband;
 
         double negInertia = wheel - mOldWheel;
         mOldWheel = wheel;
@@ -100,14 +112,19 @@ public class CheesyDriveHelper {
         if (isQuickTurn) {
             if (Math.abs(linearPower) < kQuickStopDeadband) {
                 double alpha = kQuickStopWeight;
-                mQuickStopAccumlator = (1 - alpha) * mQuickStopAccumlator
-                    + alpha * Util.limit(wheel, 1.0) * kQuickStopScalar;
+                mQuickStopAccumlator =
+                    (1 - alpha) *
+                    mQuickStopAccumlator +
+                    alpha *
+                    Util.limit(wheel, 1.0) *
+                    kQuickStopScalar;
             }
             overPower = 1.0;
             angularPower = wheel;
         } else {
             overPower = 0.0;
-            angularPower = Math.abs(throttle) * wheel * sensitivity - mQuickStopAccumlator;
+            angularPower =
+                Math.abs(throttle) * wheel * sensitivity - mQuickStopAccumlator;
             if (mQuickStopAccumlator > 1) {
                 mQuickStopAccumlator -= 1;
             } else if (mQuickStopAccumlator < -1) {
@@ -121,18 +138,23 @@ public class CheesyDriveHelper {
         leftPwm += angularPower;
         rightPwm -= angularPower;
 
+        double ratio;
         if (leftPwm > 1.0) {
-            rightPwm -= overPower * (leftPwm - 1.0);
+            ratio = 1.0 / leftPwm;
             leftPwm = 1.0;
+            rightPwm = rightPwm * ratio;
         } else if (rightPwm > 1.0) {
-            leftPwm -= overPower * (rightPwm - 1.0);
+            ratio = 1.0 / rightPwm;
             rightPwm = 1.0;
+            leftPwm = leftPwm * ratio;
         } else if (leftPwm < -1.0) {
-            rightPwm += overPower * (-1.0 - leftPwm);
+            ratio = -1.0 / leftPwm;
             leftPwm = -1.0;
+            rightPwm = rightPwm * ratio;
         } else if (rightPwm < -1.0) {
-            leftPwm += overPower * (-1.0 - rightPwm);
+            ratio = -1.0 / rightPwm;
             rightPwm = -1.0;
+            leftPwm = leftPwm * ratio;
         }
         return new DriveSignal(leftPwm, rightPwm);
     }

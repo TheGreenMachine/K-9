@@ -1,5 +1,6 @@
 package com.team1816.lib.hardware;
 
+import com.team1816.lib.hardware.components.motor.GhostMotorControllerEnhanced;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +21,9 @@ public class RobotFactoryTest {
 
     @Test
     public void testGetMotor() {
-        Assert.assertTrue(factory.getMotor("fooDrive", "left") instanceof GhostTalonSRX);
+        Assert.assertTrue(
+            factory.getMotor("fooDrive", "left") instanceof GhostMotorControllerEnhanced
+        );
     }
 
     public void testGetSolenoid() {}

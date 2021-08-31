@@ -52,13 +52,13 @@ public abstract class Controller {
     }
 
     public boolean getButton(Button button) {
-        if(!mJoystickButtonMap.containsKey(button)) return false;
+        if (!mJoystickButtonMap.containsKey(button)) return false;
         return mController.getRawButton(mJoystickButtonMap.get(button));
     }
 
     //Treats an Axis like a button
     public boolean getTrigger(Axis axis) {
-        if(!mJoystickAxisMap.containsKey(axis)) return false;
+        if (!mJoystickAxisMap.containsKey(axis)) return false;
         return (
             mController.getRawAxis(mJoystickAxisMap.get(axis)) >
             Constants.kJoystickThreshold
@@ -66,11 +66,7 @@ public abstract class Controller {
     }
 
     public double getJoystick(Axis axis) {
-        if(!mJoystickAxisMap.containsKey(axis)) return 0;
-        return handleDeadBand(mController.getRawAxis(mJoystickAxisMap.get(axis)));
-    }
-
-    protected double handleDeadBand(double value) {
-        return (Math.abs(value) > Math.abs(Constants.kJoystickThreshold)) ? value : 0;
+        if (!mJoystickAxisMap.containsKey(axis)) return 0;
+        return mController.getRawAxis(mJoystickAxisMap.get(axis));
     }
 }

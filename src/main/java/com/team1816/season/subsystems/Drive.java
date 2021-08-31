@@ -748,12 +748,12 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     @Override
     public double getLeftVelocityDemand() {
-        return mPeriodicIO.left_demand;
+        return mPeriodicIO.left_demand * maxVelTicksPer100ms;
     }
 
     @Override
     public double getRightVelocityDemand() {
-        return mPeriodicIO.right_demand;
+        return mPeriodicIO.right_demand * maxVelTicksPer100ms;
     }
 
     @Override

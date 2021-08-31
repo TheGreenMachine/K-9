@@ -14,7 +14,7 @@ public class WasdController extends Controller {
         mJoystickButtonMap.put(Controller.Button.START, 10);
         mJoystickButtonMap.put(Controller.Button.L_JOYSTICK, 11);
         mJoystickButtonMap.put(Controller.Button.R_JOYSTICK, 12);
-        mJoystickAxisMap.put(Axis.RIGHT_X,0);
-        mJoystickAxisMap.put(Axis.LEFT_Y,2);
+        mJoystickAxisMap.put(Axis.RIGHT_X, 0);
+        mJoystickAxisMap.put(Axis.LEFT_Y, 2);
     }
 }
