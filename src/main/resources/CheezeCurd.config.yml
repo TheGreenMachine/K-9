@@ -30,7 +30,7 @@ subsystems:
     canifier: 12
     constants:
         maxLevel: 25
-        raveEnabled: 1
+        raveEnabled: 0
         raveSpeed: .05
   turret:
     implemented: true

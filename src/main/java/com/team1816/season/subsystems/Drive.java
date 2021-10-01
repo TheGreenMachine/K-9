@@ -234,7 +234,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
                 leftAdjDemand = mPeriodicIO.left_demand * maxVelTicksPer100ms;
                 rightAdjDemand = mPeriodicIO.right_demand * maxVelTicksPer100ms;
             }
-            var driveTrainErrorPercent = .05;
+            var driveTrainErrorPercent = .03;
             mPeriodicIO.left_error = leftAdjDemand * driveTrainErrorPercent;
             leftEncoderSimPosition +=
                 (leftAdjDemand - mPeriodicIO.left_error) * tickRatioPerLoop;
@@ -748,12 +748,18 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     @Override
     public double getLeftVelocityDemand() {
-        return mPeriodicIO.left_demand * maxVelTicksPer100ms;
+        if(mDriveControlState == DriveControlState.OPEN_LOOP) {
+            return mPeriodicIO.left_demand * maxVelTicksPer100ms;
+        }
+        return mPeriodicIO.left_demand;
     }
 
     @Override
     public double getRightVelocityDemand() {
-        return mPeriodicIO.right_demand * maxVelTicksPer100ms;
+        if(mDriveControlState == DriveControlState.OPEN_LOOP) {
+            return mPeriodicIO.right_demand * maxVelTicksPer100ms;
+        }
+        return  mPeriodicIO.right_demand;
     }
 
     @Override
@@ -814,9 +820,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         SmartDashboard
             .getEntry("Drive/OpenLoopRampRate")
             .addListener(
-                notification -> {
-                    setOpenLoopRampRate(notification.value.getDouble());
-                },
+                notification -> setOpenLoopRampRate(notification.value.getDouble()),
                 EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
             );
 

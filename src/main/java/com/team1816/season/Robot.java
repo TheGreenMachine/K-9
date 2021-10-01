@@ -33,12 +33,13 @@ import java.util.Optional;
 
 public class Robot extends TimedRobot {
 
+    private final Injector injector;
     private BadLog logger;
 
     private final Looper mEnabledLooper = new Looper();
     private final Looper mDisabledLooper = new Looper();
 
-    private final IControlBoard mControlBoard;
+    private IControlBoard mControlBoard;
 
     private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
 
@@ -51,10 +52,6 @@ public class Robot extends TimedRobot {
     private final LedManager ledManager = LedManager.getInstance();
     private final Turret turret = Turret.getInstance();
     private final Camera camera = Camera.getInstance();
-
-    // button placed on the robot to allow the drive team to zero the robot right
-    // before the start of a match
-    DigitalInput resetRobotButton = new DigitalInput(Constants.kResetButtonChannel);
 
     private boolean mHasBeenEnabled = false;
 
@@ -71,14 +68,13 @@ public class Robot extends TimedRobot {
     private ActionManager actionManager;
     private final GreenDriveHelper greenDriveHelper = new GreenDriveHelper();
 
-    private PowerDistributionPanel pdp = new PowerDistributionPanel();
+    private final PowerDistributionPanel pdp = new PowerDistributionPanel();
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
 
     public Robot() {
         super();
         // initialize injector
-        Injector injector = Guice.createInjector(new LibModule(), new SeasonModule());
-        mControlBoard = injector.getInstance(IControlBoard.class);
+        injector = Guice.createInjector(new LibModule(), new SeasonModule());
     }
 
     private Double getLastLoop() {
@@ -89,12 +85,13 @@ public class Robot extends TimedRobot {
     public void robotInit() {
         try {
             DriverStation.getInstance().silenceJoystickConnectionWarning(true);
+            mControlBoard = injector.getInstance(IControlBoard.class);
             if (Constants.kIsBadlogEnabled) {
                 var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
                 var robotName = System.getenv("ROBOT_NAME");
                 if (robotName == null) robotName = "default";
                 var filePath = " /home/lvuser/" + robotName + "_" + logFile + ".bag";
-                // if there is a usb drive use it
+                // if there is a USB drive use it
                 if (Files.exists(Path.of("/media/sda1"))) {
                     filePath = "/media/sda1/" + robotName + "_" + logFile + ".bag";
                 }
@@ -475,7 +472,7 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
         loopStart = Timer.getFPGATimestamp();
-        boolean signalToResume = !mControlBoard.getDrivetrainFlipped(); // TODO: select auto interrupt button
+        boolean signalToResume = !mControlBoard.getDrivetrainFlipped();
         boolean signalToStop = mControlBoard.getDrivetrainFlipped();
         // Resume if switch flipped up
         if (mWantsAutoExecution.update(signalToResume)) {
