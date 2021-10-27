@@ -19,9 +19,9 @@ public class Turret extends Subsystem implements PidProvider {
     public static final double CARDINAL_EAST = 270; // deg
     private static final String NAME = "turret";
     public static final int TURRET_LIMIT_REVERSE =
-        ((int) factory.getConstant(NAME, "minPos"));
+        ((int) factory.getConstant(NAME, "revLimit"));
     public static final int TURRET_LIMIT_FORWARD =
-        ((int) factory.getConstant(NAME, "maxPos"));
+        ((int) factory.getConstant(NAME, "fwdLimit"));
     public static final int ABS_TICKS_SOUTH =
         ((int) factory.getConstant(NAME, "absPosTicksSouth"));
     // Constants
@@ -279,6 +279,7 @@ public class Turret extends Subsystem implements PidProvider {
 
     private void positionControl() {
         if (outputsChanged) {
+
             turret.set(
                 com.ctre.phoenix.motorcontrol.ControlMode.Position,
                 followingTurretPos

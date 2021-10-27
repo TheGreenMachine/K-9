@@ -33,7 +33,7 @@ public class YamlConfigTest {
         assertEquals(
             "Overridden constant minPos == -374",
             -374,
-            result.constants.get("minPos").intValue()
+            result.constants.get("revLimit").intValue()
         );
         assertEquals(
             "New constant newConstant == 34",
@@ -109,7 +109,7 @@ public class YamlConfigTest {
         assertEquals(
             "Overridden constant turret.minPos == -374",
             -374,
-            config.subsystems.get("turret").constants.get("minPos").intValue()
+            config.subsystems.get("turret").constants.get("revLimit").intValue()
         );
 
         assertEquals(

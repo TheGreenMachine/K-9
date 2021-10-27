@@ -47,8 +47,8 @@ subsystems:
       kF_slot1: 0 # Should be 0 for position control
       iZone: 200
       encPPR: 4096
-      minPos: 960
-      maxPos: 2990
+      revLimit: 960
+      fwdLimit: 2990
       currentFloorCheck: 0
       currentEpsilonCheck: .2
       rpmFloorCheck: 0
