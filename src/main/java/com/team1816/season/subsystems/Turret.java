@@ -187,7 +187,7 @@ public class Turret extends Subsystem implements PidProvider {
         }
     }
 
-    public synchronized void setTurretPosition(double position) {
+    private synchronized void setTurretPosition(double position) {
         //Since we are using position we need ensure value stays in one rotation
         int adjPos = (int) position & TURRET_ENCODER_MASK;
         if (desiredTurretPos != adjPos) {
@@ -198,10 +198,6 @@ public class Turret extends Subsystem implements PidProvider {
 
     public synchronized void setTurretAngle(double angle) {
         setControlMode(ControlMode.POSITION);
-        setTurretAngleInternal(angle);
-    }
-
-    private synchronized void setTurretAngleInternal(double angle) {
         setTurretPosition(convertTurretDegreesToTicks(angle));
     }
 
@@ -279,7 +275,6 @@ public class Turret extends Subsystem implements PidProvider {
 
     private void positionControl() {
         if (outputsChanged) {
-
             turret.set(
                 com.ctre.phoenix.motorcontrol.ControlMode.Position,
                 followingTurretPos

@@ -519,7 +519,12 @@ public class Robot extends TimedRobot {
 
         double throttle = mControlBoard.getThrottle();
         double turn = mControlBoard.getTurn();
-        DriveSignal driveSignal = greenDriveHelper.cheesyDrive(throttle, turn, false, false);
+        DriveSignal driveSignal = greenDriveHelper.cheesyDrive(
+            throttle,
+            turn,
+            false,
+            false
+        );
         if (
             mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING
         ) {

@@ -748,7 +748,7 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     @Override
     public double getLeftVelocityDemand() {
-        if(mDriveControlState == DriveControlState.OPEN_LOOP) {
+        if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             return mPeriodicIO.left_demand * maxVelTicksPer100ms;
         }
         return mPeriodicIO.left_demand;
@@ -756,10 +756,10 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
 
     @Override
     public double getRightVelocityDemand() {
-        if(mDriveControlState == DriveControlState.OPEN_LOOP) {
+        if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             return mPeriodicIO.right_demand * maxVelTicksPer100ms;
         }
-        return  mPeriodicIO.right_demand;
+        return mPeriodicIO.right_demand;
     }
 
     @Override

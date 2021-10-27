@@ -50,7 +50,6 @@ public class GreenDriveHelperTest {
         assertInRange(result);
     }
 
-
     private void assertInRange(DriveSignal signal) {
         var value = signal.getLeft();
         Assert.assertTrue("Left exceeded 1.0 was " + value, value <= 1.0);
