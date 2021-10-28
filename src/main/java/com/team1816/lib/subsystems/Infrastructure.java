@@ -4,8 +4,9 @@ import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.season.Constants;
 import com.team1816.season.subsystems.Superstructure;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 /**
  * Subsystem to ensure the compressor never runs while the superstructure moves
@@ -25,7 +26,7 @@ public class Infrastructure extends Subsystem {
     private Infrastructure() {
         super("Infrastructure");
         if (Constants.kPCMId >= 0) {
-            mCompressor = new Compressor(Constants.kPCMId);
+            mCompressor = new Compressor(Constants.kPCMId, PneumaticsModuleType.CTREPCM);
         }
     }
 
@@ -83,13 +84,13 @@ public class Infrastructure extends Subsystem {
 
     private void startCompressor() {
         if (COMPRESSOR_ENABLED) {
-            mCompressor.start();
+            mCompressor.enableDigital();
         }
     }
 
     private void stopCompressor() {
         if (COMPRESSOR_ENABLED) {
-            mCompressor.stop();
+            mCompressor.disable();
         }
     }
 

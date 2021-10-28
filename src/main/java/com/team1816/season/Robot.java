@@ -25,8 +25,11 @@ import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -68,7 +71,7 @@ public class Robot extends TimedRobot {
     private ActionManager actionManager;
     private final GreenDriveHelper greenDriveHelper = new GreenDriveHelper();
 
-    private final PowerDistributionPanel pdp = new PowerDistributionPanel();
+    private final PowerDistribution pdp = new PowerDistribution();
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
 
     public Robot() {
@@ -90,7 +93,7 @@ public class Robot extends TimedRobot {
                 var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
                 var robotName = System.getenv("ROBOT_NAME");
                 if (robotName == null) robotName = "default";
-                var filePath = " /home/lvuser/" + robotName + "_" + logFile + ".bag";
+                var filePath = "/home/lvuser/" + robotName + "_" + logFile + ".bag";
                 // if there is a USB drive use it
                 if (Files.exists(Path.of("/media/sda1"))) {
                     filePath = "/media/sda1/" + robotName + "_" + logFile + ".bag";

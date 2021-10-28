@@ -9,6 +9,7 @@ import com.team1816.lib.hardware.components.pcm.SolenoidImpl;
 import com.team1816.season.Constants;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class RobotFactory {
 
@@ -188,7 +189,7 @@ public class RobotFactory {
         var subsystem = getSubsystem(subsystemName);
         Integer solenoidId = subsystem.solenoids.get(name);
         if (isHardwareValid(solenoidId)) {
-            return new SolenoidImpl(config.pcm, solenoidId);
+            return new SolenoidImpl(config.pcm, PneumaticsModuleType.CTREPCM, solenoidId);
         }
         if (subsystem.implemented) {
             DriverStation.reportError(
@@ -212,6 +213,7 @@ public class RobotFactory {
         ) {
             return new DoubleSolenoid(
                 config.pcm,
+                PneumaticsModuleType.CTREPCM,
                 solenoidConfig.forward,
                 solenoidConfig.reverse
             );
