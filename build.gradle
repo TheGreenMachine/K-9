@@ -99,7 +99,7 @@ jar {
 task run(type: JavaExec) {
     String jniDir = "${project.buildDir}/jni/debug"
     environment "PATH", jniDir
-    String hal = fileTree(dir: "${project.buildDir}/tmp/expandedArchives", include: 'halsim*/**/*.*').asPath
+    String hal = fileTree(dir: "${project.buildDir}/jni/debug", include: 'halsim_*.*').asPath
     if (!DefaultNativePlatform.currentOperatingSystem.isWindows()) {
         environment "LD_LIBRARY_PATH", jniDir
         environment "DYLD_FALLBACK_LIBRARY_PATH", jniDir
