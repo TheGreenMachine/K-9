@@ -2,8 +2,9 @@ import edu.wpi.first.gradlerio.deploy.roborio.RoboRIO
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 plugins {
-    id "java"
-    id "edu.wpi.first.GradleRIO" version "2022.1.1-beta-3"
+    id 'java'
+    id 'edu.wpi.first.GradleRIO' version '2022.1.1'
+    id 'org.jsonschema2dataclass' version '4.0.1'
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -94,6 +95,22 @@ jar {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+jsonSchema2Pojo {
+    targetPackage = 'com.team1816.lib.hardware'
+    useTitleAsClassname = true
+    includeGetters = false
+    includeSetters = false
+    removeOldOutput = true
+    includeAdditionalProperties = false
+    includeToString = false
+    includeHashcodeAndEquals = false
+    source.setFrom files(
+        "${project.rootDir}/src/main/resources/subsystem.schema.json",
+        "${project.rootDir}/src/main/resources/double.solenoid.schema.json",
+        "${project.rootDir}/src/main/resources/robotconfig.schema.json"
+    )
 }
 
 task run(type: JavaExec) {

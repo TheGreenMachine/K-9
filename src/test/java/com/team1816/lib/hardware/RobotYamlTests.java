@@ -37,7 +37,7 @@ public class RobotYamlTests {
     }
 
     private void loadConfig(String configName) {
-        YamlConfig config = null;
+        RobotConfiguration config = null;
         try {
             config =
                 YamlConfig.loadFrom(
@@ -45,10 +45,9 @@ public class RobotYamlTests {
                         .getClassLoader()
                         .getResourceAsStream(configName + ".config.yml")
                 );
-        } catch (ConfigIsAbstractException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         assertNotNull(config);
-        System.out.println(config);
     }
 }

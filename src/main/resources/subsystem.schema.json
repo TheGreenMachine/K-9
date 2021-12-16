@@ -1,0 +1,38 @@
+{
+    "type": "object",
+    "title": "SubsystemConfig",
+    "properties": {
+        "implemented": {
+            "type": "boolean"
+        },
+        "canifier": {
+            "type": "integer"
+        },
+        "constants": {
+            "$ref": "double.map.schema.json"
+        },
+        "talons": {
+            "$ref": "int.map.schema.json"
+        },
+        "falcons": {
+            "$ref": "int.map.schema.json"
+        },
+        "victors": {
+            "$ref": "int.map.schema.json"
+        },
+        "solenoids": {
+            "$ref": "int.map.schema.json"
+        },
+        "doublesolenoids": {
+            "existingJavaType": "java.util.Map<String,DoubleSolenoidConfig>"
+        },
+        "invertMotor": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+    "additionalProperties": false
+}

@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class RobotFactory {
 
-    private YamlConfig config;
+    private RobotConfiguration config;
     private static boolean verbose;
     private static RobotFactory factory;
 
@@ -35,14 +35,15 @@ public class RobotFactory {
     public RobotFactory(String configName) {
         System.out.println("Loading Config for " + configName);
         try {
+
             config =
                 YamlConfig.loadFrom(
                     this.getClass()
                         .getClassLoader()
                         .getResourceAsStream(configName + ".config.yml")
                 );
-        } catch (ConfigIsAbstractException e) {
-            DriverStation.reportError("Yaml Config was abstract!", e.getStackTrace());
+        } catch (Exception e) {
+            DriverStation.reportError("Yaml Config error!", e.getStackTrace());
         }
         verbose = getConstant("verbose") >= 1;
     }
@@ -204,7 +205,7 @@ public class RobotFactory {
     }
 
     public DoubleSolenoid getDoubleSolenoid(String subsystemName, String name) {
-        YamlConfig.DoubleSolenoidConfig solenoidConfig = getSubsystem(subsystemName)
+        DoubleSolenoidConfig solenoidConfig = getSubsystem(subsystemName)
             .doublesolenoids.get(name);
         if (
             solenoidConfig != null &&
@@ -277,10 +278,10 @@ public class RobotFactory {
         return config.pcm;
     }
 
-    public YamlConfig.SubsystemConfig getSubsystem(String subsystemName) {
+    public SubsystemConfig getSubsystem(String subsystemName) {
         var subsystem = config.subsystems.get(subsystemName);
         if (subsystem == null) {
-            subsystem = new YamlConfig.SubsystemConfig();
+            subsystem = new SubsystemConfig();
             subsystem.implemented = false;
         }
         return subsystem;
