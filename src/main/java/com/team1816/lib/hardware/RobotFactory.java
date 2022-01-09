@@ -9,10 +9,11 @@ import com.team1816.lib.hardware.components.pcm.SolenoidImpl;
 import com.team1816.season.Constants;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class RobotFactory {
 
-    private YamlConfig config;
+    private RobotConfiguration config;
     private static boolean verbose;
     private static RobotFactory factory;
 
@@ -34,14 +35,15 @@ public class RobotFactory {
     public RobotFactory(String configName) {
         System.out.println("Loading Config for " + configName);
         try {
+
             config =
                 YamlConfig.loadFrom(
                     this.getClass()
                         .getClassLoader()
                         .getResourceAsStream(configName + ".config.yml")
                 );
-        } catch (ConfigIsAbstractException e) {
-            DriverStation.reportError("Yaml Config was abstract!", e.getStackTrace());
+        } catch (Exception e) {
+            DriverStation.reportError("Yaml Config error!", e.getStackTrace());
         }
         verbose = getConstant("verbose") >= 1;
     }
@@ -135,7 +137,7 @@ public class RobotFactory {
         IMotorController motor = null;
         var subsystem = getSubsystem(subsystemName);
         if (subsystem.implemented && master != null) {
-            if (isHardwareValid(subsystem.talons.get(name))) {
+            if (subsystem.talons != null && isHardwareValid(subsystem.talons.get(name))) {
                 // Talons must be following another Talon, cannot follow a Victor.
                 motor =
                     CtreMotorFactory.createPermanentSlaveTalon(
@@ -143,14 +145,14 @@ public class RobotFactory {
                         false,
                         master
                     );
-            } else if (isHardwareValid(subsystem.falcons.get(name))) {
+            } else if (subsystem.falcons != null && isHardwareValid(subsystem.falcons.get(name))) {
                 motor =
                     CtreMotorFactory.createPermanentSlaveTalon(
                         subsystem.falcons.get(name),
                         true,
                         master
                     );
-            } else if (isHardwareValid(subsystem.victors.get(name))) {
+            } else if (subsystem.victors != null && isHardwareValid(subsystem.victors.get(name))) {
                 // Victors can follow Talons or another Victor.
                 motor =
                     CtreMotorFactory.createPermanentSlaveVictor(
@@ -188,7 +190,7 @@ public class RobotFactory {
         var subsystem = getSubsystem(subsystemName);
         Integer solenoidId = subsystem.solenoids.get(name);
         if (isHardwareValid(solenoidId)) {
-            return new SolenoidImpl(config.pcm, solenoidId);
+            return new SolenoidImpl(config.pcm, PneumaticsModuleType.CTREPCM, solenoidId);
         }
         if (subsystem.implemented) {
             DriverStation.reportError(
@@ -203,7 +205,7 @@ public class RobotFactory {
     }
 
     public DoubleSolenoid getDoubleSolenoid(String subsystemName, String name) {
-        YamlConfig.DoubleSolenoidConfig solenoidConfig = getSubsystem(subsystemName)
+        DoubleSolenoidConfig solenoidConfig = getSubsystem(subsystemName)
             .doublesolenoids.get(name);
         if (
             solenoidConfig != null &&
@@ -212,6 +214,7 @@ public class RobotFactory {
         ) {
             return new DoubleSolenoid(
                 config.pcm,
+                PneumaticsModuleType.CTREPCM,
                 solenoidConfig.forward,
                 solenoidConfig.reverse
             );
@@ -275,10 +278,10 @@ public class RobotFactory {
         return config.pcm;
     }
 
-    public YamlConfig.SubsystemConfig getSubsystem(String subsystemName) {
+    public SubsystemConfig getSubsystem(String subsystemName) {
         var subsystem = config.subsystems.get(subsystemName);
         if (subsystem == null) {
-            subsystem = new YamlConfig.SubsystemConfig();
+            subsystem = new SubsystemConfig();
             subsystem.implemented = false;
         }
         return subsystem;

@@ -7,6 +7,7 @@ import com.ctre.phoenix.motion.TrajectoryPoint;
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
 
@@ -36,6 +37,11 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
 
     @Override
     public void setInverted(boolean invert) {}
+
+    @Override
+    public void setInverted(InvertType invertType) {
+
+    }
 
     @Override
     public boolean getInverted() {
@@ -118,6 +124,11 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
     }
 
     @Override
+    public ErrorCode configVelocityMeasurementPeriod(SensorVelocityMeasPeriod period, int timeoutMs) {
+        return null;
+    }
+
+    @Override
     public double getTemperature() {
         return 0;
     }
@@ -156,6 +167,11 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
         int remoteOrdinal,
         int timeoutMs
     ) {
+        return null;
+    }
+
+    @Override
+    public ErrorCode configRemoteFeedbackFilter(BaseTalon talonRef, int remoteOrdinal, int timeoutMs) {
         return null;
     }
 
