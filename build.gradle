@@ -97,6 +97,7 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
+// see https://github.com/joelittlejohn/jsonschema2pojo/tree/master/jsonschema2pojo-gradle-plugin#usage
 jsonSchema2Pojo {
     targetPackage = 'com.team1816.lib.hardware'
     useTitleAsClassname = true
@@ -114,9 +115,9 @@ jsonSchema2Pojo {
 }
 
 task run(type: JavaExec) {
-    String jniDir = "${project.buildDir}/jni/debug"
+    String jniDir = "${project.buildDir}/jni/release"
     environment "PATH", jniDir
-    String hal = fileTree(dir: "${project.buildDir}/jni/debug", include: 'halsim_*.*').asPath
+    String hal = fileTree(dir: "${project.buildDir}/jni/release", include: 'halsim_*.*').asPath
     if (!DefaultNativePlatform.currentOperatingSystem.isWindows()) {
         environment "LD_LIBRARY_PATH", jniDir
         environment "DYLD_FALLBACK_LIBRARY_PATH", jniDir
@@ -124,7 +125,7 @@ task run(type: JavaExec) {
     }
     environment "HALSIM_EXTENSIONS", hal
     environment "ROBOT_NAME", "CheezeCurd"
-    dependsOn(jar, simulateExternalJavaDebug)
+    dependsOn(jar, simulateExternalJavaRelease)
     classpath = files(jar)
     jvmArgs "-Djava.library.path=${jniDir}"
 }

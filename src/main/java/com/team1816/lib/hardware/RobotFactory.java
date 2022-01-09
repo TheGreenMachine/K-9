@@ -137,7 +137,7 @@ public class RobotFactory {
         IMotorController motor = null;
         var subsystem = getSubsystem(subsystemName);
         if (subsystem.implemented && master != null) {
-            if (isHardwareValid(subsystem.talons.get(name))) {
+            if (subsystem.talons != null && isHardwareValid(subsystem.talons.get(name))) {
                 // Talons must be following another Talon, cannot follow a Victor.
                 motor =
                     CtreMotorFactory.createPermanentSlaveTalon(
@@ -145,14 +145,14 @@ public class RobotFactory {
                         false,
                         master
                     );
-            } else if (isHardwareValid(subsystem.falcons.get(name))) {
+            } else if (subsystem.falcons != null && isHardwareValid(subsystem.falcons.get(name))) {
                 motor =
                     CtreMotorFactory.createPermanentSlaveTalon(
                         subsystem.falcons.get(name),
                         true,
                         master
                     );
-            } else if (isHardwareValid(subsystem.victors.get(name))) {
+            } else if (subsystem.victors != null && isHardwareValid(subsystem.victors.get(name))) {
                 // Victors can follow Talons or another Victor.
                 motor =
                     CtreMotorFactory.createPermanentSlaveVictor(
