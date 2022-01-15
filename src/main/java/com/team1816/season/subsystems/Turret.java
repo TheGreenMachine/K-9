@@ -7,6 +7,9 @@ import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team1816.season.Constants;
 import com.team1816.season.RobotState;
+import com.team254.lib.util.Units;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -225,6 +228,17 @@ public class Turret extends Subsystem implements PidProvider {
     public void readPeriodicInputs() {
         turretAngleRelativeToField =
             robotState.getHeadingRelativeToInitial().getDegrees();
+        if (RobotBase.isSimulation()) {
+            var xPos = Units.inches_to_meters(robotState.getEstimatedX());
+            var yPos = Units.inches_to_meters(robotState.getEstimatedY()) + 3.5;
+            // show turret
+            var turret = robotState.field.getObject("turret");
+            turret.setPose(
+                xPos,
+                yPos,
+                Rotation2d.fromDegrees(getActualTurretPositionDegrees())
+            );
+        }
     }
 
     @Override
@@ -246,6 +260,7 @@ public class Turret extends Subsystem implements PidProvider {
                 manualControl();
                 break;
         }
+        //robotState.turretAngle = getActualTurretPositionDegrees();
     }
 
     private void autoHome() {

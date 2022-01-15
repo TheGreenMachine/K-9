@@ -35,7 +35,6 @@ import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider {
@@ -71,7 +70,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
     private final RobotState mRobotState = RobotState.getInstance();
 
     // simulator
-    private final Field2d fieldSim = new Field2d();
     private double leftEncoderSimPosition = 0, rightEncoderSimPosition = 0;
     private double gyroDrift;
     private final double tickRatioPerLoop = Constants.kLooperDt / .1d;
@@ -138,8 +136,6 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
         setBrakeMode(false);
 
         mMotionPlanner = new DriveMotionPlanner();
-
-        SmartDashboard.putData("Field", fieldSim);
     }
 
     public double getHeadingDegrees() {
@@ -256,11 +252,9 @@ public class Drive extends Subsystem implements TrackableDrivetrain, PidProvider
             var rot2d = new edu.wpi.first.math.geometry.Rotation2d(
                 mPeriodicIO.gyro_heading_no_offset.getRadians()
             );
-            fieldSim.setRobotPose(
-                Units.inches_to_meters(mRobotState.getEstimatedX()),
-                Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5,
-                rot2d
-            );
+            var xPos = Units.inches_to_meters(mRobotState.getEstimatedX());
+            var yPos = Units.inches_to_meters(mRobotState.getEstimatedY()) + 3.5;
+            mRobotState.field.setRobotPose(xPos, yPos, rot2d);
         } else {
             mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
             mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);

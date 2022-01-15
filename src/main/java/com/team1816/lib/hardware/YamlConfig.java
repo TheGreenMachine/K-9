@@ -1,11 +1,10 @@
 package com.team1816.lib.hardware;
 
+import java.io.InputStream;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 import org.yaml.snakeyaml.representer.Representer;
-
-import java.io.InputStream;
 
 // Since the Collections of configurations are injected by SnakeYaml,
 // IDEs will report that the collections are never updated.
@@ -39,5 +38,4 @@ public class YamlConfig {
     public String toString() {
         return FORMATTER.dump(this);
     }
-
 }

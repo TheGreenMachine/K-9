@@ -23,7 +23,7 @@
         "solenoids": {
             "$ref": "int.map.schema.json"
         },
-        "doublesolenoids": {
+        "doubleSolenoids": {
             "existingJavaType": "java.util.Map<String,DoubleSolenoidConfig>"
         },
         "invertMotor": {
@@ -32,6 +32,17 @@
             "items": {
                 "type": "string"
             }
+        },
+        "invertSensorPhase": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "pidConfig": {
+            "type": "object",
+            "existingJavaType": "java.util.Map<String,PIDSlotConfiguration>"
         }
     },
     "additionalProperties": false

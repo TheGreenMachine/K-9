@@ -4,7 +4,8 @@
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Auto mode": "String Chooser",
       "/SmartDashboard/Field": "Field2d",
-      "/SmartDashboard/Starting Position": "String Chooser"
+      "/SmartDashboard/Starting Position": "String Chooser",
+      "/SmartDashboard/Turret Sim": "Mechanism2d"
     },
     "windows": {
       "/SmartDashboard/Auto mode": {
@@ -13,10 +14,24 @@
         }
       },
       "/SmartDashboard/Field": {
+        "Robot": {
+          "arrows": false
+        },
+        "turret": {
+          "style": "Line"
+        },
         "window": {
           "visible": true
         }
       }
+    }
+  },
+  "NetworkTables": {
+    "SmartDashboard": {
+      "Field": {
+        "open": true
+      },
+      "open": true
     }
   }
 }

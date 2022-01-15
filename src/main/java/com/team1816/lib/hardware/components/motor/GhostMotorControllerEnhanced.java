@@ -39,9 +39,7 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
     public void setInverted(boolean invert) {}
 
     @Override
-    public void setInverted(InvertType invertType) {
-
-    }
+    public void setInverted(InvertType invertType) {}
 
     @Override
     public boolean getInverted() {
@@ -124,7 +122,10 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configVelocityMeasurementPeriod(SensorVelocityMeasPeriod period, int timeoutMs) {
+    public ErrorCode configVelocityMeasurementPeriod(
+        SensorVelocityMeasPeriod period,
+        int timeoutMs
+    ) {
         return null;
     }
 
@@ -171,7 +172,11 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
     }
 
     @Override
-    public ErrorCode configRemoteFeedbackFilter(BaseTalon talonRef, int remoteOrdinal, int timeoutMs) {
+    public ErrorCode configRemoteFeedbackFilter(
+        BaseTalon talonRef,
+        int remoteOrdinal,
+        int timeoutMs
+    ) {
         return null;
     }
 

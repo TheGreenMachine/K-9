@@ -5,6 +5,7 @@ plugins {
     id 'java'
     id 'edu.wpi.first.GradleRIO' version '2022.1.1'
     id 'org.jsonschema2dataclass' version '4.0.1'
+    id "com.diffplug.spotless" version "5.8.2"
 }
 
 sourceCompatibility = JavaVersion.VERSION_11
@@ -110,8 +111,24 @@ jsonSchema2Pojo {
     source.setFrom files(
         "${project.rootDir}/src/main/resources/subsystem.schema.json",
         "${project.rootDir}/src/main/resources/double.solenoid.schema.json",
+        "${project.rootDir}/src/main/resources/pidconfig.schema.json",
         "${project.rootDir}/src/main/resources/robotconfig.schema.json"
     )
+}
+spotless {
+    java {
+        target 'src/*/java/com/team1816/**/*.java'
+        importOrder()
+        removeUnusedImports()
+        prettier(['prettier': '2.2.1', 'prettier-plugin-java': '1.0.1'])
+            .config([
+                'parser': 'java',
+                'tabWidth': 4,
+                'printWidth': 90
+            ])
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
 
 task run(type: JavaExec) {

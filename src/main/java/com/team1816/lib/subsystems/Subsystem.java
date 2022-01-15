@@ -6,7 +6,6 @@ import com.team1816.lib.loops.ILooper;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
-
 import java.util.function.Supplier;
 
 /**
@@ -51,13 +50,13 @@ public abstract class Subsystem implements Sendable {
         Supplier<Double> supplier,
         String... attrs
     ) {
-        if (factory.isImplemented(name)) {
+        if (factory.getSubsystem(name).implemented) {
             BadLog.createTopic(topicName, unit, supplier, attrs);
         }
     }
 
     public void CreateBadLogValue(String badLogName, String value) {
-        if (factory.isImplemented(name)) {
+        if (factory.getSubsystem(name).implemented) {
             BadLog.createValue(badLogName, value);
         }
     }
