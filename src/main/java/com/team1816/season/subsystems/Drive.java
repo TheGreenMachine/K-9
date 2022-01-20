@@ -22,6 +22,7 @@ import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.util.List;
 
 public abstract class Drive
@@ -356,16 +357,6 @@ public abstract class Drive
     @Override
     public double getFieldYDistance() {
         return mRobotState.getEstimatedY();
-    }
-
-    @Override
-    public double getFieldDesiredXDistance() {
-        return 0;
-    }
-
-    @Override
-    public double getFieldYDesiredYDistance() {
-        return 0;
     }
 
     @Override

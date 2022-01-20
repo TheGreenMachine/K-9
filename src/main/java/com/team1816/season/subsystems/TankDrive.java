@@ -25,6 +25,7 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.util.List;
 
 @Singleton
@@ -32,7 +33,6 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     private final CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
 
-    private static TankDrive INSTANCE;
     private static final String NAME = "drivetrain";
 
     @Inject
@@ -562,12 +562,14 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         return mPeriodicIO.right_error;
     }
 
-    public double getRightDriveTicks() {
-        return mPeriodicIO.right_position_ticks;
+    @Override
+    public double getFieldDesiredXDistance() {
+        return mPeriodicIO.path_setpoint.state().getTranslation().x();
     }
 
-    public double getLeftDriveTicks() {
-        return mPeriodicIO.left_position_ticks;
+    @Override
+    public double getFieldYDesiredYDistance() {
+        return mPeriodicIO.path_setpoint.state().getTranslation().y();
     }
 
     @Override
