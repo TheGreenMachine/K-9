@@ -10,7 +10,7 @@ import com.team254.lib.util.DriveSignal;
  * a corrective factor to account for skidding).
  */
 
-public class Kinematics {
+public class TankKinematics {
 
     private static final double kEpsilon = 1E-9;
 

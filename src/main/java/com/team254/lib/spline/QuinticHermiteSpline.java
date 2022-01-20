@@ -13,7 +13,18 @@ public class QuinticHermiteSpline extends Spline {
     private static final int kSamples = 100;
     private static final int kMaxIterations = 100;
 
-    private double x0, x1, dx0, dx1, ddx0, ddx1, y0, y1, dy0, dy1, ddy0, ddy1;
+    private final double x0;
+  private final double x1;
+  private final double dx0;
+  private final double dx1;
+  private double ddx0;
+  private double ddx1;
+  private final double y0;
+  private final double y1;
+  private final double dy0;
+  private final double dy1;
+  private double ddy0;
+  private double ddy1;
     private double ax, bx, cx, dx, ex, fx, ay, by, cy, dy, ey, fy;
 
     /**

@@ -1,12 +1,11 @@
 package com.team1816.lib.subsystems;
 
+import com.google.inject.Inject;
+import com.team1816.lib.hardware.components.pcm.ICompressor;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
-import com.team1816.season.Constants;
 import com.team1816.season.subsystems.Superstructure;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 /**
  * Subsystem to ensure the compressor never runs while the superstructure moves
@@ -15,27 +14,27 @@ public class Infrastructure extends Subsystem {
 
     private static Infrastructure mInstance;
 
-    private Superstructure mSuperstructure = Superstructure.getInstance();
-    private Compressor mCompressor;
+    @Inject
+    private Superstructure mSuperstructure;
+
+    private final ICompressor mCompressor;
 
     private boolean mIsManualControl = false;
     private static final boolean COMPRESSOR_ENABLED =
         factory.getConstant("compressorEnabled") > 0;
     private boolean lastCompressorOn = true;
 
-    private Infrastructure() {
+    public Infrastructure() {
         super("Infrastructure");
-        if (Constants.kPCMId >= 0) {
-            mCompressor = new Compressor(Constants.kPCMId, PneumaticsModuleType.CTREPCM);
+        mCompressor = factory.getCompressor();
+        if (factory.getConstant("compressorEnabled") > 0) {
+            mCompressor.stop();
         }
     }
 
-    public static Infrastructure getInstance() {
-        if (mInstance == null) {
-            mInstance = new Infrastructure();
-        }
-
-        return mInstance;
+    @Override
+    public boolean isImplemented() {
+        return true;
     }
 
     @Override
@@ -49,17 +48,20 @@ public class Infrastructure extends Subsystem {
                 public void onLoop(double timestamp) {
                     synchronized (Infrastructure.this) {
                         boolean superstructureMoving = !mSuperstructure.isAtDesiredState();
-
-                        if (superstructureMoving || !mIsManualControl) {
-                            if (lastCompressorOn) {
-                                stopCompressor();
-                                lastCompressorOn = false;
+                        if (!(factory.getConstant("compressorEnabled") > 0)) {
+                            if (superstructureMoving || !mIsManualControl) {
+                                if (lastCompressorOn) {
+                                    stopCompressor();
+                                    lastCompressorOn = false;
+                                }
+                            } else {
+                                if (!lastCompressorOn) {
+                                    startCompressor();
+                                    lastCompressorOn = true;
+                                }
                             }
                         } else {
-                            if (!lastCompressorOn) {
-                                startCompressor();
-                                lastCompressorOn = true;
-                            }
+                            stopCompressor();
                         }
                     }
                 }
@@ -84,13 +86,13 @@ public class Infrastructure extends Subsystem {
 
     private void startCompressor() {
         if (COMPRESSOR_ENABLED) {
-            mCompressor.enableDigital();
+            mCompressor.start();
         }
     }
 
     private void stopCompressor() {
         if (COMPRESSOR_ENABLED) {
-            mCompressor.disable();
+            mCompressor.stop();
         }
     }
 

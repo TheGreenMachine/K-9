@@ -1,5 +1,6 @@
 package com.team1816.season;
 
+import com.google.inject.Singleton;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
@@ -18,17 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Singleton
 public class RobotState {
-
-    private static RobotState mInstance;
-
-    public static RobotState getInstance() {
-        if (mInstance == null) {
-            mInstance = new RobotState();
-        }
-
-        return mInstance;
-    }
 
     private static final int kObservationBufferSize = 100;
 
@@ -76,8 +68,8 @@ public class RobotState {
     private MovingAverageTwist2d vehicle_velocity_measured_filtered_;
     private double distance_driven_;
 
-    private GoalTracker vision_target_low_ = new GoalTracker();
-    private GoalTracker vision_target_high_ = new GoalTracker();
+    private final GoalTracker vision_target_low_ = new GoalTracker();
+    private final GoalTracker vision_target_high_ = new GoalTracker();
 
     List<Translation2d> mCameraToVisionTargetPosesLow = new ArrayList<>();
     List<Translation2d> mCameraToVisionTargetPosesHigh = new ArrayList<>();
@@ -86,7 +78,7 @@ public class RobotState {
 
     public final Field2d field = new Field2d();
 
-    private RobotState() {
+    public RobotState() {
         SmartDashboard.putData("Field", field);
         reset(0.0, Pose2d.identity(), Rotation2d.identity());
     }
@@ -205,7 +197,7 @@ public class RobotState {
         distance_driven_ += displacement.dx;
         addFieldToVehicleObservation(
             timestamp,
-            Kinematics.integrateForwardKinematics(
+            TankKinematics.integrateForwardKinematics(
                 getLatestFieldToVehicle().getValue(),
                 displacement
             )

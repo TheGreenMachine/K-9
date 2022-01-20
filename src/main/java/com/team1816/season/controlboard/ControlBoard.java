@@ -39,6 +39,11 @@ public class ControlBoard implements IControlBoard {
     }
 
     @Override
+    public double getStrafe() {
+        return mDriveControlBoard.getStrafe();
+    }
+
+    @Override
     public boolean getSlowMode() {
         return mDriveControlBoard.getSlowMode();
     }

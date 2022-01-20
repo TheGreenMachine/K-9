@@ -19,9 +19,9 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DriveMotionPlanner implements CSVWritable {
+public class TankMotionPlanner implements CSVWritable {
 
-    private static final DriveMotionPlanner INSTANCE = new DriveMotionPlanner();
+    private static final TankMotionPlanner INSTANCE = new TankMotionPlanner();
 
     private static final double kMaxDx = 2.0;
     private static final double kMaxDy = 0.25;
@@ -54,7 +54,7 @@ public class DriveMotionPlanner implements CSVWritable {
     DifferentialDrive.ChassisState prev_velocity_ = new DifferentialDrive.ChassisState();
     double mDt = 0.0;
 
-    public DriveMotionPlanner() {
+    public TankMotionPlanner() {
         final DCMotorTransmission transmission = new DCMotorTransmission(
             1.0 / Constants.kDriveKv,
             Units.inches_to_meters(Constants.kDriveWheelRadiusInches) *
@@ -535,7 +535,7 @@ public class DriveMotionPlanner implements CSVWritable {
         return mSetpoint;
     }
 
-    public static DriveMotionPlanner getInstance() {
+    public static TankMotionPlanner getInstance() {
         return INSTANCE;
     }
 }

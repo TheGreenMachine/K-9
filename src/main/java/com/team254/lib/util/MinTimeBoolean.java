@@ -5,7 +5,7 @@ package com.team254.lib.util;
  * based on timestamp.
  */
 public class MinTimeBoolean {
-    private LatchedBoolean mLatchedBoolean;
+    private final LatchedBoolean mLatchedBoolean;
     private final double mMinTime;
     private double mRisingEdgeTime;
 

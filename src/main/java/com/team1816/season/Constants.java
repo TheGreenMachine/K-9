@@ -1,14 +1,18 @@
 package com.team1816.season;
 
 import com.team1816.lib.hardware.RobotFactory;
+import com.team254.lib.geometry.Translation2d;
 
 public class Constants {
 
     private static final RobotFactory factory = RobotFactory.getInstance();
 
-    public static final double kLooperDt = factory.getConstant("kLooperDt");
+    public static final double kLooperDt = factory.getConstant("kLooperDt", .020);
     public static final double kDriveWheelTrackWidthInches = factory.getConstant(
         "trackWidth"
+    );
+    public static final double kDriveWheelbaseLengthInches = factory.getConstant(
+        "wheelbaseLength"
     );
     public static final double kDriveWheelDiameterInches = factory.getConstant(
         "wheelDiameter"
@@ -24,6 +28,33 @@ public class Constants {
         "drivetrain",
         "openLoopRampRate"
     );
+
+    private static final double moduleDeltaX = kDriveWheelbaseLengthInches / 2.0;
+    private static final double moduleDeltaY = kDriveWheelTrackWidthInches / 2.0;
+
+    public static final Translation2d kFrontLeftModulePosition = new Translation2d(
+        moduleDeltaX,
+        moduleDeltaY
+    );
+    public static final Translation2d kFrontRightModulePosition = new Translation2d(
+        moduleDeltaX,
+        -moduleDeltaY
+    );
+    public static final Translation2d kBackLeftModulePosition = new Translation2d(
+        -moduleDeltaX,
+        moduleDeltaY
+    );
+    public static final Translation2d kBackRightModulePosition = new Translation2d(
+        -moduleDeltaX,
+        -moduleDeltaY
+    );
+
+    public static final Translation2d[] kModulePositions = {
+        kFrontLeftModulePosition,
+        kFrontRightModulePosition,
+        kBackRightModulePosition,
+        kBackLeftModulePosition,
+    };
 
     // reset button
     public static final int kResetButtonChannel = 4;

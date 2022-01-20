@@ -6,7 +6,7 @@ package com.team254.lib.util;
  * speeds. Also handles the robot's quick turn functionality - "quick turn" overrides constant-curvature turning for
  * turn-in-place maneuvers.
  */
-public class CheesyDriveHelper implements DriveHelper {
+public class SwerveCheesyDriveHelper implements DriveHelper {
     private static final double kThrottleDeadband = 0.035; // 0.035
     private static final double kWheelDeadband = 0.02; // 0.02, 0.01
 
@@ -39,12 +39,12 @@ public class CheesyDriveHelper implements DriveHelper {
     private final double leftPrevPwm = 0;
     private final double rightPrevPwm = 0;
 
-    public DriveSignal arcadeDrive(double throttle, double wheel) {
+    public SwerveDriveSignal arcadeDrive(double throttle, double wheel) {
         return null;
     }
 
-    public DriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn,
-                                   boolean isHighGear) {
+    public SwerveDriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn,
+                                         boolean isHighGear) {
 
         wheel = handleDeadband(wheel, kWheelDeadband);
         throttle = handleDeadband(throttle, kThrottleDeadband);
@@ -143,10 +143,10 @@ public class CheesyDriveHelper implements DriveHelper {
             rightPwm = -1.0;
         }
 
-        return new DriveSignal(leftPwm, rightPwm);
+        return new SwerveDriveSignal(leftPwm, rightPwm);
     }
 
-    public DriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn) {
+    public SwerveDriveSignal cheesyDrive(double throttle, double wheel, boolean isQuickTurn) {
         return cheesyDrive(throttle, wheel, isQuickTurn, false); // TODO: no gearshift, isHighGear = true?
     }
 
@@ -156,6 +156,6 @@ public class CheesyDriveHelper implements DriveHelper {
 
     @Override
     public SwerveDriveSignal calculateDriveSignal(double forwardInput, double strafeInput, double rotationInput, boolean low_power, boolean field_relative, boolean use_heading_controller) {
-        return null;
+        return cheesyDrive(forwardInput, rotationInput, true);
     }
 }

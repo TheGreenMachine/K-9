@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.Timer;
  * a set timeout. This returns true if the stored value is true and the timeout has expired.
  */
 public class TimeDelayedBoolean {
-    private Timer t = new Timer();
+    private final Timer t = new Timer();
     private boolean m_old = false;
 
     public boolean update(boolean value, double timeout) {

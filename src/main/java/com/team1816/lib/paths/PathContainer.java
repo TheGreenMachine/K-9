@@ -1,7 +1,7 @@
 package com.team1816.lib.paths;
 
 import com.team1816.lib.hardware.RobotFactory;
-import com.team1816.season.planners.DriveMotionPlanner;
+import com.team1816.season.planners.TankMotionPlanner;
 import com.team254.lib.control.Path;
 import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Pose2dWithCurvature;
@@ -42,7 +42,7 @@ public interface PathContainer {
         boolean isReversed,
         List<Pose2d> waypoints
     ) {
-        return DriveMotionPlanner
+        return TankMotionPlanner
             .getInstance()
             .generateTrajectory(
                 isReversed,

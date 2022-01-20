@@ -15,9 +15,18 @@
       },
       "/SmartDashboard/Field": {
         "Robot": {
-          "arrows": false
+          "arrowColor": [
+            0.5980392098426819,
+            0.5247501134872437,
+            0.5247501134872437,
+            255.0
+          ],
+          "arrowWeight": 2.0,
+          "selectable": false,
+          "weight": 2.0
         },
         "turret": {
+          "arrowWeight": 3.0,
           "style": "Line"
         },
         "window": {

@@ -8,8 +8,10 @@ import com.team1816.lib.hardware.components.ICanifier;
 import com.team1816.lib.hardware.components.pcm.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import java.util.Map;
+import edu.wpi.first.wpilibj.RobotBase;
+
 import javax.annotation.Nonnull;
+import java.util.Map;
 
 public class RobotFactory {
 
@@ -156,7 +158,7 @@ public class RobotFactory {
     }
 
     private boolean isHardwareValid(Integer hardwareId) {
-        return hardwareId != null && hardwareId > -1;
+        return hardwareId != null && hardwareId > -1 && RobotBase.isReal();
     }
 
     @Nonnull

@@ -50,10 +50,10 @@ public class ControlUtils implements Controller.Factory {
 
     public static class PressAction implements ButtonAction {
 
-        private LatchedBoolean pressedState = new LatchedBoolean();
-        private LatchedBoolean releasedState = new LatchedBoolean();
-        private BooleanSupplier input;
-        private Runnable action;
+        private final LatchedBoolean pressedState = new LatchedBoolean();
+        private final LatchedBoolean releasedState = new LatchedBoolean();
+        private final BooleanSupplier input;
+        private final Runnable action;
 
         private PressAction(BooleanSupplier input, Runnable action) {
             this.input = input;
@@ -77,10 +77,10 @@ public class ControlUtils implements Controller.Factory {
 
     public static class HoldAction implements ButtonAction {
 
-        private BooleanSupplier input;
-        private Consumer<Boolean> action;
-        private LatchedBoolean pressedState = new LatchedBoolean();
-        private LatchedBoolean releasedState = new LatchedBoolean();
+        private final BooleanSupplier input;
+        private final Consumer<Boolean> action;
+        private final LatchedBoolean pressedState = new LatchedBoolean();
+        private final LatchedBoolean releasedState = new LatchedBoolean();
 
         private HoldAction(BooleanSupplier input, Consumer<Boolean> action) {
             this.input = input;
@@ -103,8 +103,8 @@ public class ControlUtils implements Controller.Factory {
 
     public static class ScalarAction implements ButtonAction {
 
-        private DoubleSupplier input;
-        private DoubleConsumer action;
+        private final DoubleSupplier input;
+        private final DoubleConsumer action;
 
         private double lastValue;
 

@@ -3,6 +3,7 @@ package com.team1816.lib.subsystems;
 import badlog.lib.BadLog;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.loops.ILooper;
+import com.team1816.season.Robot;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
@@ -21,14 +22,12 @@ import java.util.function.Supplier;
 public abstract class Subsystem implements Sendable {
 
     private final String name;
-    protected static final RobotFactory factory = RobotFactory.getInstance();
+    protected static final RobotFactory factory = Robot.getFactory();
 
     protected Subsystem(String name) {
         this.name = name;
         SendableRegistry.addLW(this, name, name);
     }
-
-    public void writeToLog() {}
 
     // Optional design pattern for caching periodic reads to avoid hammering the HAL/CAN.
     public void readPeriodicInputs() {}
@@ -61,10 +60,17 @@ public abstract class Subsystem implements Sendable {
         }
     }
 
+    @Deprecated
+    public void outputTelemetry() {}
+
     @Override
     public void initSendable(SendableBuilder builder) {}
 
     public String getSubsystemName() {
-        return SendableRegistry.getName(this);
+        return name;
+    }
+
+    public boolean isImplemented() {
+        return factory.getSubsystem(name).implemented;
     }
 }

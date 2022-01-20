@@ -7,7 +7,7 @@ import java.util.ArrayList;
  */
 public class MovingAverage {
     ArrayList<Double> numbers = new ArrayList<Double>();
-    private int maxSize;
+    private final int maxSize;
 
     public MovingAverage(int maxSize) {
         this.maxSize = maxSize;

@@ -51,11 +51,11 @@ public class CrashTracker {
             filePath = System.getenv("temp") + "\\crash_tracking.log";
         }
         try (PrintWriter writer = new PrintWriter(new FileWriter(filePath, true))) {
-            writer.print(RUN_INSTANCE_UUID.toString());
+            writer.print(RUN_INSTANCE_UUID);
             writer.print(", ");
             writer.print(mark);
             writer.print(", ");
-            writer.print(new Date().toString());
+            writer.print(new Date());
 
             if (nullableException != null) {
                 writer.print(", ");

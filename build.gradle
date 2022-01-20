@@ -3,7 +3,7 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 plugins {
     id 'java'
-    id 'edu.wpi.first.GradleRIO' version '2022.1.1'
+    id 'edu.wpi.first.GradleRIO' version '2022.2.1'
     id 'org.jsonschema2dataclass' version '4.0.1'
     id "com.diffplug.spotless" version "5.8.2"
 }
@@ -109,9 +109,11 @@ jsonSchema2Pojo {
     includeToString = false
     includeHashcodeAndEquals = false
     source.setFrom files(
-        "${project.rootDir}/src/main/resources/subsystem.schema.json",
-        "${project.rootDir}/src/main/resources/double.solenoid.schema.json",
+        "${project.rootDir}/src/main/resources/subsystemconfig.schema.json",
         "${project.rootDir}/src/main/resources/pidconfig.schema.json",
+        "${project.rootDir}/src/main/resources/swervemoduleconfig.schema.json",
+        "${project.rootDir}/src/main/resources/moduleconfig.schema.json",
+        "${project.rootDir}/src/main/resources/double.solenoid.schema.json",
         "${project.rootDir}/src/main/resources/robotconfig.schema.json"
     )
 }

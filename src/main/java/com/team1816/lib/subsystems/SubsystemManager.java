@@ -12,31 +12,19 @@ import java.util.List;
  */
 public class SubsystemManager implements ILooper {
 
-    public static SubsystemManager mInstance = null;
-
     private List<Subsystem> mAllSubsystems;
-    private List<Loop> mLoops = new ArrayList<>();
+    private final List<Loop> mLoops = new ArrayList<>();
 
-    private SubsystemManager() {}
+    public SubsystemManager() {}
 
-    public static SubsystemManager getInstance() {
-        if (mInstance == null) {
-            mInstance = new SubsystemManager();
-        }
-
-        return mInstance;
-    }
+    public void outputToSmartDashboard() {}
 
     public boolean checkSubsystems() {
         boolean ret_val = true;
 
         for (Subsystem s : mAllSubsystems) {
             System.out.println("SUBSYSTEM: " + s.getSubsystemName());
-            var passed = s.checkSystem();
-            if (!passed) {
-                System.out.println(" !!! Failed !!!");
-            }
-            ret_val &= passed;
+            ret_val &= s.checkSystem();
         }
 
         return ret_val;
@@ -52,6 +40,13 @@ public class SubsystemManager implements ILooper {
 
     public void setSubsystems(Subsystem... allSubsystems) {
         mAllSubsystems = Arrays.asList(allSubsystems);
+        for (Subsystem subsystem : mAllSubsystems) {
+            if (!subsystem.isImplemented()) {
+                System.out.println(
+                    "  Warning: " + subsystem.getSubsystemName() + " is not implemented"
+                );
+            }
+        }
     }
 
     private class EnabledLoop implements Loop {

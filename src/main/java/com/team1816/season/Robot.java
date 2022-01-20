@@ -1,15 +1,13 @@
 package com.team1816.season;
 
-import static com.team1816.season.controlboard.ControlUtils.*;
-
 import badlog.lib.BadLog;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.team1816.lib.LibModule;
 import com.team1816.lib.auto.AutoModeExecutor;
-import com.team1816.lib.auto.actions.DriveTrajectory;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.controlboard.IControlBoard;
+import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.loops.Looper;
 import com.team1816.lib.subsystems.DrivetrainLogger;
 import com.team1816.lib.subsystems.Infrastructure;
@@ -24,44 +22,46 @@ import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.team1816.season.controlboard.ControlUtils.createAction;
+import static com.team1816.season.controlboard.ControlUtils.createHoldAction;
+
 public class Robot extends TimedRobot {
 
     private final Injector injector;
     private BadLog logger;
 
-    private final Looper mEnabledLooper = new Looper();
-    private final Looper mDisabledLooper = new Looper();
+    private final Looper mEnabledLooper = new Looper(this);
+    private final Looper mDisabledLooper = new Looper(this);
 
     private IControlBoard mControlBoard;
 
-    private final SubsystemManager mSubsystemManager = SubsystemManager.getInstance();
+    private final SubsystemManager mSubsystemManager;
 
     // subsystems
-    private final Superstructure mSuperstructure = Superstructure.getInstance();
-    private final Infrastructure mInfrastructure = Infrastructure.getInstance();
-    private final RobotState mRobotState = RobotState.getInstance();
-    private final RobotStateEstimator mRobotStateEstimator = RobotStateEstimator.getInstance();
-    private final Drive mDrive = Drive.getInstance();
-    private final LedManager ledManager = LedManager.getInstance();
-    private final Turret turret = Turret.getInstance();
-    private final Camera camera = Camera.getInstance();
+    private final Superstructure mSuperstructure;
+    private final Infrastructure mInfrastructure;
+    private final RobotState mRobotState;
+    private final RobotStateEstimator mRobotStateEstimator;
+    private final Drive mDrive;
+    private final LedManager ledManager;
+    private final Turret turret;
+    private final Camera camera;
 
     private boolean mHasBeenEnabled = false;
 
     private final LatchedBoolean mWantsAutoExecution = new LatchedBoolean();
     private final LatchedBoolean mWantsAutoInterrupt = new LatchedBoolean();
 
-    private final AutoModeSelector mAutoModeSelector = AutoModeSelector.getInstance();
+    private final AutoModeSelector mAutoModeSelector;
     private AutoModeExecutor mAutoModeExecutor;
 
-    private boolean mDriveByCameraInAuto = false;
     private double loopStart;
     private boolean faulted;
 
@@ -72,9 +72,25 @@ public class Robot extends TimedRobot {
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
 
     public Robot() {
-        super();
+        super(Constants.kLooperDt);
         // initialize injector
         injector = Guice.createInjector(new LibModule(), new SeasonModule());
+        mDrive = (injector.getInstance(Drive.Factory.class)).getInstance();
+        mRobotStateEstimator = injector.getInstance(RobotStateEstimator.class);
+        turret = injector.getInstance(Turret.class);
+        mRobotState = injector.getInstance(RobotState.class);
+        mSuperstructure = injector.getInstance(Superstructure.class);
+        mInfrastructure = injector.getInstance(Infrastructure.class);
+        ledManager = injector.getInstance(LedManager.class);
+        camera = injector.getInstance(Camera.class);
+        mSubsystemManager = injector.getInstance(SubsystemManager.class);
+        mAutoModeSelector = injector.getInstance(AutoModeSelector.class);
+        // we need to get an instance to initialize trajectories
+        injector.getInstance(TrajectorySet.class);
+    }
+
+    public static RobotFactory getFactory() {
+        return RobotFactory.getInstance();
     }
 
     private Double getLastLoop() {
@@ -84,7 +100,7 @@ public class Robot extends TimedRobot {
     @Override
     public void robotInit() {
         try {
-            DriverStation.getInstance().silenceJoystickConnectionWarning(true);
+            DriverStation.silenceJoystickConnectionWarning(true);
             mControlBoard = injector.getInstance(IControlBoard.class);
             if (Constants.kIsBadlogEnabled) {
                 var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
@@ -150,7 +166,7 @@ public class Robot extends TimedRobot {
                     turret.CreateBadLogTopic(
                         "Turret/ActPos",
                         "NativeUnits",
-                        () -> (double) turret.getActualTurretPositionTicks(),
+                        turret::getActualTurretPositionTicks,
                         "hide",
                         "join:Turret/Positions"
                     );
@@ -189,9 +205,6 @@ public class Robot extends TimedRobot {
                     "hide",
                     "join:Tracking/Angles"
                 );
-
-                mDrive.setLogger(logger);
-
                 logger.finishInitialization();
             }
 
@@ -220,38 +233,11 @@ public class Robot extends TimedRobot {
             );
             mDrive.setHeading(Rotation2d.identity());
 
-            TrajectorySet.getInstance();
-
             mAutoModeSelector.updateModeCreator();
 
             actionManager =
                 new ActionManager(
                     // Driver Gamepad
-                    createAction(
-                        mControlBoard::getTrenchToFeederSpline,
-                        () -> {
-                            System.out.println("STARTING TRENCH TO FEEDER");
-                            SmartDashboard.putString("Teleop Spline", "TRENCH TO FEEDER");
-                            var trajectory = new DriveTrajectory(
-                                TrajectorySet.getInstance().TRENCH_TO_FEEDER,
-                                true
-                            );
-                            trajectory.start();
-                        }
-                    ),
-                    createAction(
-                        mControlBoard::getFeederToTrenchSpline,
-                        () -> {
-                            System.out.println("STARTING FEEDER TO TRENCH");
-                            SmartDashboard.putString("Teleop Spline", "FEEDER TO TRENCH");
-                            turret.setTurretAngle(Turret.CARDINAL_SOUTH);
-                            var trajectory = new DriveTrajectory(
-                                TrajectorySet.getInstance().FEEDER_TO_TRENCH,
-                                true
-                            );
-                            trajectory.start();
-                        }
-                    ),
                     createHoldAction(mControlBoard::getSlowMode, mDrive::setSlowMode),
                     // Operator Gamepad
                     createAction(
@@ -296,7 +282,7 @@ public class Robot extends TimedRobot {
                 );
         } catch (Throwable t) {
             faulted = true;
-            DriverStation.reportError(t.getMessage(), true);
+            t.printStackTrace();
         }
     }
 
@@ -322,7 +308,7 @@ public class Robot extends TimedRobot {
             mDrive.setBrakeMode(false);
         } catch (Throwable t) {
             faulted = true;
-            DriverStation.reportError(t.getMessage(), true);
+            t.printStackTrace();
         }
     }
 
@@ -346,16 +332,11 @@ public class Robot extends TimedRobot {
 
             mDrive.zeroSensors();
             turret.zeroSensors();
-
-            System.out.println("Auto init - " + mDriveByCameraInAuto);
-            if (!mDriveByCameraInAuto) {
-                mAutoModeExecutor.start();
-            }
-
+            mAutoModeExecutor.start();
             mEnabledLooper.start();
         } catch (Throwable t) {
             faulted = true;
-            DriverStation.reportError(t.getMessage(), true);
+            t.printStackTrace();
         }
     }
 
@@ -382,7 +363,7 @@ public class Robot extends TimedRobot {
             mControlBoard.reset();
         } catch (Throwable t) {
             faulted = true;
-            DriverStation.reportError(t.getMessage(), true);
+            t.printStackTrace();
         }
     }
 
@@ -411,7 +392,7 @@ public class Robot extends TimedRobot {
             }
         } catch (Throwable t) {
             faulted = true;
-            DriverStation.reportError(t.getMessage(), true);
+            t.printStackTrace();
         }
     }
 
@@ -420,10 +401,9 @@ public class Robot extends TimedRobot {
         try {
             mRobotState.outputToSmartDashboard();
             mAutoModeSelector.outputToSmartDashboard();
-            mRobotStateEstimator.outputToSmartDashboard();
         } catch (Throwable t) {
             faulted = true;
-            DriverStation.reportError(t.getMessage(), true);
+            t.printStackTrace();
         }
     }
 
@@ -454,7 +434,7 @@ public class Robot extends TimedRobot {
             mAutoModeSelector.updateModeCreator();
 
             Optional<AutoModeBase> autoMode = mAutoModeSelector.getAutoMode();
-            mDriveByCameraInAuto = mAutoModeSelector.isDriveByCamera();
+
             if (
                 autoMode.isPresent() && autoMode.get() != mAutoModeExecutor.getAutoMode()
             ) {
@@ -465,7 +445,7 @@ public class Robot extends TimedRobot {
             }
         } catch (Throwable t) {
             faulted = true;
-            DriverStation.reportError(t.getMessage(), true);
+            DriverStation.reportError(t.getMessage(), t.getStackTrace());
         }
     }
 
@@ -485,7 +465,7 @@ public class Robot extends TimedRobot {
             mAutoModeExecutor.interrupt();
         }
 
-        if (mDriveByCameraInAuto || mAutoModeExecutor.isInterrupted()) {
+        if (mAutoModeExecutor.isInterrupted()) {
             manualControl();
         }
 
@@ -503,7 +483,7 @@ public class Robot extends TimedRobot {
             manualControl();
         } catch (Throwable t) {
             faulted = true;
-            DriverStation.reportError(t.getMessage(), false);
+            t.printStackTrace();
             t.printStackTrace();
         }
 

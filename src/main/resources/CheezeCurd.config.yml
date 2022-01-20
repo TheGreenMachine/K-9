@@ -68,7 +68,7 @@ constants:
     maxTicks: 2000 # ticks per 100ms
     maxAccel: 50
     sensorPhase: 0
-    kLooperDt: .030
+    kLooperDt: .010
     kTrackScrubFactor: 2
     kPCMId: 0
     pathKs: .0125

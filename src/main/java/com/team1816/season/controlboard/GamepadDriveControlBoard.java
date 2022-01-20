@@ -29,6 +29,11 @@ public class GamepadDriveControlBoard implements IDriveControlBoard {
     }
 
     @Override
+    public double getStrafe() {
+        return 0;
+    }
+
+    @Override
     public boolean getSlowMode() {
         return mController.getTrigger(Axis.RIGHT_TRIGGER);
     }

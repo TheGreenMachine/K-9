@@ -11,7 +11,7 @@ public class PigeonChecker {
         pigeon.getGeneralStatus(status);
         failure = status.state != PigeonIMU.PigeonState.Ready;
         if (failure) {
-            System.out.println("Failed! Status: " + status.toString());
+            System.out.println("Failed! Status: " + status);
         }
         return !failure;
     }

@@ -20,18 +20,15 @@ import java.util.Optional;
 public class Superstructure extends Subsystem {
 
     private static Superstructure mInstance;
-    private Optional<AimingParameters> mLatestAimingParameters = Optional.empty();
+    private final Optional<AimingParameters> mLatestAimingParameters = Optional.empty();
 
-    public static synchronized Superstructure getInstance() {
-        if (mInstance == null) {
-            mInstance = new Superstructure();
-        }
-
-        return mInstance;
+    public Superstructure() {
+        super("superstructure");
     }
 
-    private Superstructure() {
-        super("superstructure");
+    @Override
+    public boolean isImplemented() {
+        return true;
     }
 
     @Override

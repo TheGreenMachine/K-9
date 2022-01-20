@@ -8,10 +8,10 @@ import com.team1816.season.paths.TrajectorySet;
 
 public class LivingRoomMode extends AutoModeBase {
 
-    private DriveTrajectory mDriveTrajectory;
+    private final DriveTrajectory mDriveTrajectory;
 
     public LivingRoomMode() {
-        var trajectory = TrajectorySet.getInstance().LIVING_ROOM;
+        var trajectory = TrajectorySet.LIVING_ROOM;
         mDriveTrajectory = new DriveTrajectory(trajectory, true);
     }
 

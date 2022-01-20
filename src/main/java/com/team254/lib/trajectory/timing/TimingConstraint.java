@@ -7,7 +7,7 @@ public interface TimingConstraint<S extends State<S>> {
 
     MinMaxAcceleration getMinMaxAcceleration(S state, double velocity);
 
-    public static class MinMaxAcceleration {
+    class MinMaxAcceleration {
         protected final double min_acceleration_;
         protected final double max_acceleration_;
 

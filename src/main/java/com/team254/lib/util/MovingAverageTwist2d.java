@@ -9,7 +9,7 @@ import java.util.ArrayList;
  */
 public class MovingAverageTwist2d {
     ArrayList<Twist2d> twists = new ArrayList<Twist2d>();
-    private int maxSize;
+    private final int maxSize;
 
     public MovingAverageTwist2d(int maxSize) {
         this.maxSize = maxSize;

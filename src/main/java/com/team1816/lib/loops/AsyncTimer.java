@@ -6,9 +6,9 @@ import javax.annotation.Nullable;
 public class AsyncTimer {
 
     private double startTime;
-    private double duration;
-    private Runnable startAction;
-    private Runnable endAction;
+    private final double duration;
+    private final Runnable startAction;
+    private final Runnable endAction;
     private boolean hasStarted;
     private boolean completed;
 

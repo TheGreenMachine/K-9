@@ -13,13 +13,13 @@ import java.util.Optional;
  */
 
 public class PathSegment {
-    private Translation2d start;
-    private Translation2d end;
+    private final Translation2d start;
+    private final Translation2d end;
     private Translation2d center;
-    private Translation2d deltaStart;
+    private final Translation2d deltaStart;
     private Translation2d deltaEnd;
-    private double maxSpeed;
-    private boolean isLine;
+    private final double maxSpeed;
+    private final boolean isLine;
     private MotionProfile speedController;
     private boolean extrapolateLookahead;
     private String marker;

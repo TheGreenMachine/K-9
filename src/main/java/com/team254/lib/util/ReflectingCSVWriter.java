@@ -9,9 +9,9 @@ import java.util.concurrent.ConcurrentLinkedDeque;
  * Writes data to a CSV file
  */
 public class ReflectingCSVWriter<T> {
-    private ConcurrentLinkedDeque<String> mLinesToWrite = new ConcurrentLinkedDeque<>();
+    private final ConcurrentLinkedDeque<String> mLinesToWrite = new ConcurrentLinkedDeque<>();
     private PrintWriter mOutput = null;
-    private Field[] mFields;
+    private final Field[] mFields;
 
     public ReflectingCSVWriter(String fileName, Class<T> typeClass) {
         mFields = typeClass.getFields();

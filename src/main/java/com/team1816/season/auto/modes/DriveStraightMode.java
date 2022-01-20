@@ -8,11 +8,10 @@ import com.team1816.season.paths.TrajectorySet;
 
 public class DriveStraightMode extends AutoModeBase {
 
-    private DriveTrajectory mDriveStraight;
+    private final DriveTrajectory mDriveStraight;
 
     public DriveStraightMode() {
-        var trajectory = TrajectorySet.getInstance().DRIVE_STRAIGHT;
-        mDriveStraight = new DriveTrajectory(trajectory, true);
+        mDriveStraight = new DriveTrajectory(TrajectorySet.DRIVE_STRAIGHT, true);
     }
 
     @Override

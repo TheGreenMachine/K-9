@@ -9,7 +9,9 @@ import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 import java.awt.*;
+import javax.inject.Singleton;
 
+@Singleton
 public class LedManager extends Subsystem {
 
     public static final String NAME = "ledmanager";
@@ -41,7 +43,7 @@ public class LedManager extends Subsystem {
         STANDARD,
     }
 
-    private LedManager() {
+    public LedManager() {
         super(NAME);
         this.canifier = factory.getCanifier(NAME);
         this.cameraCanifier = factory.getCanifier("camera");
@@ -54,13 +56,6 @@ public class LedManager extends Subsystem {
         this.ledB = 0;
 
         this.cameraLedOn = false;
-    }
-
-    public static LedManager getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new LedManager();
-        }
-        return INSTANCE;
     }
 
     private void configureCanifier(ICanifier canifier) {

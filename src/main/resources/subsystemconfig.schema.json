@@ -20,6 +20,9 @@
         "victors": {
             "$ref": "int.map.schema.json"
         },
+        "swerveModules": {
+            "existingJavaType": "java.util.Map<String,SwerveModuleConfiguration>"
+        },
         "solenoids": {
             "$ref": "int.map.schema.json"
         },
