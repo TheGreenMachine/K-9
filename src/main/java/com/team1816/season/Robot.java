@@ -11,7 +11,6 @@ import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.loops.Looper;
 import com.team1816.lib.subsystems.DrivetrainLogger;
 import com.team1816.lib.subsystems.Infrastructure;
-import com.team1816.lib.subsystems.RobotStateEstimator;
 import com.team1816.lib.subsystems.SubsystemManager;
 import com.team1816.lib.util.GreenDriveHelper;
 import com.team1816.season.controlboard.ActionManager;
@@ -21,6 +20,7 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.*;
 
 import java.nio.file.Files;
@@ -48,7 +48,6 @@ public class Robot extends TimedRobot {
     private final Superstructure mSuperstructure;
     private final Infrastructure mInfrastructure;
     private final RobotState mRobotState;
-    private final RobotStateEstimator mRobotStateEstimator;
     private final Drive mDrive;
     private final LedManager ledManager;
     private final Turret turret;
@@ -76,7 +75,6 @@ public class Robot extends TimedRobot {
         // initialize injector
         injector = Guice.createInjector(new LibModule(), new SeasonModule());
         mDrive = (injector.getInstance(Drive.Factory.class)).getInstance();
-        mRobotStateEstimator = injector.getInstance(RobotStateEstimator.class);
         turret = injector.getInstance(Turret.class);
         mRobotState = injector.getInstance(RobotState.class);
         mSuperstructure = injector.getInstance(Superstructure.class);
@@ -209,7 +207,6 @@ public class Robot extends TimedRobot {
             }
 
             mSubsystemManager.setSubsystems(
-                mRobotStateEstimator,
                 mDrive,
                 mSuperstructure,
                 mInfrastructure,
@@ -438,10 +435,12 @@ public class Robot extends TimedRobot {
             if (
                 autoMode.isPresent() && autoMode.get() != mAutoModeExecutor.getAutoMode()
             ) {
+                var auto = autoMode.get();
                 System.out.println(
-                    "Set auto mode to: " + autoMode.get().getClass().toString()
+                    "Set auto mode to: " + auto.getClass().toString()
                 );
-                mAutoModeExecutor.setAutoMode(autoMode.get());
+                mRobotState.field.getObject("Trajectory").setTrajectory(auto.getTrajectory());
+                mAutoModeExecutor.setAutoMode(auto);
             }
         } catch (Throwable t) {
             faulted = true;
@@ -510,8 +509,7 @@ public class Robot extends TimedRobot {
         ) {
             if (
                 driveSignal.getLeft() != 0 ||
-                driveSignal.getRight() != 0 ||
-                mDrive.isDoneWithTrajectory()
+                    driveSignal.getRight() != 0
             ) {
                 mDrive.setOpenLoop(driveSignal);
             }
@@ -521,5 +519,6 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void testPeriodic() {}
+    public void testPeriodic() {
+    }
 }

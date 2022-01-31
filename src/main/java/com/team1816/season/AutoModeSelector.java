@@ -2,7 +2,6 @@ package com.team1816.season;
 
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.auto.modes.DoNothingMode;
-import com.team1816.season.auto.modes.DriveStraightMode;
 import com.team1816.season.auto.modes.LivingRoomMode;
 import com.team1816.season.auto.modes.TuneDrivetrainMode;
 import com.team1816.season.auto.modes.TurretTestMode;
@@ -45,8 +44,7 @@ public class AutoModeSelector {
         mModeChooser.addOption("Do Nothing", DesiredMode.DO_NOTHING);
 
         // CheezeCurd
-        mModeChooser.addOption("Living Room", DesiredMode.LIVING_ROOM);
-        mModeChooser.setDefaultOption("Drive Straight", DesiredMode.DRIVE_STRAIGHT);
+        mModeChooser.setDefaultOption("Living Room", DesiredMode.LIVING_ROOM);
         mModeChooser.addOption("Turret Tuning", DesiredMode.TURRET_TEST);
 
         SmartDashboard.putData("Auto mode", mModeChooser);
@@ -86,18 +84,15 @@ public class AutoModeSelector {
 
     private Optional<AutoModeBase> getAutoModeForParams(DesiredMode mode) {
         if (hardwareFailure) {
-            return Optional.of(new DriveStraightMode());
+            return Optional.of(new DoNothingMode());
         }
         switch (mode) {
-            // 2020
             case DO_NOTHING:
                 return Optional.of(new DoNothingMode());
             case TUNE_DRIVETRAIN:
                 return Optional.of(new TuneDrivetrainMode());
             case TURRET_TEST:
                 return Optional.of(new TurretTestMode());
-            case DRIVE_STRAIGHT:
-                return (Optional.of(new DriveStraightMode()));
             case LIVING_ROOM:
                 return (Optional.of(new LivingRoomMode()));
             default:

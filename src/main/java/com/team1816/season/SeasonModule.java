@@ -1,7 +1,6 @@
 package com.team1816.season;
 
 import com.google.inject.AbstractModule;
-import com.team1816.lib.auto.actions.DriveTrajectory;
 import com.team1816.lib.controlboard.IButtonControlBoard;
 import com.team1816.lib.controlboard.IControlBoard;
 import com.team1816.lib.controlboard.IDriveControlBoard;
@@ -25,7 +24,6 @@ public class SeasonModule extends AbstractModule {
         requestStaticInjection(TankDrive.class);
         requestStaticInjection(Camera.class);
         requestStaticInjection(Turret.class);
-        requestStaticInjection(DriveTrajectory.class);
         requestStaticInjection(TurretAction.class);
         requestStaticInjection(AutoAimAction.class);
     }

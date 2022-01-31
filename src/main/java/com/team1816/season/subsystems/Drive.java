@@ -18,16 +18,24 @@ import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveSignal;
+import com.team254.lib.util.Units;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public abstract class Drive
     extends Subsystem
     implements TrackableDrivetrain, PidProvider {
+
+    public abstract void updateTrajectoryVelocities(Double aDouble, Double aDouble1);
+    public abstract edu.wpi.first.math.geometry.Pose2d getPose();
+    public abstract void startTrajectory(edu.wpi.first.math.geometry.Pose2d initialPose);
 
     public interface Factory {
         Drive getInstance();
@@ -62,11 +70,8 @@ public abstract class Drive
     protected boolean mOverrideTrajectory = false;
 
     protected boolean isSlowMode;
-    protected double rotationScalar = 1;
-    protected boolean robotCentric = false;
 
     // Simulator
-    protected final Field2d fieldSim = new Field2d();
     protected double gyroDrift;
     protected final double robotWidthTicks =
         inchesPerSecondToTicksPer100ms(Constants.kDriveWheelTrackWidthInches) * Math.PI;
@@ -84,11 +89,8 @@ public abstract class Drive
     protected Drive() {
         super(NAME);
         mPeriodicIO = new PeriodicIO();
-
         openLoopRampRate = Constants.kOpenLoopRampRate;
-
         mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId", -1));
-
         mPigeon.configFactoryDefault();
     }
 
@@ -207,7 +209,6 @@ public abstract class Drive
                                 updateOpenLoopPeriodic();
                                 break;
                             case TRAJECTORY_FOLLOWING:
-                                updatePathFollower(timestamp);
                                 break;
                             default:
                                 System.out.println(
@@ -230,7 +231,6 @@ public abstract class Drive
 
     protected abstract void updateOpenLoopPeriodic();
 
-    protected abstract void updatePathFollower(double timestamp);
 
     public static double rotationsToInches(double rotations) {
         return rotations * (Constants.kDriveWheelDiameterInches * Math.PI);
@@ -242,6 +242,10 @@ public abstract class Drive
 
     protected static double inchesToRotations(double inches) {
         return inches / (Constants.kDriveWheelDiameterInches * Math.PI);
+    }
+
+    public static double metersPerSecondToTicksPer100ms(double meters_per_second) {
+        return inchesPerSecondToTicksPer100ms(Units.meters_to_inches(meters_per_second));
     }
 
     public static double inchesPerSecondToTicksPer100ms(double inches_per_second) {
@@ -274,10 +278,6 @@ public abstract class Drive
         return this.openLoopRampRate;
     }
 
-    /**
-     * Configure talons for velocity control
-     */
-    public abstract void setVelocity(List<Translation2d> driveVectors);
 
     public boolean isBrakeMode() {
         return mIsBrakeMode;
@@ -319,25 +319,10 @@ public abstract class Drive
         return mDriveControlState;
     }
 
-    public abstract void setTrajectory(
-        TrajectoryIterator<TimedState<Pose2dWithCurvature>> trajectory,
-        Rotation2d targetHeading
-    );
-
-    public abstract boolean isDoneWithTrajectory();
-
     public enum DriveControlState {
         OPEN_LOOP, // open loop voltage control
-        PATH_FOLLOWING, // velocity PID control
         TRAJECTORY_FOLLOWING,
     }
-
-    @Override
-    public void zeroSensors() {
-        zeroSensors(Pose2d.identity());
-    }
-
-    public abstract void zeroSensors(Pose2d pose);
 
     public boolean hasPigeonResetOccurred() {
         return mPigeon.hasResetOccurred();
@@ -366,9 +351,6 @@ public abstract class Drive
             () -> this.getDriveControlState().toString(),
             null
         );
-
-        SmartDashboard.putData("Field", fieldSim);
-
         SmartDashboard.putNumber("Drive/Vector Direction", 0);
         SmartDashboard.putNumber("Drive/Robot Velocity", 0);
         SmartDashboard.putNumber("Drive/OpenLoopRampRate", this.openLoopRampRate);

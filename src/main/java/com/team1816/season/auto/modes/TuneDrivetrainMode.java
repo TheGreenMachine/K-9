@@ -1,23 +1,15 @@
 package com.team1816.season.auto.modes;
 
 import com.team1816.lib.auto.AutoModeEndedException;
-import com.team1816.lib.auto.actions.DriveTrajectory;
+import com.team1816.lib.auto.actions.TrajectoryAction;
 import com.team1816.lib.auto.actions.WaitAction;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.season.paths.TrajectorySet;
-import com.team254.lib.geometry.Rotation2d;
 
 public class TuneDrivetrainMode extends AutoModeBase {
 
-    private final DriveTrajectory trajectory;
-
     public TuneDrivetrainMode() {
-        trajectory =
-            new DriveTrajectory(
-                TrajectorySet.TUNE_DRIVETRAIN,
-                Rotation2d.fromDegrees(90),
-                true
-            );
+        trajectory = new TrajectoryAction(TrajectorySet.TUNE_DRIVETRAIN);
     }
 
     @Override

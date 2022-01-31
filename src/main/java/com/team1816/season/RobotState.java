@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 @Singleton
 public class RobotState {
@@ -77,6 +78,7 @@ public class RobotState {
     private Rotation2d headingRelativeToInitial = Rotation2d.identity();
 
     public final Field2d field = new Field2d();
+
 
     public RobotState() {
         SmartDashboard.putData("Field", field);
@@ -372,4 +374,5 @@ public class RobotState {
             getHeadingRelativeToInitial().getDegrees()
         );
     }
+
 }

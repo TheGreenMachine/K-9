@@ -2,6 +2,8 @@ package com.team1816.season;
 
 import com.team1816.lib.hardware.RobotFactory;
 import com.team254.lib.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 public class Constants {
 
@@ -17,6 +19,7 @@ public class Constants {
     public static final double kDriveWheelDiameterInches = factory.getConstant(
         "wheelDiameter"
     );
+    public static final Pose2d StartingPose = new Pose2d(.5, 3.5, new Rotation2d());
 
     public static double kTrackScrubFactor = factory.getConstant("kTrackScrubFactor");
     public static int kPCMId = factory.getPcmId();

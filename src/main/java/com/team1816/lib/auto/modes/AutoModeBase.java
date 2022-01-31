@@ -3,6 +3,8 @@ package com.team1816.lib.auto.modes;
 import com.team1816.lib.auto.AutoModeEndedException;
 import com.team1816.lib.auto.actions.Action;
 import com.team1816.lib.auto.actions.NoopAction;
+import com.team1816.lib.auto.actions.TrajectoryAction;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 
 /**
@@ -14,8 +16,13 @@ public abstract class AutoModeBase {
     protected final double mUpdateRate = 1.0 / 50.0;
     protected boolean mActive = false;
     protected boolean mIsInterrupted = false;
+    protected TrajectoryAction trajectory;
 
     protected abstract void routine() throws AutoModeEndedException;
+
+    public Trajectory getTrajectory(){
+        return trajectory.getTrajectory();
+    }
 
     public void run() {
         mActive = true;

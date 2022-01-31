@@ -134,20 +134,6 @@ public class TrajectoryTest {
         assertTrue(left_iterator.isDone() && right_iterator.isDone());
     }
 
-    @Test
-    public void test() {
-        var trajectories = TrajectorySet.getInstance();
-        System.out.println(trajectories.FEEDER_TO_TRENCH);
-        verifyTrajectory(trajectories.FEEDER_TO_TRENCH, true);
-    }
-
-    @Test
-    public void reversedTrajectory() {
-        var trajectories = TrajectorySet.getInstance();
-        System.out.println(trajectories.TRENCH_TO_FEEDER);
-        verifyTrajectory(trajectories.TRENCH_TO_FEEDER, false);
-    }
-
     private void verifyTrajectory(
         Trajectory<TimedState<Pose2dWithCurvature>> trajectory,
         boolean shouldBeReversed

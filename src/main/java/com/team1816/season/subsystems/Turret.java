@@ -235,13 +235,12 @@ public class Turret extends Subsystem implements PidProvider {
         turretAngleRelativeToField =
             robotState.getHeadingRelativeToInitial().getDegrees();
         if (RobotBase.isSimulation()) {
-            var xPos = Units.inches_to_meters(robotState.getEstimatedX());
-            var yPos = Units.inches_to_meters(robotState.getEstimatedY()) + 3.5;
             // show turret
+            var robotPose = robotState.field.getRobotPose();
             var turret = robotState.field.getObject("turret");
             turret.setPose(
-                xPos,
-                yPos,
+                robotPose.getX(),
+                robotPose.getY(),
                 Rotation2d.fromDegrees(getActualTurretPositionDegrees())
             );
         }

@@ -2,6 +2,7 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/SmartDashboard/Auto mode": "String Chooser",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Starting Position": "String Chooser",
@@ -24,6 +25,11 @@
           "arrowWeight": 2.0,
           "selectable": false,
           "weight": 2.0
+        },
+        "Trajectory": {
+          "arrows": false,
+          "style": "Line",
+          "weight": 1.0
         },
         "turret": {
           "arrowWeight": 3.0,
