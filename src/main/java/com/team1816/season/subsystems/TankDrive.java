@@ -10,17 +10,14 @@ import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.subsystems.DifferentialDrivetrain;
 import com.team1816.season.AutoModeSelector;
 import com.team1816.season.Constants;
-
-import com.team254.lib.geometry.Rotation2d;
-
 import com.team254.lib.util.CheesyDriveHelper;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.Units;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.RobotBase;
-
-import java.util.List;
 
 @Singleton
 public class TankDrive extends Drive implements DifferentialDrivetrain {
@@ -42,26 +39,34 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     private final double tickRatioPerLoop = Constants.kLooperDt / .1d;
 
     private DifferentialDriveOdometry odometry;
+    private Trajectory mTrajectory;
 
     @Override
     public void updateTrajectoryVelocities(Double leftVel, Double rightVel) {
         // Velocities are in m/sec comes from trajectory command
-        var signal = new DriveSignal(metersPerSecondToTicksPer100ms(leftVel), metersPerSecondToTicksPer100ms(rightVel));
+        var signal = new DriveSignal(
+            metersPerSecondToTicksPer100ms(leftVel),
+            metersPerSecondToTicksPer100ms(rightVel)
+        );
         setVelocity(signal, DriveSignal.NEUTRAL);
     }
 
     @Override
     public Pose2d getPose() {
-        return  odometry.getPoseMeters();
+        return odometry.getPoseMeters();
     }
 
-    private void updateRobotPose(){
+    private void updateRobotPose() {
         mRobotState.field.setRobotPose(odometry.getPoseMeters());
     }
 
     @Override
-    public void startTrajectory(Pose2d pose) {
-        odometry.resetPosition(pose, pose.getRotation());
+    public void startTrajectory(Trajectory trajectory) {
+        mTrajectory = trajectory;
+        odometry.resetPosition(
+            trajectory.getInitialPose(),
+            trajectory.getInitialPose().getRotation()
+        );
         updateRobotPose();
         mDriveControlState = DriveControlState.TRAJECTORY_FOLLOWING;
         setBrakeMode(true);
@@ -91,25 +96,25 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
             Constants.kLongCANTimeoutMs
         );
         ((IMotorControllerEnhanced) mLeftSlaveA).configSupplyCurrentLimit(
-            currentLimitConfig,
-            Constants.kLongCANTimeoutMs
-        );
+                currentLimitConfig,
+                Constants.kLongCANTimeoutMs
+            );
         ((IMotorControllerEnhanced) mLeftSlaveB).configSupplyCurrentLimit(
-            currentLimitConfig,
-            Constants.kLongCANTimeoutMs
-        );
+                currentLimitConfig,
+                Constants.kLongCANTimeoutMs
+            );
         mRightMaster.configSupplyCurrentLimit(
             currentLimitConfig,
             Constants.kLongCANTimeoutMs
         );
         ((IMotorControllerEnhanced) mRightSlaveA).configSupplyCurrentLimit(
-            currentLimitConfig,
-            Constants.kLongCANTimeoutMs
-        );
+                currentLimitConfig,
+                Constants.kLongCANTimeoutMs
+            );
         ((IMotorControllerEnhanced) mRightSlaveB).configSupplyCurrentLimit(
-            currentLimitConfig,
-            Constants.kLongCANTimeoutMs
-        );
+                currentLimitConfig,
+                Constants.kLongCANTimeoutMs
+            );
 
         setOpenLoopRampRate(Constants.kOpenLoopRampRate);
 
@@ -153,7 +158,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     public Rotation2d getDesiredRotation2d() {
         if (mDriveControlState == DriveControlState.TRAJECTORY_FOLLOWING) {
-            return mPeriodicIO.path_setpoint.state().getRotation();
+            return mPeriodicIO.desired_pose.getRotation();
         }
         return mPeriodicIO.desired_heading;
     }
@@ -181,14 +186,11 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
             gyroDrift -=
                 (
                     mPeriodicIO.left_velocity_ticks_per_100ms -
-                        mPeriodicIO.right_velocity_ticks_per_100ms
+                    mPeriodicIO.right_velocity_ticks_per_100ms
                 ) /
-                    robotWidthTicks;
+                robotWidthTicks;
             mPeriodicIO.gyro_heading_no_offset =
                 getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
-            var rot2d = new edu.wpi.first.math.geometry.Rotation2d(
-                mPeriodicIO.gyro_heading_no_offset.getRadians()
-            );
         } else {
             mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
             mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);
@@ -208,8 +210,11 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
             mPeriodicIO.left_error = mLeftMaster.getClosedLoopError(0);
             mPeriodicIO.right_error = mRightMaster.getClosedLoopError(0);
         }
-        var rotation = new edu.wpi.first.math.geometry.Rotation2d(mPeriodicIO.gyro_heading.getRadians());
-        odometry.update(rotation, Units.inches_to_meters(getLeftEncoderDistance()), Units.inches_to_meters(getRightEncoderDistance()));
+        odometry.update(
+            mPeriodicIO.gyro_heading,
+            Units.inches_to_meters(getLeftEncoderDistance()),
+            Units.inches_to_meters(getRightEncoderDistance())
+        );
         updateRobotPose();
     }
 
@@ -235,6 +240,12 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     @Override
     protected void updateOpenLoopPeriodic() {
         // no openLoop update needed
+    }
+
+    @Override
+    protected void updateTrajectoryPeriodic(double timestamp) {
+        // update desired pose from trajectory
+        mPeriodicIO.desired_pose = mTrajectory.sample(timestamp).poseMeters;
     }
 
     /**
@@ -275,10 +286,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         // }
 
         if (mDriveControlState == Drive.DriveControlState.TRAJECTORY_FOLLOWING) {
-            if (
-                driveSignal.getLeft() != 0 ||
-                    driveSignal.getRight() != 0
-            ) {
+            if (driveSignal.getLeft() != 0 || driveSignal.getRight() != 0) {
                 setOpenLoop(driveSignal);
             }
         } else {
@@ -333,7 +341,9 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         System.out.println("set heading: " + heading.getDegrees());
 
         mGyroOffset =
-            heading.rotateBy(Rotation2d.fromDegrees(mPigeon.getFusedHeading()).inverse());
+            heading.rotateBy(
+                Rotation2d.fromDegrees(mPigeon.getFusedHeading()).unaryMinus()
+            );
         System.out.println("gyro offset: " + mGyroOffset.getDegrees());
 
         mPeriodicIO.desired_heading = heading;
@@ -346,7 +356,11 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         leftEncoderSimPosition = 0;
         rightEncoderSimPosition = 0;
         mRobotState.field.setRobotPose(Constants.StartingPose);
-        odometry = new DifferentialDriveOdometry(Constants.StartingPose.getRotation(), Constants.StartingPose);
+        odometry =
+            new DifferentialDriveOdometry(
+                Constants.StartingPose.getRotation(),
+                Constants.StartingPose
+            );
     }
 
     public double getLeftEncoderRotations() {
@@ -400,7 +414,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     public double getAngularVelocity() {
         return (
             (getRightLinearVelocity() - getLeftLinearVelocity()) /
-                Constants.kDriveWheelTrackWidthInches
+            Constants.kDriveWheelTrackWidthInches
         );
     }
 
@@ -408,7 +422,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     public void zeroSensors() {
         System.out.println("Zeroing drive sensors!");
         resetPigeon();
-        setHeading(Rotation2d.identity());
+        setHeading(new Rotation2d());
         resetEncoders();
         if (mPigeon.getLastError() != ErrorCode.OK) {
             // BadLog.createValue("PigeonErrorDetected", "true");
@@ -487,12 +501,11 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     @Override
     public double getFieldDesiredXDistance() {
-        return mPeriodicIO.path_setpoint.state().getTranslation().x();
+        return mPeriodicIO.desired_pose.getX();
     }
 
     @Override
     public double getFieldYDesiredYDistance() {
-        return mPeriodicIO.path_setpoint.state().getTranslation().y();
+        return mPeriodicIO.desired_pose.getY();
     }
-
 }

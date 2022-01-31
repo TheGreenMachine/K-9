@@ -1,5 +1,8 @@
 package com.team1816.season;
 
+import static com.team1816.season.controlboard.ControlUtils.createAction;
+import static com.team1816.season.controlboard.ControlUtils.createHoldAction;
+
 import badlog.lib.BadLog;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -20,17 +23,12 @@ import com.team254.lib.geometry.Pose2d;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.*;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
-
-import static com.team1816.season.controlboard.ControlUtils.createAction;
-import static com.team1816.season.controlboard.ControlUtils.createHoldAction;
 
 public class Robot extends TimedRobot {
 
@@ -228,7 +226,7 @@ public class Robot extends TimedRobot {
                 Pose2d.identity(),
                 Rotation2d.identity()
             );
-            mDrive.setHeading(Rotation2d.identity());
+            mDrive.setHeading(new edu.wpi.first.math.geometry.Rotation2d());
 
             mAutoModeSelector.updateModeCreator();
 
@@ -321,7 +319,7 @@ public class Robot extends TimedRobot {
                 Pose2d.identity(),
                 Rotation2d.identity()
             );
-            mDrive.setHeading(Rotation2d.identity());
+            mDrive.setHeading(new edu.wpi.first.math.geometry.Rotation2d());
 
             mHasBeenEnabled = true;
 
@@ -417,7 +415,7 @@ public class Robot extends TimedRobot {
                     Pose2d.identity(),
                     Rotation2d.identity()
                 );
-                mDrive.setHeading(Rotation2d.identity());
+                mDrive.setHeading(new edu.wpi.first.math.geometry.Rotation2d());
                 ledManager.indicateStatus(LedManager.RobotStatus.SEEN_TARGET);
             } else {
                 if (faulted) {
@@ -436,10 +434,10 @@ public class Robot extends TimedRobot {
                 autoMode.isPresent() && autoMode.get() != mAutoModeExecutor.getAutoMode()
             ) {
                 var auto = autoMode.get();
-                System.out.println(
-                    "Set auto mode to: " + auto.getClass().toString()
-                );
-                mRobotState.field.getObject("Trajectory").setTrajectory(auto.getTrajectory());
+                System.out.println("Set auto mode to: " + auto.getClass().toString());
+                mRobotState.field
+                    .getObject("Trajectory")
+                    .setTrajectory(auto.getTrajectory());
                 mAutoModeExecutor.setAutoMode(auto);
             }
         } catch (Throwable t) {
@@ -507,10 +505,7 @@ public class Robot extends TimedRobot {
         if (
             mDrive.getDriveControlState() == Drive.DriveControlState.TRAJECTORY_FOLLOWING
         ) {
-            if (
-                driveSignal.getLeft() != 0 ||
-                    driveSignal.getRight() != 0
-            ) {
+            if (driveSignal.getLeft() != 0 || driveSignal.getRight() != 0) {
                 mDrive.setOpenLoop(driveSignal);
             }
         } else {
@@ -519,6 +514,5 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void testPeriodic() {
-    }
+    public void testPeriodic() {}
 }

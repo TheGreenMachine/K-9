@@ -8,9 +8,8 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import jdk.jshell.spi.ExecutionControl;
-
 import java.util.List;
+import jdk.jshell.spi.ExecutionControl;
 
 /**
  * Interface containing all information necessary for a path including the Path itself, the Path's starting pose, and
@@ -18,8 +17,12 @@ import java.util.List;
  */
 public interface PathContainer {
     // velocities are in/sec
-    double kMaxVelocity = Units.inches_to_meters(RobotFactory.getInstance().getConstant("maxVel"));
-    double kMaxAccel = Units.inches_to_meters(RobotFactory.getInstance().getConstant("maxAccel"));
+    double kMaxVelocity = Units.inches_to_meters(
+        RobotFactory.getInstance().getConstant("maxVel")
+    );
+    double kMaxAccel = Units.inches_to_meters(
+        RobotFactory.getInstance().getConstant("maxAccel")
+    );
 
     List<Pose2d> buildWaypoints();
 
@@ -27,7 +30,8 @@ public interface PathContainer {
         return generateBaseTrajectory(isReversed(), buildWaypoints());
     }
 
-    default Trajectory generateReversedTrajectory() throws ExecutionControl.NotImplementedException {
+    default Trajectory generateReversedTrajectory()
+        throws ExecutionControl.NotImplementedException {
         throw new ExecutionControl.NotImplementedException("TODO");
     }
 
@@ -37,8 +41,13 @@ public interface PathContainer {
     ) {
         TrajectoryConfig config = new TrajectoryConfig(kMaxVelocity, kMaxAccel);
         var baseTrajectory = TrajectoryGenerator.generateTrajectory(waypoints, config);
-        return baseTrajectory.transformBy(new Transform2d(Constants.StartingPose.getTranslation(), Constants.StartingPose.getRotation()));
+        return baseTrajectory.transformBy(
+            new Transform2d(
+                Constants.StartingPose.getTranslation(),
+                Constants.StartingPose.getRotation()
+            )
+        );
     }
-    boolean isReversed();
 
+    boolean isReversed();
 }

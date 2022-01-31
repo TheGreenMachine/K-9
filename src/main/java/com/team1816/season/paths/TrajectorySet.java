@@ -1,7 +1,6 @@
 package com.team1816.season.paths;
 
 import edu.wpi.first.math.trajectory.Trajectory;
-
 import javax.inject.Singleton;
 
 @Singleton

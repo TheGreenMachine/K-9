@@ -9,9 +9,8 @@ import com.team1816.lib.hardware.components.pcm.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
-
-import javax.annotation.Nonnull;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 public class RobotFactory {
 

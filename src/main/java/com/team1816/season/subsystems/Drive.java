@@ -11,31 +11,26 @@ import com.team1816.lib.subsystems.Subsystem;
 import com.team1816.lib.subsystems.TrackableDrivetrain;
 import com.team1816.season.Constants;
 import com.team1816.season.RobotState;
-import com.team254.lib.geometry.Pose2d;
-import com.team254.lib.geometry.Pose2dWithCurvature;
-import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
-import com.team254.lib.trajectory.TrajectoryIterator;
-import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.Units;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import java.util.List;
-import java.util.function.Supplier;
 
 public abstract class Drive
     extends Subsystem
     implements TrackableDrivetrain, PidProvider {
 
     public abstract void updateTrajectoryVelocities(Double aDouble, Double aDouble1);
+
     public abstract edu.wpi.first.math.geometry.Pose2d getPose();
-    public abstract void startTrajectory(edu.wpi.first.math.geometry.Pose2d initialPose);
+
+    public abstract void startTrajectory(Trajectory initialPose);
 
     public interface Factory {
         Drive getInstance();
@@ -56,14 +51,12 @@ public abstract class Drive
     protected static RobotState mRobotState;
 
     // Odometry variables
-    protected Pose2d pose = Pose2d.identity();
-    protected Pose2d startingPosition = Pose2d.identity();
     protected double lastUpdateTimestamp = 0;
 
     // hardware states
     protected String pidSlot = "slot0";
     protected boolean mIsBrakeMode;
-    protected Rotation2d mGyroOffset = Rotation2d.identity();
+    protected Rotation2d mGyroOffset = new Rotation2d();
     protected double openLoopRampRate;
 
     protected PeriodicIO mPeriodicIO;
@@ -155,10 +148,9 @@ public abstract class Drive
 
         // INPUTS
         public double timestamp;
-        public Rotation2d gyro_heading = Rotation2d.identity();
+        public Rotation2d gyro_heading = new Rotation2d();
         // no_offset = Relative to initial position, unaffected by reset
-        public Rotation2d gyro_heading_no_offset = Rotation2d.identity();
-        public Pose2d error = Pose2d.identity();
+        public Rotation2d gyro_heading_no_offset = new Rotation2d();
         public double drive_distance_inches;
         public double velocity_inches_per_second = 0;
         public double left_position_ticks;
@@ -181,10 +173,8 @@ public abstract class Drive
         public double left_feedforward;
         public double right_feedforward;
 
-        public Rotation2d desired_heading = Rotation2d.identity();
-        TimedState<Pose2dWithCurvature> path_setpoint = new TimedState<>(
-            Pose2dWithCurvature.identity()
-        );
+        public Rotation2d desired_heading = new Rotation2d();
+        public Pose2d desired_pose = new Pose2d();
     }
 
     @Override
@@ -209,6 +199,7 @@ public abstract class Drive
                                 updateOpenLoopPeriodic();
                                 break;
                             case TRAJECTORY_FOLLOWING:
+                                updateTrajectoryPeriodic(timestamp);
                                 break;
                             default:
                                 System.out.println(
@@ -231,6 +222,7 @@ public abstract class Drive
 
     protected abstract void updateOpenLoopPeriodic();
 
+    protected abstract void updateTrajectoryPeriodic(double timestamp);
 
     public static double rotationsToInches(double rotations) {
         return rotations * (Constants.kDriveWheelDiameterInches * Math.PI);
@@ -278,7 +270,6 @@ public abstract class Drive
         return this.openLoopRampRate;
     }
 
-
     public boolean isBrakeMode() {
         return mIsBrakeMode;
     }
@@ -303,7 +294,9 @@ public abstract class Drive
         System.out.println("set heading: " + heading.getDegrees());
 
         mGyroOffset =
-            heading.rotateBy(Rotation2d.fromDegrees(mPigeon.getFusedHeading()).inverse());
+            heading.rotateBy(
+                Rotation2d.fromDegrees(mPigeon.getFusedHeading()).unaryMinus()
+            );
         System.out.println("gyro offset: " + mGyroOffset.getDegrees());
 
         mPeriodicIO.desired_heading = heading;

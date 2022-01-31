@@ -11,7 +11,6 @@ import com.team254.lib.trajectory.Trajectory;
 import com.team254.lib.trajectory.TrajectoryIterator;
 import com.team254.lib.trajectory.timing.TimedState;
 import com.team254.lib.util.Util;
-import org.junit.Test;
 
 // @RunWith(JUnit4.class)
 public class TrajectoryTest {

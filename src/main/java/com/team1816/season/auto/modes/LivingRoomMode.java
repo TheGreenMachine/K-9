@@ -8,7 +8,6 @@ import com.team1816.season.paths.TrajectorySet;
 
 public class LivingRoomMode extends AutoModeBase {
 
-
     public LivingRoomMode() {
         trajectory = new TrajectoryAction(TrajectorySet.LIVING_ROOM);
     }
@@ -19,5 +18,4 @@ public class LivingRoomMode extends AutoModeBase {
         runAction(new WaitAction(.5));
         runAction(trajectory);
     }
-
 }

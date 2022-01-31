@@ -23,11 +23,11 @@
             255.0
           ],
           "arrowWeight": 2.0,
-          "selectable": false,
           "weight": 2.0
         },
         "Trajectory": {
           "arrows": false,
+          "selectable": false,
           "style": "Line",
           "weight": 1.0
         },

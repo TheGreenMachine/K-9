@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 @Singleton
 public class RobotState {
@@ -78,7 +77,6 @@ public class RobotState {
     private Rotation2d headingRelativeToInitial = Rotation2d.identity();
 
     public final Field2d field = new Field2d();
-
 
     public RobotState() {
         SmartDashboard.putData("Field", field);
@@ -188,36 +186,6 @@ public class RobotState {
             .inverse()
             .rotateBy(getLatestVehicleToTurret().getValue());
         return fieldToTurret.getDegrees();
-    }
-
-    public synchronized void addObservations(
-        double timestamp,
-        Twist2d displacement,
-        Twist2d measured_velocity,
-        Twist2d predicted_velocity
-    ) {
-        distance_driven_ += displacement.dx;
-        addFieldToVehicleObservation(
-            timestamp,
-            TankKinematics.integrateForwardKinematics(
-                getLatestFieldToVehicle().getValue(),
-                displacement
-            )
-        );
-        vehicle_velocity_measured_ = measured_velocity;
-        if (Math.abs(vehicle_velocity_measured_.dtheta) < 2.0 * Math.PI) {
-            // Reject really high angular velocities from the filter.
-            vehicle_velocity_measured_filtered_.add(vehicle_velocity_measured_);
-        } else {
-            vehicle_velocity_measured_filtered_.add(
-                new Twist2d(
-                    vehicle_velocity_measured_.dx,
-                    vehicle_velocity_measured_.dy,
-                    0.0
-                )
-            );
-        }
-        vehicle_velocity_predicted_ = predicted_velocity;
     }
 
     public synchronized double getDistanceDriven() {
@@ -374,5 +342,4 @@ public class RobotState {
             getHeadingRelativeToInitial().getDegrees()
         );
     }
-
 }

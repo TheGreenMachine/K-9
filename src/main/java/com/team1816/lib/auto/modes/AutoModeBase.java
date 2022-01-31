@@ -20,7 +20,7 @@ public abstract class AutoModeBase {
 
     protected abstract void routine() throws AutoModeEndedException;
 
-    public Trajectory getTrajectory(){
+    public Trajectory getTrajectory() {
         return trajectory.getTrajectory();
     }
 

@@ -18,15 +18,19 @@ public class TrajectoryAction implements Action {
     private final Trajectory mTrajectory;
     private final Drive mDrive;
 
-
     public TrajectoryAction(Trajectory trajectory) {
         mDrive = mDriveFactory.getInstance();
         mTrajectory = trajectory;
-        mCommand = new RamseteCommand(trajectory,
-            mDrive::getPose,
-            new RamseteController(),
-            new DifferentialDriveKinematics(Units.inchesToMeters(Constants.kDriveWheelTrackWidthInches)),
-            mDrive::updateTrajectoryVelocities);
+        mCommand =
+            new RamseteCommand(
+                trajectory,
+                mDrive::getPose,
+                new RamseteController(),
+                new DifferentialDriveKinematics(
+                    Units.inchesToMeters(Constants.kDriveWheelTrackWidthInches)
+                ),
+                mDrive::updateTrajectoryVelocities
+            );
     }
 
     @Override
@@ -50,11 +54,11 @@ public class TrajectoryAction implements Action {
         System.out.println(
             "Starting trajectory! (seconds=" + mTrajectory.getTotalTimeSeconds() + ")"
         );
-        mDrive.startTrajectory(mTrajectory.getInitialPose());
+        mDrive.startTrajectory(mTrajectory);
         mCommand.initialize();
     }
 
-    public Trajectory getTrajectory(){
+    public Trajectory getTrajectory() {
         return mTrajectory;
     }
 }
