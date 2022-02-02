@@ -149,26 +149,6 @@ public class RobotState {
         return vehicle_to_turret_.lastEntry();
     }
 
-    public synchronized Pose2d getPredictedFieldToVehicle(double lookahead_time) {
-        return getLatestFieldToVehicle()
-            .getValue()
-            .transformBy(Pose2d.exp(vehicle_velocity_predicted_.scaled(lookahead_time)));
-    }
-
-    public synchronized void addFieldToVehicleObservation(
-        double timestamp,
-        Pose2d observation
-    ) {
-        field_to_vehicle_.put(new InterpolatingDouble(timestamp), observation);
-    }
-
-    public synchronized void addVehicleToTurretObservation(
-        double timestamp,
-        Rotation2d observation
-    ) {
-        vehicle_to_turret_.put(new InterpolatingDouble(timestamp), observation);
-    }
-
     /**
      * Rotation of robot relative to initial position, i.e. raw sensor
      * unaffected by calls to {@link #reset()}
@@ -313,10 +293,6 @@ public class RobotState {
             report.id
         );
         return Optional.of(params);
-    }
-
-    public Pose2d getRobot() {
-        return new Pose2d();
     }
 
     public synchronized Pose2d getVisionTargetToGoalOffset() {

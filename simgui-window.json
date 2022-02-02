@@ -1,13 +1,13 @@
 {
   "MainWindow": {
     "GLOBAL": {
-      "height": "831",
+      "height": "765",
       "maximized": "0",
       "style": "0",
       "userScale": "2",
-      "width": "1603",
-      "xpos": "736",
-      "ypos": "292"
+      "width": "1380",
+      "xpos": "89",
+      "ypos": "43"
     }
   },
   "Window": {
@@ -48,7 +48,7 @@
     },
     "###Other Devices": {
       "Collapsed": "0",
-      "Pos": "1311,44",
+      "Pos": "1112,26",
       "Size": "250,695"
     },
     "###System Joysticks": {

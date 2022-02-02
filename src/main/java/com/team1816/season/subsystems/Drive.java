@@ -13,10 +13,10 @@ import com.team1816.season.Constants;
 import com.team1816.season.RobotState;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.util.DriveSignal;
-import com.team254.lib.util.Units;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -52,11 +52,13 @@ public abstract class Drive
 
     // Odometry variables
     protected double lastUpdateTimestamp = 0;
+    protected Trajectory mTrajectory;
+    protected double mTrajectoryStart = 0;
 
     // hardware states
     protected String pidSlot = "slot0";
     protected boolean mIsBrakeMode;
-    protected Rotation2d mGyroOffset = new Rotation2d();
+    protected Rotation2d mGyroOffset = Constants.EmptyRotation;
     protected double openLoopRampRate;
 
     protected PeriodicIO mPeriodicIO;
@@ -148,9 +150,9 @@ public abstract class Drive
 
         // INPUTS
         public double timestamp;
-        public Rotation2d gyro_heading = new Rotation2d();
+        public Rotation2d gyro_heading = Constants.EmptyRotation;
         // no_offset = Relative to initial position, unaffected by reset
-        public Rotation2d gyro_heading_no_offset = new Rotation2d();
+        public Rotation2d gyro_heading_no_offset = Constants.EmptyRotation;
         public double drive_distance_inches;
         public double velocity_inches_per_second = 0;
         public double left_position_ticks;
@@ -173,8 +175,8 @@ public abstract class Drive
         public double left_feedforward;
         public double right_feedforward;
 
-        public Rotation2d desired_heading = new Rotation2d();
-        public Pose2d desired_pose = new Pose2d();
+        public Rotation2d desired_heading = Constants.EmptyRotation;
+        public Pose2d desired_pose = Constants.EmptyPose;
     }
 
     @Override
@@ -237,7 +239,7 @@ public abstract class Drive
     }
 
     public static double metersPerSecondToTicksPer100ms(double meters_per_second) {
-        return inchesPerSecondToTicksPer100ms(Units.meters_to_inches(meters_per_second));
+        return inchesPerSecondToTicksPer100ms(Units.metersToInches(meters_per_second));
     }
 
     public static double inchesPerSecondToTicksPer100ms(double inches_per_second) {
@@ -329,12 +331,12 @@ public abstract class Drive
 
     @Override
     public double getFieldXDistance() {
-        return mRobotState.getEstimatedX();
+        return Units.metersToInches(getPose().getX() - Constants.StartingPose.getX());
     }
 
     @Override
     public double getFieldYDistance() {
-        return mRobotState.getEstimatedY();
+        return Units.metersToInches(getPose().getY() - Constants.StartingPose.getY());
     }
 
     @Override

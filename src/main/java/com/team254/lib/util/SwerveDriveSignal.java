@@ -2,7 +2,6 @@ package com.team254.lib.util;
 
 import com.team1816.season.Constants;
 import com.team1816.season.subsystems.Drive;
-import com.team1816.season.subsystems.SwerveModule;
 import com.team254.lib.geometry.Rotation2d;
 
 import java.text.DecimalFormat;
@@ -29,10 +28,7 @@ public class SwerveDriveSignal extends DriveSignal {
     public SwerveDriveSignal(double left, double right) {
         super(left, right);
         mWheelSpeeds = new double[4];
-        mWheelSpeeds[SwerveModule.kFrontLeft] = left;
-        mWheelSpeeds[SwerveModule.kBackLeft] = left;
-        mWheelSpeeds[SwerveModule.kFrontRight] = right;
-        mWheelSpeeds[SwerveModule.kBackRight] = right;
+
 
         mWheelAzimuths = ZERO_AZIMUTH;
         mBrakeMode = false;
@@ -40,8 +36,8 @@ public class SwerveDriveSignal extends DriveSignal {
 
     public SwerveDriveSignal(double[] wheelSpeeds, Rotation2d[] wheelAzimuths, boolean brakeMode) {
         super(
-            wheelSpeeds[SwerveModule.kFrontLeft],
-            wheelSpeeds[SwerveModule.kFrontRight]
+            wheelSpeeds[0],
+            wheelSpeeds[1]
         );
         mWheelSpeeds = wheelSpeeds;
         mWheelAzimuths = wheelAzimuths;

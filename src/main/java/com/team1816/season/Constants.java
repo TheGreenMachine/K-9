@@ -9,6 +9,9 @@ public class Constants {
 
     private static final RobotFactory factory = RobotFactory.getInstance();
 
+    public static final Pose2d EmptyPose = new Pose2d();
+    public static final Rotation2d EmptyRotation = new Rotation2d();
+
     public static final double kLooperDt = factory.getConstant("kLooperDt", .020);
     public static final double kDriveWheelTrackWidthInches = factory.getConstant(
         "trackWidth"
@@ -19,7 +22,7 @@ public class Constants {
     public static final double kDriveWheelDiameterInches = factory.getConstant(
         "wheelDiameter"
     );
-    public static final Pose2d StartingPose = new Pose2d(.5, 3.5, new Rotation2d());
+    public static final Pose2d StartingPose = new Pose2d(.5, 3.5, EmptyRotation);
 
     public static double kTrackScrubFactor = factory.getConstant("kTrackScrubFactor");
     public static int kPCMId = factory.getPcmId();

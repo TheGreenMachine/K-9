@@ -12,11 +12,11 @@ import com.team1816.season.AutoModeSelector;
 import com.team1816.season.Constants;
 import com.team254.lib.util.CheesyDriveHelper;
 import com.team254.lib.util.DriveSignal;
-import com.team254.lib.util.Units;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 
 @Singleton
@@ -39,7 +39,6 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     private final double tickRatioPerLoop = Constants.kLooperDt / .1d;
 
     private DifferentialDriveOdometry odometry;
-    private Trajectory mTrajectory;
 
     @Override
     public void updateTrajectoryVelocities(Double leftVel, Double rightVel) {
@@ -63,6 +62,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     @Override
     public void startTrajectory(Trajectory trajectory) {
         mTrajectory = trajectory;
+        mTrajectoryStart = 0;
         odometry.resetPosition(
             trajectory.getInitialPose(),
             trajectory.getInitialPose().getRotation()
@@ -212,8 +212,8 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         }
         odometry.update(
             mPeriodicIO.gyro_heading,
-            Units.inches_to_meters(getLeftEncoderDistance()),
-            Units.inches_to_meters(getRightEncoderDistance())
+            Units.inchesToMeters(getLeftEncoderDistance()),
+            Units.inchesToMeters(getRightEncoderDistance())
         );
         updateRobotPose();
     }
@@ -244,8 +244,10 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     @Override
     protected void updateTrajectoryPeriodic(double timestamp) {
+        if (mTrajectoryStart == 0) mTrajectoryStart = timestamp;
         // update desired pose from trajectory
-        mPeriodicIO.desired_pose = mTrajectory.sample(timestamp).poseMeters;
+        mPeriodicIO.desired_pose =
+            mTrajectory.sample(timestamp - mTrajectoryStart).poseMeters;
     }
 
     /**
@@ -386,43 +388,16 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         return mPeriodicIO.right_velocity_ticks_per_100ms;
     }
 
-    public double getRightLinearVelocity() {
-        return rotationsToInches(
-            getRightVelocityNativeUnits() * 10.0 / DRIVE_ENCODER_PPR
-        );
-    }
-
     @Override
     public double getLeftVelocityNativeUnits() {
         return mPeriodicIO.left_velocity_ticks_per_100ms;
-    }
-
-    public double getLeftLinearVelocity() {
-        return rotationsToInches(getLeftVelocityNativeUnits() * 10.0 / DRIVE_ENCODER_PPR);
-    }
-
-    public double getLinearVelocity() {
-        return (getLeftLinearVelocity() + getRightLinearVelocity()) / 2.0;
-    }
-
-    public double getAverageDriveVelocityMagnitude() {
-        return (
-            Math.abs(getLeftLinearVelocity()) + Math.abs(getRightLinearVelocity()) / 2.0
-        );
-    }
-
-    public double getAngularVelocity() {
-        return (
-            (getRightLinearVelocity() - getLeftLinearVelocity()) /
-            Constants.kDriveWheelTrackWidthInches
-        );
     }
 
     @Override
     public void zeroSensors() {
         System.out.println("Zeroing drive sensors!");
         resetPigeon();
-        setHeading(new Rotation2d());
+        setHeading(Constants.EmptyRotation);
         resetEncoders();
         if (mPigeon.getLastError() != ErrorCode.OK) {
             // BadLog.createValue("PigeonErrorDetected", "true");
@@ -501,11 +476,17 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     @Override
     public double getFieldDesiredXDistance() {
-        return mPeriodicIO.desired_pose.getX();
+        if (mPeriodicIO.desired_pose.getX() == 0) return 0;
+        return Units.metersToInches(
+            mPeriodicIO.desired_pose.getX() - Constants.StartingPose.getX()
+        );
     }
 
     @Override
     public double getFieldYDesiredYDistance() {
-        return mPeriodicIO.desired_pose.getY();
+        if (mPeriodicIO.desired_pose.getY() == 0) return 0;
+        return Units.metersToInches(
+            mPeriodicIO.desired_pose.getY() - Constants.StartingPose.getY()
+        );
     }
 }
