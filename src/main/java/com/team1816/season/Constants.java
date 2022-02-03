@@ -1,9 +1,9 @@
 package com.team1816.season;
 
 import com.team1816.lib.hardware.RobotFactory;
-import com.team254.lib.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 public class Constants {
 

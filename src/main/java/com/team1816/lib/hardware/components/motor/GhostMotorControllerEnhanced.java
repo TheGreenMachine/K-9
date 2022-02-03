@@ -15,8 +15,12 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
         new BaseTalon(0, "Talon SRX") {}
     );
 
+    private final double[] mSensorPosition = new double[] { 0, 0 };
+
     @Override
-    public void set(ControlMode Mode, double demand) {}
+    public void set(ControlMode Mode, double demand) {
+        if (Mode == ControlMode.Position) mSensorPosition[0] = demand;
+    }
 
     @Override
     public void set(
@@ -191,7 +195,7 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
 
     @Override
     public double getSelectedSensorPosition(int pidIdx) {
-        return 0;
+        return mSensorPosition[pidIdx];
     }
 
     @Override
@@ -205,7 +209,8 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
         int pidIdx,
         int timeoutMs
     ) {
-        return null;
+        mSensorPosition[pidIdx] = sensorPos;
+        return ErrorCode.OK;
     }
 
     @Override

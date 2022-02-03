@@ -19,8 +19,6 @@ import com.team1816.lib.util.GreenDriveHelper;
 import com.team1816.season.controlboard.ActionManager;
 import com.team1816.season.paths.TrajectorySet;
 import com.team1816.season.subsystems.*;
-import com.team254.lib.geometry.Pose2d;
-import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.*;
@@ -221,11 +219,7 @@ public class Robot extends TimedRobot {
             ledManager.registerEnabledLoops(mDisabledLooper);
 
             // Robot starts forwards.
-            mRobotState.reset(
-                Timer.getFPGATimestamp(),
-                Pose2d.identity(),
-                Rotation2d.identity()
-            );
+            mRobotState.reset();
             mDrive.setHeading(new edu.wpi.first.math.geometry.Rotation2d());
 
             mAutoModeSelector.updateModeCreator();
@@ -314,11 +308,7 @@ public class Robot extends TimedRobot {
             ledManager.setDefaultStatus(LedManager.RobotStatus.AUTONOMOUS);
 
             // Robot starts forwards.
-            mRobotState.reset(
-                Timer.getFPGATimestamp(),
-                Pose2d.identity(),
-                Rotation2d.identity()
-            );
+            mRobotState.reset();
             mDrive.setHeading(new edu.wpi.first.math.geometry.Rotation2d());
 
             mHasBeenEnabled = true;
@@ -327,6 +317,8 @@ public class Robot extends TimedRobot {
 
             mDrive.zeroSensors();
             turret.zeroSensors();
+            turret.setTurretAngle(Turret.CARDINAL_SOUTH);
+            turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
             mAutoModeExecutor.start();
             mEnabledLooper.start();
         } catch (Throwable t) {
@@ -351,7 +343,7 @@ public class Robot extends TimedRobot {
 
             mEnabledLooper.start();
 
-            turret.setTurretAngle(Turret.CARDINAL_NORTH);
+            turret.setTurretAngle(Turret.CARDINAL_WEST);
             turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
 
             mInfrastructure.setIsManualControl(true);
@@ -410,11 +402,7 @@ public class Robot extends TimedRobot {
                 System.out.println("Zeroing Robot!");
                 mDrive.zeroSensors();
                 turret.zeroSensors();
-                mRobotState.reset(
-                    Timer.getFPGATimestamp(),
-                    Pose2d.identity(),
-                    Rotation2d.identity()
-                );
+                mRobotState.reset();
                 mDrive.setHeading(new edu.wpi.first.math.geometry.Rotation2d());
                 ledManager.indicateStatus(LedManager.RobotStatus.SEEN_TARGET);
             } else {

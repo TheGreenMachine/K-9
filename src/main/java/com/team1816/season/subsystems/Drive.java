@@ -11,7 +11,6 @@ import com.team1816.lib.subsystems.Subsystem;
 import com.team1816.lib.subsystems.TrackableDrivetrain;
 import com.team1816.season.Constants;
 import com.team1816.season.RobotState;
-import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.util.DriveSignal;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,7 +19,6 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.List;
 
 public abstract class Drive
     extends Subsystem
@@ -28,7 +26,7 @@ public abstract class Drive
 
     public abstract void updateTrajectoryVelocities(Double aDouble, Double aDouble1);
 
-    public abstract edu.wpi.first.math.geometry.Pose2d getPose();
+    public abstract Pose2d getPose();
 
     public abstract void startTrajectory(Trajectory initialPose);
 
@@ -74,12 +72,6 @@ public abstract class Drive
     // Constants
     public static final double maxVelTicksPer100ms = factory.getConstant("maxTicks");
     public static final double DRIVE_ENCODER_PPR = factory.getConstant(NAME, "encPPR");
-    public static final List<Translation2d> ZERO_DRIVE_VECTOR = List.of(
-        Translation2d.identity(),
-        Translation2d.identity(),
-        Translation2d.identity(),
-        Translation2d.identity()
-    );
 
     protected Drive() {
         super(NAME);

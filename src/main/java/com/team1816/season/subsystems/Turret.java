@@ -116,9 +116,7 @@ public class Turret extends Subsystem implements PidProvider {
             ); // Reverse = MIN
             turret.overrideLimitSwitchesEnable(true);
             turret.overrideSoftLimitsEnable(true);
-
-            turretAngleRelativeToField =
-                robotState.getHeadingRelativeToInitial().getDegrees();
+            turretAngleRelativeToField = robotState.getLatestFieldToTurret();
         }
     }
 
@@ -138,6 +136,10 @@ public class Turret extends Subsystem implements PidProvider {
             var sensorVal = sensors.getPulseWidthPosition() & TURRET_ENCODER_MASK;
             sensors.setQuadraturePosition(sensorVal, Constants.kLongCANTimeoutMs);
             System.out.println("zeroing turret at " + sensorVal);
+        }
+        if (RobotBase.isSimulation()) {
+            // populate sensor with offset
+            turret.setSelectedSensorPosition(ABS_TICKS_SOUTH, 0, 0);
         }
     }
 
@@ -231,18 +233,15 @@ public class Turret extends Subsystem implements PidProvider {
 
     @Override
     public void readPeriodicInputs() {
-        turretAngleRelativeToField =
-            robotState.getHeadingRelativeToInitial().getDegrees();
-        if (RobotBase.isSimulation()) {
-            // show turret
-            var robotPose = robotState.field.getRobotPose();
-            var turret = robotState.field.getObject("turret");
-            turret.setPose(
-                robotPose.getX(),
-                robotPose.getY(),
-                Rotation2d.fromDegrees(getActualTurretPositionDegrees())
-            );
-        }
+        turretAngleRelativeToField = robotState.getLatestFieldToTurret();
+        // show turret
+        var robotPose = robotState.field.getRobotPose();
+        var turret = robotState.field.getObject("turret");
+        turret.setPose(
+            robotPose.getX(),
+            robotPose.getY(),
+            Rotation2d.fromDegrees(getActualTurretPositionDegrees())
+        );
     }
 
     @Override
@@ -294,7 +293,6 @@ public class Turret extends Subsystem implements PidProvider {
     private void positionControl(double rawPos) {
         if (outputsChanged) {
             turret.set(com.ctre.phoenix.motorcontrol.ControlMode.Position, rawPos);
-            double result = turret.getClosedLoopTarget(0);
             outputsChanged = false;
         }
     }

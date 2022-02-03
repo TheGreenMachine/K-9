@@ -52,11 +52,11 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     @Override
     public Pose2d getPose() {
-        return odometry.getPoseMeters();
+        return mRobotState.field_to_vehicle;
     }
 
     private void updateRobotPose() {
-        mRobotState.field.setRobotPose(odometry.getPoseMeters());
+        mRobotState.field_to_vehicle = odometry.getPoseMeters();
     }
 
     @Override
