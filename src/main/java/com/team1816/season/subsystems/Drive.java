@@ -90,6 +90,22 @@ public abstract class Drive
     public abstract double getDesiredHeading();
 
     @Override
+    public double getFieldDesiredXDistance() {
+        if (mPeriodicIO.desired_pose.getX() == 0) return 0;
+        return Units.metersToInches(
+            mPeriodicIO.desired_pose.getX() - Constants.StartingPose.getX()
+        );
+    }
+
+    @Override
+    public double getFieldYDesiredYDistance() {
+        if (mPeriodicIO.desired_pose.getY() == 0) return 0;
+        return Units.metersToInches(
+            mPeriodicIO.desired_pose.getY() - Constants.StartingPose.getY()
+        );
+    }
+
+    @Override
     public double getKP() {
         PIDSlotConfiguration defaultPIDConfig = new PIDSlotConfiguration();
         defaultPIDConfig.kP = 0.0;
@@ -309,10 +325,6 @@ public abstract class Drive
     public enum DriveControlState {
         OPEN_LOOP, // open loop voltage control
         TRAJECTORY_FOLLOWING,
-    }
-
-    public boolean hasPigeonResetOccurred() {
-        return mPigeon.hasResetOccurred();
     }
 
     @Override

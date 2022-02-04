@@ -190,7 +190,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
                 ) /
                 robotWidthTicks;
             mPeriodicIO.gyro_heading_no_offset =
-                getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift));
+                getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift * .3));
         } else {
             mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
             mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);
@@ -472,21 +472,5 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     @Override
     public double getRightVelocityError() {
         return mPeriodicIO.right_error;
-    }
-
-    @Override
-    public double getFieldDesiredXDistance() {
-        if (mPeriodicIO.desired_pose.getX() == 0) return 0;
-        return Units.metersToInches(
-            mPeriodicIO.desired_pose.getX() - Constants.StartingPose.getX()
-        );
-    }
-
-    @Override
-    public double getFieldYDesiredYDistance() {
-        if (mPeriodicIO.desired_pose.getY() == 0) return 0;
-        return Units.metersToInches(
-            mPeriodicIO.desired_pose.getY() - Constants.StartingPose.getY()
-        );
     }
 }

@@ -11,10 +11,6 @@ import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
 
-    private final SensorCollection sensorCollection = new SensorCollection(
-        new BaseTalon(0, "Talon SRX") {}
-    );
-
     private final double[] mSensorPosition = new double[] { 0, 0 };
 
     @Override
@@ -604,9 +600,5 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
         int timeoutMs
     ) {
         return ErrorCode.OK;
-    }
-
-    public SensorCollection getSensorCollection() {
-        return sensorCollection;
     }
 }
