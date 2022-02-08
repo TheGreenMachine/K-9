@@ -55,7 +55,7 @@ public abstract class Drive
 
     // hardware states
     protected String pidSlot = "slot0";
-    protected boolean mIsBrakeMode;
+    protected boolean mIsBrakeMode = false;
     protected Rotation2d mGyroOffset = Constants.EmptyRotation;
     protected double openLoopRampRate;
 
@@ -65,7 +65,7 @@ public abstract class Drive
     protected boolean isSlowMode;
 
     // Simulator
-    protected double gyroDrift;
+    protected double additionalRotation;
     protected final double robotWidthTicks =
         inchesPerSecondToTicksPer100ms(Constants.kDriveWheelTrackWidthInches) * Math.PI;
 

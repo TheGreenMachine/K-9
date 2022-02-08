@@ -7,6 +7,7 @@ import com.team1816.season.Robot;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
+
 import java.util.function.Supplier;
 
 /**
@@ -22,7 +23,7 @@ import java.util.function.Supplier;
 public abstract class Subsystem implements Sendable {
 
     private final String name;
-    protected static final RobotFactory factory = Robot.getFactory();
+    public static RobotFactory factory = Robot.getFactory();
 
     protected Subsystem(String name) {
         this.name = name;

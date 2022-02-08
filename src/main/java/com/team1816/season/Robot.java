@@ -1,8 +1,5 @@
 package com.team1816.season;
 
-import static com.team1816.season.controlboard.ControlUtils.createAction;
-import static com.team1816.season.controlboard.ControlUtils.createHoldAction;
-
 import badlog.lib.BadLog;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -22,11 +19,15 @@ import com.team1816.season.subsystems.*;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.*;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
+
+import static com.team1816.season.controlboard.ControlUtils.createAction;
+import static com.team1816.season.controlboard.ControlUtils.createHoldAction;
 
 public class Robot extends TimedRobot {
 
@@ -67,7 +68,7 @@ public class Robot extends TimedRobot {
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
 
     public Robot() {
-        super(Constants.kLooperDt);
+        super();
         // initialize injector
         injector = Guice.createInjector(new LibModule(), new SeasonModule());
         mDrive = (injector.getInstance(Drive.Factory.class)).getInstance();
@@ -220,7 +221,7 @@ public class Robot extends TimedRobot {
 
             // Robot starts forwards.
             mRobotState.reset();
-            mDrive.setHeading(new edu.wpi.first.math.geometry.Rotation2d());
+            mDrive.setHeading(Constants.EmptyRotation);
 
             mAutoModeSelector.updateModeCreator();
 
@@ -309,7 +310,7 @@ public class Robot extends TimedRobot {
 
             // Robot starts forwards.
             mRobotState.reset();
-            mDrive.setHeading(new edu.wpi.first.math.geometry.Rotation2d());
+            mDrive.setHeading(Constants.EmptyRotation);
 
             mHasBeenEnabled = true;
 
@@ -403,7 +404,7 @@ public class Robot extends TimedRobot {
                 mDrive.zeroSensors();
                 turret.zeroSensors();
                 mRobotState.reset();
-                mDrive.setHeading(new edu.wpi.first.math.geometry.Rotation2d());
+                mDrive.setHeading(Constants.EmptyRotation);
                 ledManager.indicateStatus(LedManager.RobotStatus.SEEN_TARGET);
             } else {
                 if (faulted) {

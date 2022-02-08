@@ -23,7 +23,7 @@ public class Turret extends Subsystem implements PidProvider {
     public static final double CARDINAL_EAST = 90; // deg
     public static final double CARDINAL_NORTH = 180; // deg
     public static final double CARDINAL_WEST = 270; // deg
-    private static final String NAME = "turret";
+    public static final String NAME = "turret";
     public static final int TURRET_LIMIT_REVERSE =
         ((int) factory.getConstant(NAME, "revLimit"));
     public static final int TURRET_LIMIT_FORWARD =
@@ -37,9 +37,10 @@ public class Turret extends Subsystem implements PidProvider {
     private static final int kPIDVisionIDx = 0;
     private static final int TURRET_ENCODER_PPR = (int) factory.getConstant(
         NAME,
-        "encPPR"
+        "encPPR",
+        4096
     );
-    private static final int TURRET_ENCODER_MASK = 0xFFF;
+    private static final int TURRET_ENCODER_MASK = TURRET_ENCODER_PPR - 1;
     private static final int ALLOWABLE_ERROR_TICKS = 5;
     private static Turret INSTANCE;
     // Components
@@ -200,7 +201,7 @@ public class Turret extends Subsystem implements PidProvider {
 
     private synchronized void setTurretPosition(double position) {
         //Since we are using position we need ensure value stays in one rotation
-        int adjPos = -(int) (Math.abs(position) % Math.abs(TURRET_ENCODER_MASK));
+        int adjPos = -(int) position & TURRET_ENCODER_MASK;
         if (desiredTurretPos != adjPos) {
             desiredTurretPos = adjPos;
             outputsChanged = true;
@@ -278,12 +279,11 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     private void trackGyro() {
-        int fieldTickOffset =
-            convertTurretDegreesToTicks(turretAngleRelativeToField) - ABS_TICKS_SOUTH;
+        int fieldTickOffset = convertTurretDegreesToTicks(turretAngleRelativeToField) - ABS_TICKS_SOUTH;
         int adj = desiredTurretPos + fieldTickOffset;
         // Valid positions are 0 to encoder max ticks if we go negative adjust
         if (adj < 0) adj += TURRET_ENCODER_PPR;
-        adj = -(int) (Math.abs(adj) % Math.abs(TURRET_ENCODER_MASK));
+        adj = - (adj & TURRET_ENCODER_MASK);
         if (adj != followingTurretPos) {
             followingTurretPos = adj;
             outputsChanged = true;

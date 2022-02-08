@@ -2,6 +2,7 @@ package com.team1816.lib.hardware;
 
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
+import com.google.inject.Singleton;
 import com.team1816.lib.hardware.components.CanifierImpl;
 import com.team1816.lib.hardware.components.GhostCanifier;
 import com.team1816.lib.hardware.components.ICanifier;
@@ -9,9 +10,11 @@ import com.team1816.lib.hardware.components.pcm.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
-import java.util.Map;
-import javax.annotation.Nonnull;
 
+import javax.annotation.Nonnull;
+import java.util.Map;
+
+@Singleton
 public class RobotFactory {
 
     private RobotConfiguration config;
@@ -20,27 +23,27 @@ public class RobotFactory {
 
     public static RobotFactory getInstance() {
         if (factory == null) {
-            var robotName = System.getenv("ROBOT_NAME");
-            if (robotName == null) {
-                robotName = "default";
-                DriverStation.reportWarning(
-                    "ROBOT_NAME environment variable not defined, falling back to default.config.yml!",
-                    false
-                );
-            }
-            factory = new RobotFactory(robotName);
+            factory = new RobotFactory();
         }
         return factory;
     }
 
-    public RobotFactory(String configName) {
-        System.out.println("Loading Config for " + configName);
+    public RobotFactory() {
+        var robotName = System.getenv("ROBOT_NAME");
+        if (robotName == null) {
+            robotName = "default";
+            DriverStation.reportWarning(
+                "ROBOT_NAME environment variable not defined, falling back to default.config.yml!",
+                false
+            );
+        }
+        System.out.println("Loading Config for " + robotName);
         try {
             config =
                 YamlConfig.loadFrom(
                     this.getClass()
                         .getClassLoader()
-                        .getResourceAsStream(configName + ".config.yml")
+                        .getResourceAsStream(robotName + ".config.yml")
                 );
         } catch (Exception e) {
             DriverStation.reportError("Yaml Config error!", e.getStackTrace());

@@ -183,19 +183,19 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
                 leftAdjDemand - mPeriodicIO.left_error;
             mPeriodicIO.right_velocity_ticks_per_100ms = rightAdjDemand;
             // calculate rotation based on left/right vel differences
-            gyroDrift -=
+            additionalRotation -=
                 (
                     mPeriodicIO.left_velocity_ticks_per_100ms -
                     mPeriodicIO.right_velocity_ticks_per_100ms
                 ) /
                 robotWidthTicks;
             mPeriodicIO.gyro_heading_no_offset =
-                getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(gyroDrift * .3));
+                getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(additionalRotation));
         } else {
             mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
             mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);
             mPeriodicIO.left_velocity_ticks_per_100ms =
-                +mLeftMaster.getSelectedSensorVelocity(0);
+                mLeftMaster.getSelectedSensorVelocity(0);
             mPeriodicIO.right_velocity_ticks_per_100ms =
                 mRightMaster.getSelectedSensorVelocity(0);
             mPeriodicIO.gyro_heading_no_offset =

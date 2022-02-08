@@ -23,6 +23,7 @@
             255.0
           ],
           "arrowWeight": 2.0,
+          "style": "Box/Image",
           "weight": 2.0
         },
         "Trajectory": {

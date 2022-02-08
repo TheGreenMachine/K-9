@@ -38,15 +38,12 @@ public class RobotState {
     }
 
     public synchronized Pose2d getLatestFieldToVehicle() {
+        // CCW rotation increases degrees
         return field_to_vehicle;
     }
 
     public Double getLatestFieldToTurret() {
-        return getLatestVehicleToTurret().getDegrees();
-    }
-
-    public Rotation2d getLatestVehicleToTurret() {
-        return vehicle_to_turret;
+        return field_to_vehicle.getRotation().minus(vehicle_to_turret).getDegrees();
     }
 
     public synchronized void outputToSmartDashboard() {

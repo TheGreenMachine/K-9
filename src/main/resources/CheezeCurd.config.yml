@@ -53,12 +53,12 @@ subsystems:
                 iZone: 200
         constants:
             encPPR: 4096
-            revLimit: 960
-            fwdLimit: 2990
+            revLimit: 760 # CCW
+            fwdLimit: 3190 # CW
             currentFloorCheck: 0
             currentEpsilonCheck: .2
             rpmFloorCheck: 0
-            absPosTicksSouth: 4035
+            absPosTicksSouth: 1980
             invert_sensor_phase: 0
             rpmEpsilonCheck: 60
 constants:
@@ -68,7 +68,7 @@ constants:
     maxTicks: 2000 # ticks per 100ms
     maxAccel: 50
     sensorPhase: 0
-    kLooperDt: .010
+    kLooperDt: .015
     kTrackScrubFactor: 2
     kPCMId: 0
     pathKs: .0125

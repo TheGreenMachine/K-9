@@ -9,7 +9,10 @@ import com.team1816.season.auto.actions.TurretAction;
 import com.team1816.season.controlboard.ControlBoard;
 import com.team1816.season.controlboard.GamepadButtonControlBoard;
 import com.team1816.season.controlboard.GamepadDriveControlBoard;
-import com.team1816.season.subsystems.*;
+import com.team1816.season.subsystems.Camera;
+import com.team1816.season.subsystems.Drive;
+import com.team1816.season.subsystems.TankDrive;
+import com.team1816.season.subsystems.Turret;
 
 public class SeasonModule extends AbstractModule {
 

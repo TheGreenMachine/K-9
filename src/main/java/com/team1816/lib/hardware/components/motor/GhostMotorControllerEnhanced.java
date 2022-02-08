@@ -11,11 +11,11 @@ import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
 
-    private final double[] mSensorPosition = new double[] { 0, 0 };
+    private final double[] mDemand = new double[] { 0, 0 };
 
     @Override
     public void set(ControlMode Mode, double demand) {
-        if (Mode == ControlMode.Position) mSensorPosition[0] = demand;
+        if (Mode == ControlMode.Position || Mode == ControlMode.Velocity) mDemand[0] = demand;
     }
 
     @Override
@@ -191,12 +191,12 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
 
     @Override
     public double getSelectedSensorPosition(int pidIdx) {
-        return mSensorPosition[pidIdx];
+        return mDemand[pidIdx];
     }
 
     @Override
     public double getSelectedSensorVelocity(int pidIdx) {
-        return 0;
+        return mDemand[pidIdx];
     }
 
     @Override
@@ -205,7 +205,7 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
         int pidIdx,
         int timeoutMs
     ) {
-        mSensorPosition[pidIdx] = sensorPos;
+        mDemand[pidIdx] = sensorPos;
         return ErrorCode.OK;
     }
 
