@@ -8,8 +8,8 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+
 import java.util.List;
-import jdk.jshell.spi.ExecutionControl;
 
 /**
  * Interface containing all information necessary for a path including the Path itself, the Path's starting pose, and
@@ -28,11 +28,6 @@ public interface PathContainer {
 
     default Trajectory generateTrajectory() {
         return generateBaseTrajectory(isReversed(), buildWaypoints());
-    }
-
-    default Trajectory generateReversedTrajectory()
-        throws ExecutionControl.NotImplementedException {
-        throw new ExecutionControl.NotImplementedException("TODO");
     }
 
     private Trajectory generateBaseTrajectory(

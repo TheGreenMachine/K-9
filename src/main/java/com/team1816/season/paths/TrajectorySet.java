@@ -1,7 +1,7 @@
 package com.team1816.season.paths;
 
+import com.google.inject.Singleton;
 import edu.wpi.first.math.trajectory.Trajectory;
-import javax.inject.Singleton;
 
 @Singleton
 public class TrajectorySet {

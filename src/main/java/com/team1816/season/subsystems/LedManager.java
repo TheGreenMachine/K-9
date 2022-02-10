@@ -2,14 +2,17 @@ package com.team1816.season.subsystems;
 
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifierStatusFrame;
+import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix.led.RainbowAnimation;
 import com.team1816.lib.hardware.components.ICanifier;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
-import java.awt.*;
+
 import javax.inject.Singleton;
+import java.awt.*;
 
 @Singleton
 public class LedManager extends Subsystem {
@@ -21,6 +24,7 @@ public class LedManager extends Subsystem {
     // Components
     private final ICanifier canifier;
     private final ICanifier cameraCanifier;
+    private final CANdle candle;
 
     // State
     private boolean blinkLedOn = false;
@@ -47,15 +51,23 @@ public class LedManager extends Subsystem {
         super(NAME);
         this.canifier = factory.getCanifier(NAME);
         this.cameraCanifier = factory.getCanifier("camera");
+        this.candle = new CANdle(10);
+        this.candle.animate(new RainbowAnimation(1,.5,8));
 
         configureCanifier(canifier);
         configureCanifier(cameraCanifier);
+        configureCandle();
 
         this.ledR = 0;
         this.ledG = 0;
         this.ledB = 0;
 
         this.cameraLedOn = false;
+    }
+
+    private void configureCandle(){
+        this.candle.configStatusLedState(true);
+        this.candle.configBrightnessScalar(.04);
     }
 
     private void configureCanifier(ICanifier canifier) {
