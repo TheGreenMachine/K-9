@@ -166,31 +166,27 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     @Override
     public synchronized void readPeriodicInputs() {
         if (RobotBase.isSimulation()) {
-            double leftAdjDemand = mPeriodicIO.left_demand;
-            double rightAdjDemand = mPeriodicIO.right_demand;
-            if (mDriveControlState == DriveControlState.OPEN_LOOP) {
-                leftAdjDemand = mPeriodicIO.left_demand * maxVelTicksPer100ms;
-                rightAdjDemand = mPeriodicIO.right_demand * maxVelTicksPer100ms;
-            }
+            // read velocities from motor
+            var leftVelocity = mLeftMaster.getSelectedSensorVelocity(0);
+            var rightVelocity = mRightMaster.getSelectedSensorVelocity(0);
+            // create some error in left drive to simulate problem to test ability to correct
             var driveTrainErrorPercent = .05;
-            mPeriodicIO.left_error = leftAdjDemand * driveTrainErrorPercent;
+            mPeriodicIO.left_error = leftVelocity * driveTrainErrorPercent;
+            // calculate distance traveled
             leftEncoderSimPosition +=
-                (leftAdjDemand - mPeriodicIO.left_error) * tickRatioPerLoop;
-            rightEncoderSimPosition += rightAdjDemand * tickRatioPerLoop;
+                (leftVelocity - mPeriodicIO.left_error) * tickRatioPerLoop;
+            rightEncoderSimPosition += rightVelocity * tickRatioPerLoop;
             mPeriodicIO.left_position_ticks = leftEncoderSimPosition;
             mPeriodicIO.right_position_ticks = rightEncoderSimPosition;
+            //update velocities for periodic IO
             mPeriodicIO.left_velocity_ticks_per_100ms =
-                leftAdjDemand - mPeriodicIO.left_error;
-            mPeriodicIO.right_velocity_ticks_per_100ms = rightAdjDemand;
+                leftVelocity - mPeriodicIO.left_error;
+            mPeriodicIO.right_velocity_ticks_per_100ms = rightVelocity;
             // calculate rotation based on left/right vel differences
-            additionalRotation -=
-                (
-                    mPeriodicIO.left_velocity_ticks_per_100ms -
-                    mPeriodicIO.right_velocity_ticks_per_100ms
-                ) /
-                robotWidthTicks;
+            additionalRotation -= (leftVelocity - rightVelocity) / robotWidthTicks;
             mPeriodicIO.gyro_heading_no_offset =
-                getDesiredRotation2d().rotateBy(Rotation2d.fromDegrees(additionalRotation));
+                getDesiredRotation2d()
+                    .rotateBy(Rotation2d.fromDegrees(additionalRotation));
         } else {
             mPeriodicIO.left_position_ticks = mLeftMaster.getSelectedSensorPosition(0);
             mPeriodicIO.right_position_ticks = mRightMaster.getSelectedSensorPosition(0);
@@ -414,6 +410,8 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     @Override
     public synchronized void stop() {
         setOpenLoop(DriveSignal.NEUTRAL);
+        // need for force one last write while enabled for updates to take
+        writePeriodicOutputs();
     }
 
     @Override

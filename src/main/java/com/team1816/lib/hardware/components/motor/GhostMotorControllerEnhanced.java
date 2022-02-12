@@ -11,11 +11,17 @@ import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
 
 public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
 
+    private ControlMode mControlMode;
+    private final int mMaxTicks;
     private final double[] mDemand = new double[] { 0, 0 };
+
+    public GhostMotorControllerEnhanced(int maxTicks) {
+        mMaxTicks = maxTicks;
+    }
 
     @Override
     public void set(ControlMode Mode, double demand) {
-        if (Mode == ControlMode.Position || Mode == ControlMode.Velocity) mDemand[0] = demand;
+        processSet(Mode, demand);
     }
 
     @Override
@@ -24,7 +30,20 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
         double demand0,
         DemandType demand1Type,
         double demand1
-    ) {}
+    ) {
+        processSet(Mode, demand0);
+    }
+
+    private void processSet(ControlMode Mode, double demand) {
+        if (
+            Mode == ControlMode.Position ||
+            Mode == ControlMode.Velocity ||
+            Mode == ControlMode.PercentOutput
+        ) {
+            mDemand[0] = demand;
+            mControlMode = Mode;
+        }
+    }
 
     @Override
     public void neutralOutput() {}
@@ -196,7 +215,14 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
 
     @Override
     public double getSelectedSensorVelocity(int pidIdx) {
-        return mDemand[pidIdx];
+        var output = mDemand[pidIdx];
+        if (mControlMode == ControlMode.PercentOutput) {
+            if (Math.abs(output) > 1.1) System.out.println(
+                "Motor % output should be between -1.0 to 1.0 value:" + output
+            );
+            return output * mMaxTicks;
+        }
+        return output;
     }
 
     @Override

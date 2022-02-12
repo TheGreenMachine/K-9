@@ -10,9 +10,8 @@ import com.team1816.lib.hardware.components.pcm.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
-
-import javax.annotation.Nonnull;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 @Singleton
 public class RobotFactory {
@@ -85,7 +84,10 @@ public class RobotFactory {
         }
         if (motor == null) {
             reportGhostWarning("Motor", subsystemName, name);
-            motor = CtreMotorFactory.createGhostTalon();
+            motor =
+                CtreMotorFactory.createGhostTalon(
+                    config.constants.get("maxTicks").intValue()
+                );
         }
 
         // Motor configuration
@@ -151,7 +153,10 @@ public class RobotFactory {
         }
         if (followerMotor == null) {
             if (subsystem.implemented) reportGhostWarning("Motor", subsystemName, name);
-            followerMotor = CtreMotorFactory.createGhostTalon();
+            followerMotor =
+                CtreMotorFactory.createGhostTalon(
+                    config.constants.get("maxTicks").intValue()
+                );
         }
         if (master != null) {
             followerMotor.setInverted(master.getInverted());

@@ -8,7 +8,8 @@ import com.team1816.lib.hardware.components.motor.IConfigurableMotorController;
 import com.team1816.lib.hardware.components.motor.LazyTalonFX;
 import com.team1816.lib.hardware.components.motor.LazyTalonSRX;
 import edu.wpi.first.wpilibj.RobotBase;
-import java.util.*;
+
+import java.util.Map;
 
 /**
  * A class to create Falcon (TalonFX), TalonSRX, VictorSPX, and GhostTalonSRX objects.
@@ -123,8 +124,8 @@ public class CtreMotorFactory {
         return talon;
     }
 
-    public static IMotorControllerEnhanced createGhostTalon() {
-        return new GhostMotorControllerEnhanced();
+    public static IMotorControllerEnhanced createGhostTalon(int maxTicks) {
+        return new GhostMotorControllerEnhanced(maxTicks);
     }
 
     public static IMotorController createDefaultVictor(int id) {

@@ -28,9 +28,9 @@ public class TurretTest {
     @Spy
     private Constants constants;
 
-    public TurretTest(){
+    public TurretTest() {
         mockFactory = Mockito.spy(RobotFactory.class);
-        when(mockFactory.getConstant(Turret.NAME,"absPosTicksSouth")).thenReturn(1980.0);
+        when(mockFactory.getConstant(Turret.NAME, "absPosTicksSouth")).thenReturn(1980.0);
         Subsystem.factory = mockFactory;
         Injector injector = Guice.createInjector(new LibModule(), new SeasonModule());
         state = injector.getInstance(RobotState.class);
@@ -49,8 +49,8 @@ public class TurretTest {
         mTurret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
         mTurret.readPeriodicInputs();
         mTurret.writePeriodicOutputs();
-        assertEquals(0,state.getLatestFieldToTurret(),0.1);
-        assertEquals(0,state.vehicle_to_turret.getDegrees(),.01);
+        assertEquals(0, state.getLatestFieldToTurret(), 0.1);
+        assertEquals(0, state.vehicle_to_turret.getDegrees(), .01);
         assertEquals(1980, mTurret.getActualTurretPositionTicks(), .01);
     }
 
@@ -58,23 +58,25 @@ public class TurretTest {
     public void fieldFollowing45Test() {
         mTurret.setTurretAngle(0);
         mTurret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
-        state.field_to_vehicle = new Pose2d(0,0,Rotation2d.fromDegrees(45));
+        state.field_to_vehicle = new Pose2d(0, 0, Rotation2d.fromDegrees(45));
         mTurret.readPeriodicInputs();
         mTurret.writePeriodicOutputs();
-        assertEquals(0,state.getLatestFieldToTurret(),0.1);
-        assertEquals(315,state.vehicle_to_turret.getDegrees(),.01);
-        assertEquals(1980, mTurret.getActualTurretPositionTicks(), .01);
+        assertEquals(0, state.getLatestFieldToTurret(), 0.1);
+        assertEquals(315, state.vehicle_to_turret.getDegrees(), .01);
+        // Turret should move CW
+        assertEquals(1980 + 512, mTurret.getActualTurretPositionTicks(), .01);
     }
 
     @Test
     public void fieldFollowing315Test() {
         mTurret.setTurretAngle(0);
         mTurret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
-        state.field_to_vehicle = new Pose2d(0,0,Rotation2d.fromDegrees(-45));
+        state.field_to_vehicle = new Pose2d(0, 0, Rotation2d.fromDegrees(-45));
         mTurret.readPeriodicInputs();
         mTurret.writePeriodicOutputs();
-        assertEquals(0,state.getLatestFieldToTurret(),0.1);
-        assertEquals(45,state.vehicle_to_turret.getDegrees(),.01);
-        assertEquals(1980, mTurret.getActualTurretPositionTicks(), .01);
+        assertEquals(0, state.getLatestFieldToTurret(), 0.1);
+        assertEquals(45, state.vehicle_to_turret.getDegrees(), .01);
+        // Turret should move CCW
+        assertEquals(1980 - 512, mTurret.getActualTurretPositionTicks(), .01);
     }
 }
