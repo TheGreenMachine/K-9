@@ -65,7 +65,6 @@ public class Turret extends Subsystem implements PidProvider {
     private int followingTurretPos = 0;
     private double turretSpeed;
     private boolean outputsChanged;
-    private double turretAngleRelativeToField;
     private ControlMode controlMode = ControlMode.MANUAL;
 
     public Turret() {
@@ -115,17 +114,23 @@ public class Turret extends Subsystem implements PidProvider {
             ); // Reverse = MIN
             turret.overrideLimitSwitchesEnable(true);
             turret.overrideSoftLimitsEnable(true);
-            turretAngleRelativeToField = robotState.getLatestFieldToTurret();
         }
     }
 
+    /**
+     * converts 0-360 to 0-TURRET_ENCODER_PPR with zero  offset
+     */
     public static int convertTurretDegreesToTicks(double degrees) {
+        // CCW is positive
         return (
             (int) ((((degrees) / 360.0) * TURRET_ENCODER_PPR) + ABS_TICKS_SOUTH) &
             TURRET_ENCODER_MASK
         );
     }
 
+    /**
+     * converts 0-TURRET_ENCODER_PPR with zero offset
+     */
     public static double convertTurretTicksToDegrees(double ticks) {
         double adjTicks = ((int) ticks - ABS_TICKS_SOUTH) & TURRET_ENCODER_MASK;
         return adjTicks / TURRET_ENCODER_PPR * 360;
@@ -201,7 +206,7 @@ public class Turret extends Subsystem implements PidProvider {
 
     private synchronized void setTurretPosition(double position) {
         //Since we are using position we need ensure value stays in one rotation
-        int adjPos = -(int) position & TURRET_ENCODER_MASK;
+        int adjPos = (int) position & TURRET_ENCODER_MASK;
         if (desiredTurretPos != adjPos) {
             desiredTurretPos = adjPos;
             outputsChanged = true;
@@ -235,14 +240,14 @@ public class Turret extends Subsystem implements PidProvider {
 
     @Override
     public void readPeriodicInputs() {
-        turretAngleRelativeToField = robotState.getLatestFieldToTurret();
+        robotState.vehicle_to_turret = Rotation2d.fromDegrees(getActualTurretPositionDegrees());
         // show turret
         var robotPose = robotState.field.getRobotPose();
         var turret = robotState.field.getObject("turret");
         turret.setPose(
             robotPose.getX() - .1,
             robotPose.getY() + .1,
-            Rotation2d.fromDegrees(getActualTurretPositionDegrees())
+            Rotation2d.fromDegrees(robotState.getLatestFieldToTurret())
         );
     }
 
@@ -279,11 +284,10 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     private void trackGyro() {
-        int fieldTickOffset = convertTurretDegreesToTicks(turretAngleRelativeToField) - ABS_TICKS_SOUTH;
-        int adj = desiredTurretPos + fieldTickOffset;
-        // Valid positions are 0 to encoder max ticks if we go negative adjust
-        if (adj < 0) adj += TURRET_ENCODER_PPR;
-        adj = - (adj & TURRET_ENCODER_MASK);
+        // since convertTurretDegreesToTicks adjusts to zero we need to remove offset
+        int fieldTickOffset =
+            convertTurretDegreesToTicks(robotState.field_to_vehicle.getRotation().getDegrees()) - ABS_TICKS_SOUTH;
+        int adj = (desiredTurretPos + fieldTickOffset) & TURRET_ENCODER_MASK;
         if (adj != followingTurretPos) {
             followingTurretPos = adj;
             outputsChanged = true;

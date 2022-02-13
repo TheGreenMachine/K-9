@@ -32,4 +32,5 @@ constants:
   kLooperDt: .01
   kTrackScrubFactor: 1.0
   kPCMId: 0
+  maxTicks: 4096
   pathKs: 0
