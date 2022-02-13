@@ -13,7 +13,6 @@ import com.team1816.season.RobotState;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 @Singleton
 public class Turret extends Subsystem implements PidProvider {
@@ -28,21 +27,19 @@ public class Turret extends Subsystem implements PidProvider {
         ((int) factory.getConstant(NAME, "revLimit"));
     public static final int TURRET_LIMIT_FORWARD =
         ((int) factory.getConstant(NAME, "fwdLimit"));
-    public static final int ABS_TICKS_SOUTH =
-        ((int) factory.getConstant(NAME, "absPosTicksSouth"));
+    public final int ABS_TICKS_SOUTH;
 
     // Constants
     private static final int kPrimaryCloseLoop = 0;
     private static final int kPIDGyroIDx = 0;
     private static final int kPIDVisionIDx = 0;
-    private static final int TURRET_ENCODER_PPR = (int) factory.getConstant(
-        NAME,
-        "encPPR",
-        4096
-    );
-    private static final int TURRET_ENCODER_MASK = TURRET_ENCODER_PPR - 1;
+    private final int TURRET_ENCODER_PPR;
+    private final int TURRET_PPR;
+    private final int TURRET_ENCODER_MASK;
+    private final double TURRET_ENC_RATIO;
     private static final int ALLOWABLE_ERROR_TICKS = 5;
     private static Turret INSTANCE;
+
     // Components
     private final IMotorControllerEnhanced turret;
 
@@ -70,11 +67,14 @@ public class Turret extends Subsystem implements PidProvider {
     public Turret() {
         super(NAME);
         this.turret = factory.getMotor(NAME, "turret");
+        TURRET_ENCODER_PPR = (int) factory.getConstant(NAME, "encPPR");
+        TURRET_PPR = (int) factory.getConstant(NAME, "turretPPR");
+        TURRET_ENCODER_MASK = TURRET_PPR - 1;
+        TURRET_ENC_RATIO = (double) TURRET_PPR / TURRET_ENCODER_PPR;
+        ABS_TICKS_SOUTH = ((int) factory.getConstant(NAME, "absPosTicksSouth"));
 
         turret.setNeutralMode(NeutralMode.Brake);
 
-        SmartDashboard.putNumber("TURRET_POSITION_MIN", TURRET_LIMIT_REVERSE);
-        SmartDashboard.putNumber("TURRET_POSITION_MAX", TURRET_LIMIT_FORWARD);
         PIDSlotConfiguration pidConfig = factory.getPidSlotConfig(NAME, pidSlot);
         this.kP = pidConfig.kP;
         this.kI = pidConfig.kI;
@@ -120,10 +120,10 @@ public class Turret extends Subsystem implements PidProvider {
     /**
      * converts 0-360 to 0-TURRET_ENCODER_PPR with zero  offset
      */
-    public static int convertTurretDegreesToTicks(double degrees) {
+    public int convertTurretDegreesToTicks(double degrees) {
         // CCW is positive
         return (
-            (int) ((((degrees) / 360.0) * TURRET_ENCODER_PPR) + ABS_TICKS_SOUTH) &
+            (int) ((((degrees) / 360.0) * TURRET_PPR) + ABS_TICKS_SOUTH) &
             TURRET_ENCODER_MASK
         );
     }
@@ -131,9 +131,9 @@ public class Turret extends Subsystem implements PidProvider {
     /**
      * converts 0-TURRET_ENCODER_PPR with zero offset
      */
-    public static double convertTurretTicksToDegrees(double ticks) {
+    public double convertTurretTicksToDegrees(double ticks) {
         double adjTicks = ((int) ticks - ABS_TICKS_SOUTH) & TURRET_ENCODER_MASK;
-        return adjTicks / TURRET_ENCODER_PPR * 360;
+        return adjTicks / TURRET_PPR * 360;
     }
 
     @Override
@@ -240,7 +240,8 @@ public class Turret extends Subsystem implements PidProvider {
 
     @Override
     public void readPeriodicInputs() {
-        robotState.vehicle_to_turret = Rotation2d.fromDegrees(getActualTurretPositionDegrees());
+        robotState.vehicle_to_turret =
+            Rotation2d.fromDegrees(getActualTurretPositionDegrees());
         // show turret
         var robotPose = robotState.field.getRobotPose();
         var turret = robotState.field.getObject("turret");
@@ -286,7 +287,10 @@ public class Turret extends Subsystem implements PidProvider {
     private void trackGyro() {
         // since convertTurretDegreesToTicks adjusts to zero we need to remove offset
         int fieldTickOffset =
-            convertTurretDegreesToTicks(robotState.field_to_vehicle.getRotation().getDegrees()) - ABS_TICKS_SOUTH;
+            convertTurretDegreesToTicks(
+                robotState.field_to_vehicle.getRotation().getDegrees()
+            ) -
+            ABS_TICKS_SOUTH;
         int adj = (desiredTurretPos + fieldTickOffset) & TURRET_ENCODER_MASK;
         if (adj != followingTurretPos) {
             followingTurretPos = adj;

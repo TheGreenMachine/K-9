@@ -53,6 +53,7 @@ subsystems:
                 iZone: 200
         constants:
             encPPR: 4096
+            turretPPR: 4096
             revLimit: 760 # CCW
             fwdLimit: 3190 # CW
             currentFloorCheck: 0
