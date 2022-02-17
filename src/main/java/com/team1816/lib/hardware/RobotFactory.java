@@ -1,7 +1,16 @@
 package com.team1816.lib.hardware;
 
+import com.ctre.phoenix.CANifier;
+import com.ctre.phoenix.CANifierStatusFrame;
+import com.ctre.phoenix.led.CANdle;
+import com.ctre.phoenix.led.CANdleStatusFrame;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
+import com.ctre.phoenix.motorcontrol.StatusFrame;
+import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.CANCoderStatusFrame;
+import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.google.inject.Singleton;
 import com.team1816.lib.hardware.components.CanifierImpl;
 import com.team1816.lib.hardware.components.GhostCanifier;
@@ -324,4 +333,63 @@ public class RobotFactory {
             ", using ghost!"
         );
     }
+
+    private final int canMaxStatus = 100;
+    private void setStatusFrame(IMotorControllerEnhanced device){
+        device.setStatusFramePeriod(StatusFrame.Status_1_General,canMaxStatus, 100);
+        device.setStatusFramePeriod(StatusFrame.Status_2_Feedback0,canMaxStatus, 100);
+        device.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat,canMaxStatus, 100);
+        device.setStatusFramePeriod(StatusFrame.Status_6_Misc,canMaxStatus, 100);
+        device.setStatusFramePeriod(StatusFrame.Status_7_CommStatus,canMaxStatus, 100);
+        device.setStatusFramePeriod(StatusFrame.Status_9_MotProfBuffer,canMaxStatus, 100);
+        device.setStatusFramePeriod(StatusFrame.Status_10_Targets,canMaxStatus, 100);
+        device.setStatusFramePeriod(StatusFrame.Status_12_Feedback1,canMaxStatus, 100);
+        device.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0,canMaxStatus, 100);
+        device.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1,canMaxStatus, 100);
+        device.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus,canMaxStatus, 100);
+        device.setStatusFramePeriod(StatusFrame.Status_17_Targets1,canMaxStatus, 100);
+    }
+
+    private void setStatusFrame(PigeonIMU device){
+        device.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 100);
+        device.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 100);
+        device.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_2_GeneralCompass, 100);
+        device.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_3_GeneralAccel, 100);
+        device.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_4_Mag, 100);
+        device.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_6_Accel, 100);
+        device.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 100);
+        device.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 100);
+        device.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_10_SixDeg_Quat, 100);
+        device.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_11_GyroAccum, 100);
+        device.setStatusFramePeriod(PigeonIMU_StatusFrame.RawStatus_4_Mag, 100);
+    }
+
+    private void setStatusFrame(CANCoder device){
+        device.setStatusFramePeriod(CANCoderStatusFrame.SensorData, canMaxStatus, 100);
+        device.setStatusFramePeriod(CANCoderStatusFrame.VbatAndFaults, canMaxStatus, 100);
+    }
+
+    private void setStatusFrame(CANifier device){
+        device.setStatusFramePeriod(CANifierStatusFrame.Status_1_General, canMaxStatus, 100);
+        device.setStatusFramePeriod(CANifierStatusFrame.Status_2_General, canMaxStatus, 100);
+        device.setStatusFramePeriod(CANifierStatusFrame.Status_3_PwmInputs0, canMaxStatus, 100);
+        device.setStatusFramePeriod(CANifierStatusFrame.Status_4_PwmInputs1, canMaxStatus, 100);
+        device.setStatusFramePeriod(CANifierStatusFrame.Status_5_PwmInputs2, canMaxStatus, 100);
+        device.setStatusFramePeriod(CANifierStatusFrame.Status_6_PwmInputs3, canMaxStatus, 100);
+        device.setStatusFramePeriod(CANifierStatusFrame.Status_8_Misc, canMaxStatus, 100);
+    }
+
+    private void setStatusFrame(CANdle device){
+        device.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_1_General, canMaxStatus, 100);
+        device.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_2_Startup, canMaxStatus, 100);
+        device.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_3_FirmwareApiStatus, canMaxStatus, 100);
+        device.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_4_ControlTelem, canMaxStatus, 100);
+        device.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_5_PixelPulseTrain, canMaxStatus, 100);
+        device.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_6_BottomPixels, canMaxStatus, 100);
+        device.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_7_TopPixels, canMaxStatus, 100);
+    }
+
+
+
+
 }
