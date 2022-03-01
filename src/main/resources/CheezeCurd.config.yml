@@ -1,6 +1,6 @@
 subsystems:
     drivetrain:
-        implemented: true
+        implemented: false
         talons:
             leftMain: 2
             leftSlaveOne: -1
@@ -32,8 +32,8 @@ subsystems:
         canifier: 12
         constants:
             maxLevel: 25
-            raveEnabled: 0
-            raveSpeed: .05
+            raveEnabled: 1
+            raveSpeed: .3
     turret:
         implemented: true
         talons:
@@ -69,7 +69,7 @@ constants:
     maxTicks: 2000 # ticks per 100ms
     maxAccel: 50
     sensorPhase: 0
-    kLooperDt: .015
+    kLooperDt: .020
     kTrackScrubFactor: 2
     kPCMId: 0
     pathKs: .0125

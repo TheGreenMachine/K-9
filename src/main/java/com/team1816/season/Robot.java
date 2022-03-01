@@ -64,7 +64,7 @@ public class Robot extends TimedRobot {
     private ActionManager actionManager;
     private final GreenDriveHelper greenDriveHelper = new GreenDriveHelper();
 
-    private final PowerDistribution pdp = new PowerDistribution();
+    private final PowerDistribution pdp = new PowerDistribution(1, PowerDistribution.ModuleType.kCTRE);
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
 
     public Robot() {
@@ -207,7 +207,8 @@ public class Robot extends TimedRobot {
                 mDrive,
                 mSuperstructure,
                 mInfrastructure,
-                turret
+                turret,
+                ledManager
             );
 
             mDrive.zeroSensors();
@@ -346,7 +347,6 @@ public class Robot extends TimedRobot {
 
             turret.setTurretAngle(Turret.CARDINAL_WEST);
             turret.setControlMode(Turret.ControlMode.FIELD_FOLLOWING);
-
             mInfrastructure.setIsManualControl(true);
             mControlBoard.reset();
         } catch (Throwable t) {
@@ -363,7 +363,7 @@ public class Robot extends TimedRobot {
             ledManager.blinkStatus(LedManager.RobotStatus.DRIVETRAIN_FLIPPED);
             // Warning - blocks thread - intended behavior?
             while (System.currentTimeMillis() - initTime <= 3000) {
-                ledManager.writePeriodicOutputs();
+                ledManager.writeToHardware();
             }
 
             mEnabledLooper.stop();

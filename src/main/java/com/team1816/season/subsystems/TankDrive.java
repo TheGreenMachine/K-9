@@ -164,7 +164,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     }
 
     @Override
-    public synchronized void readPeriodicInputs() {
+    public synchronized void readFromHardware() {
         if (RobotBase.isSimulation()) {
             // read velocities from motor
             var leftVelocity = mLeftMaster.getSelectedSensorVelocity(0);
@@ -215,7 +215,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     }
 
     @Override
-    public synchronized void writePeriodicOutputs() {
+    public synchronized void writeToHardware() {
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             if (isSlowMode) {
                 mLeftMaster.set(ControlMode.PercentOutput, mPeriodicIO.left_demand * 0.5);
@@ -411,7 +411,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     public synchronized void stop() {
         setOpenLoop(DriveSignal.NEUTRAL);
         // need for force one last write while enabled for updates to take
-        writePeriodicOutputs();
+        writeToHardware();
     }
 
     @Override

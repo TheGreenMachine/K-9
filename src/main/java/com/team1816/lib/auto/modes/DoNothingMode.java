@@ -12,6 +12,6 @@ public class DoNothingMode extends AutoModeBase {
 
     @Override
     public Trajectory getTrajectory() {
-        return null;
+        return new Trajectory();
     }
 }

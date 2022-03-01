@@ -244,6 +244,7 @@ public abstract class Drive
 
     protected static double inchesToRotations(double inches) {
         return inches / (Constants.kDriveWheelDiameterInches * Math.PI);
+
     }
 
     public static double metersPerSecondToTicksPer100ms(double meters_per_second) {

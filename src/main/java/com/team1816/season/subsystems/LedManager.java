@@ -10,7 +10,7 @@ import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
-import java.awt.*;
+
 import javax.inject.Singleton;
 
 @Singleton
@@ -22,12 +22,12 @@ public class LedManager extends Subsystem {
 
     // Components
     private final ICanifier canifier;
-    private final ICanifier cameraCanifier;
     private final CANdle candle;
 
     // State
     private boolean blinkLedOn = false;
     private boolean outputsChanged = true;
+    private boolean cameraLedChanged = false;
 
     private int ledR;
     private int ledG;
@@ -36,7 +36,6 @@ public class LedManager extends Subsystem {
 
     private int period; // ms
     private long lastWriteTime = System.currentTimeMillis();
-    private float raveHue = 0f;
     private LedControlState controlState = LedControlState.STANDARD;
     private RobotStatus defaultStatus = RobotStatus.DISABLED;
 
@@ -48,25 +47,25 @@ public class LedManager extends Subsystem {
 
     public LedManager() {
         super(NAME);
-        this.canifier = factory.getCanifier(NAME);
-        this.cameraCanifier = factory.getCanifier("camera");
-        this.candle = new CANdle(10);
-        this.candle.animate(new RainbowAnimation(1, .5, 8));
+        canifier = factory.getCanifier(NAME);
+        candle = new CANdle(10);
 
         configureCanifier(canifier);
-        configureCanifier(cameraCanifier);
         configureCandle();
 
-        this.ledR = 0;
-        this.ledG = 0;
-        this.ledB = 0;
+        ledR = 0;
+        ledG = 0;
+        ledB = 0;
 
-        this.cameraLedOn = false;
+        cameraLedOn = false;
     }
 
     private void configureCandle() {
-        this.candle.configStatusLedState(true);
-        this.candle.configBrightnessScalar(.04);
+        if (candle == null) return;
+        candle.configStatusLedState(true);
+        candle.configLOSBehavior(true);
+        candle.configLEDType(CANdle.LEDStripType.BRG);
+        candle.configBrightnessScalar(1);
     }
 
     private void configureCanifier(ICanifier canifier) {
@@ -81,15 +80,15 @@ public class LedManager extends Subsystem {
     public void setCameraLed(boolean cameraLedOn) {
         if (this.cameraLedOn != cameraLedOn) {
             this.cameraLedOn = cameraLedOn;
-            outputsChanged = true;
+            cameraLedChanged = true;
         }
     }
 
     public void setLedColor(int r, int g, int b) {
-        if (this.ledR != r || this.ledG != g || this.ledB != b) {
-            this.ledR = r;
-            this.ledG = g;
-            this.ledB = b;
+        if (ledR != r || ledG != g || ledB != b) {
+            ledR = r;
+            ledG = g;
+            ledB = b;
             outputsChanged = true;
         }
     }
@@ -144,50 +143,53 @@ public class LedManager extends Subsystem {
     }
 
     private void writeLedHardware(int r, int g, int b) {
-        canifier.setLEDOutput(r / 255.0, CANifier.LEDChannel.LEDChannelB);
-        canifier.setLEDOutput(g / 255.0, CANifier.LEDChannel.LEDChannelA);
-        canifier.setLEDOutput(b / 255.0, CANifier.LEDChannel.LEDChannelC);
+
+        if (candle != null) {
+            candle.setLEDs(r, g, b, 0, 8, 66);
+            // back to back writes cancel the first output, so we need to give candle time to write
+            if (cameraLedChanged) {
+                Timer.delay(.1);
+                candle.setLEDs(0, cameraLedOn ? 255 : 0, 0, 0, 0, 8);
+            }
+        }
+        if (canifier != null && outputsChanged) {
+            canifier.setLEDOutput(r / 255.0, CANifier.LEDChannel.LEDChannelB);
+            canifier.setLEDOutput(g / 255.0, CANifier.LEDChannel.LEDChannelA);
+            canifier.setLEDOutput(b / 255.0, CANifier.LEDChannel.LEDChannelC);
+        }
     }
 
     @Override
-    public void writePeriodicOutputs() {
-        if (cameraCanifier != null) {
-            if (outputsChanged) {
-                cameraCanifier.setLEDOutput(
-                    cameraLedOn ? 1 : 0,
-                    CANifier.LEDChannel.LEDChannelB
-                );
-            }
-        }
-        if (canifier != null) {
-            switch (controlState) {
-                case RAVE:
-                    var color = Color.getHSBColor(raveHue, 1.0f, MAX / 255.0f);
-                    writeLedHardware(color.getRed(), color.getGreen(), color.getBlue());
-                    raveHue += RAVE_SPEED;
-                    break;
-                case BLINK:
-                    if (System.currentTimeMillis() >= lastWriteTime + (period / 2)) {
-                        if (blinkLedOn) {
-                            writeLedHardware(0, 0, 0);
-                            blinkLedOn = false;
-                        } else {
-                            writeLedHardware(ledR, ledG, ledB);
-                            blinkLedOn = true;
+    public void writeToHardware() {
+        if (outputsChanged || cameraLedChanged) {
+            if (canifier != null || candle != null) {
+                switch (controlState) {
+                    case RAVE:
+                        candle.animate(new RainbowAnimation(MAX / 255.0, RAVE_SPEED, 74));
+                        break;
+                    case BLINK:
+                        if (System.currentTimeMillis() >= lastWriteTime + (period / 2)) {
+                            if (blinkLedOn) {
+                                writeLedHardware(0, 0, 0);
+                                blinkLedOn = false;
+                            } else {
+                                writeLedHardware(ledR, ledG, ledB);
+                                blinkLedOn = true;
+                            }
+                            lastWriteTime = System.currentTimeMillis();
                         }
-                        lastWriteTime = System.currentTimeMillis();
-                    }
-                    break;
-                case STANDARD:
-                    writeLedHardware(ledR, ledG, ledB);
-                    outputsChanged = false;
-                    break;
+                        break;
+                    case STANDARD:
+                        writeLedHardware(ledR, ledG, ledB);
+                        break;
+                }
             }
         }
     }
 
     @Override
-    public void stop() {}
+    public void stop() {
+    }
 
     @Override
     public void registerEnabledLoops(ILooper mEnabledLooper) {
@@ -195,15 +197,17 @@ public class LedManager extends Subsystem {
         mEnabledLooper.register(
             new Loop() {
                 @Override
-                public void onStart(double timestamp) {}
-
-                @Override
-                public void onLoop(double timestamp) {
-                    LedManager.this.writePeriodicOutputs();
+                public void onStart(double timestamp) {
                 }
 
                 @Override
-                public void onStop(double timestamp) {}
+                public void onLoop(double timestamp) {
+                    LedManager.this.writeToHardware();
+                }
+
+                @Override
+                public void onStop(double timestamp) {
+                }
             }
         );
     }
@@ -211,25 +215,26 @@ public class LedManager extends Subsystem {
     @Override
     public boolean checkSystem() {
         System.out.println("Warning: checking LED systems");
-        Timer.delay(3);
-
-        writeLedHardware(255, 0, 0);
-        Timer.delay(0.4);
-        writeLedHardware(0, 255, 0);
-        Timer.delay(0.4);
-        writeLedHardware(0, 0, 255);
-        Timer.delay(0.4);
+        writeLedHardware(MAX, 0, 0);
+        Timer.delay(2);
+        setCameraLed(true);
+        writeLedHardware(0, MAX, 0);
+        Timer.delay(2);
+        setCameraLed(false);
+        writeLedHardware(0, 0, MAX);
+        Timer.delay(2);
         writeLedHardware(0, 0, 0);
-
+        Timer.delay(2);
         return true;
     }
 
     @Override
-    public void initSendable(SendableBuilder builder) {}
+    public void initSendable(SendableBuilder builder) {
+    }
 
     private static final boolean RAVE_ENABLED =
         factory.getConstant(NAME, "raveEnabled") > 0;
-    private static final double RAVE_SPEED = factory.getConstant(NAME, "raveSpeed", 0.01);
+    private static final double RAVE_SPEED = factory.getConstant(NAME, "raveSpeed", 1.0);
     private static final int MAX = (int) factory.getConstant(NAME, "maxLevel");
 
     public enum RobotStatus {

@@ -132,6 +132,7 @@ public class Turret extends Subsystem implements PidProvider {
      * converts 0-TURRET_ENCODER_PPR with zero offset
      */
     public double convertTurretTicksToDegrees(double ticks) {
+
         double adjTicks = ((int) ticks - ABS_TICKS_SOUTH) & TURRET_ENCODER_MASK;
         return adjTicks / TURRET_PPR * 360;
     }
@@ -240,7 +241,7 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     @Override
-    public void readPeriodicInputs() {
+    public void readFromHardware() {
         robotState.vehicle_to_turret =
             Rotation2d.fromDegrees(getActualTurretPositionDegrees());
         // show turret
@@ -254,7 +255,7 @@ public class Turret extends Subsystem implements PidProvider {
     }
 
     @Override
-    public void writePeriodicOutputs() {
+    public void writeToHardware() {
         switch (controlMode) {
             case CAMERA_FOLLOWING:
                 autoHome();

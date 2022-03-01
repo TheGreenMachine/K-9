@@ -3,6 +3,7 @@ package com.team1816.lib.subsystems;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.loops.Looper;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -58,9 +59,13 @@ public class SubsystemManager implements ILooper {
 
         @Override
         public void onLoop(double timestamp) {
-            mAllSubsystems.forEach(Subsystem::readPeriodicInputs);
+            mAllSubsystems.forEach((subsystem) -> {
+                if (subsystem.isImplemented()) subsystem.readFromHardware();
+            });
             mLoops.forEach(l -> l.onLoop(timestamp));
-            mAllSubsystems.forEach(Subsystem::writePeriodicOutputs);
+            mAllSubsystems.forEach((subsystem) -> {
+                if (subsystem.isImplemented()) subsystem.writeToHardware();
+            });
         }
 
         @Override
@@ -76,7 +81,9 @@ public class SubsystemManager implements ILooper {
 
         @Override
         public void onLoop(double timestamp) {
-            mAllSubsystems.forEach(Subsystem::readPeriodicInputs);
+            mAllSubsystems.forEach((subsystem) -> {
+                if (subsystem.isImplemented()) subsystem.readFromHardware();
+            });
         }
 
         @Override
