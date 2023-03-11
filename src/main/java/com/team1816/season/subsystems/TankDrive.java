@@ -17,11 +17,15 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotBase;
 
 @Singleton
 public class TankDrive extends Drive implements DifferentialDrivetrain {
 
+    private final DoubleLogEntry mLeftActLogger = new DoubleLogEntry(DataLogManager.getLog(),"Drivetrain/LeftAct");
+    private final DoubleLogEntry mLeftDemmandLogger = new DoubleLogEntry(DataLogManager.getLog(),"Drivetrain/LeftDemand");
     private final CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
 
     private static final String NAME = "drivetrain";
@@ -388,6 +392,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     @Override
     public double getLeftVelocityNativeUnits() {
+        mLeftActLogger.append(mPeriodicIO.left_velocity_ticks_per_100ms);
         return mPeriodicIO.left_velocity_ticks_per_100ms;
     }
 
@@ -451,9 +456,13 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     @Override
     public double getLeftVelocityDemand() {
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
-            return mPeriodicIO.left_demand * maxVelTicksPer100ms;
+            var ticks = mPeriodicIO.left_demand * maxVelTicksPer100ms;
+            mLeftDemmandLogger.append(ticks);
+            return ticks;
         }
+        mLeftDemmandLogger.append(mPeriodicIO.left_demand);
         return mPeriodicIO.left_demand;
+
     }
 
     @Override
