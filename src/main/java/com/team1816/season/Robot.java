@@ -18,6 +18,7 @@ import com.team1816.season.paths.TrajectorySet;
 import com.team1816.season.subsystems.*;
 import com.team254.lib.util.DriveSignal;
 import com.team254.lib.util.LatchedBoolean;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.*;
 
 import java.nio.file.Files;
@@ -67,6 +68,9 @@ public class Robot extends TimedRobot {
     private final PowerDistribution pdp = new PowerDistribution(1, PowerDistribution.ModuleType.kCTRE);
     private Turret.ControlMode prevTurretControlMode = Turret.ControlMode.FIELD_FOLLOWING;
 
+    private final DoubleLogEntry mLoopLogger = new DoubleLogEntry(DataLogManager.getLog(),"Timings/Robot");
+
+
     public Robot() {
         super();
         // initialize injector
@@ -89,7 +93,9 @@ public class Robot extends TimedRobot {
     }
 
     private Double getLastLoop() {
-        return (Timer.getFPGATimestamp() - loopStart) * 1000;
+        var dur = (Timer.getFPGATimestamp() - loopStart) * 1000;
+        mLoopLogger.append(dur);
+        return dur;
     }
 
     @Override
@@ -98,6 +104,8 @@ public class Robot extends TimedRobot {
             DriverStation.silenceJoystickConnectionWarning(true);
             mControlBoard = injector.getInstance(IControlBoard.class);
             if (Constants.kIsBadlogEnabled) {
+                DataLogManager.start();
+                DriverStation.startDataLog(DataLogManager.getLog(), false);
                 var logFile = new SimpleDateFormat("MMdd_HH-mm").format(new Date());
                 var robotName = System.getenv("ROBOT_NAME");
                 if (robotName == null) robotName = "default";

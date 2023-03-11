@@ -1,7 +1,10 @@
 package com.team1816.lib.loops;
 
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +19,7 @@ public class Looper implements ILooper {
     private final Object mTaskRunningLock = new Object();
     private double mTimestamp = 0;
     private double mDT = 0;
+    private final DoubleLogEntry mLoopLogger = new DoubleLogEntry(DataLogManager.getLog(),"Timings/Looper");
 
     public Looper(TimedRobot robot) {
         Runnable runnable_ = new Runnable() {
@@ -75,7 +79,9 @@ public class Looper implements ILooper {
     }
 
     public double getLastLoop() {
-        if (!mRunning) return 0;
-        return mDT * 1000; // Convert to ms
+        var dur=0.0;
+        if(mRunning) dur = mDT * 1000; // Convert to ms
+        mLoopLogger.append(dur);
+        return dur;
     }
 }
