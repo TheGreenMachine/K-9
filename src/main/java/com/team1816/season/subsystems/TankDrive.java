@@ -64,8 +64,9 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         mTrajectory = trajectory;
         mTrajectoryStart = 0;
         odometry.resetPosition(
-            trajectory.getInitialPose(),
-            trajectory.getInitialPose().getRotation()
+            trajectory.getInitialPose().getRotation(),
+            0,0,
+            trajectory.getInitialPose()
         );
         updateRobotPose();
         mDriveControlState = DriveControlState.TRAJECTORY_FOLLOWING;
@@ -357,6 +358,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         odometry =
             new DifferentialDriveOdometry(
                 Constants.StartingPose.getRotation(),
+                0,0,
                 Constants.StartingPose
             );
     }

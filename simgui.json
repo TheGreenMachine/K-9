@@ -32,6 +32,7 @@
           "style": "Line",
           "weight": 1.0
         },
+        "image": "D:\\Source\\GreenMachine\\K-9\\season.png",
         "turret": {
           "arrowWeight": 3.0,
           "style": "Line"
@@ -49,5 +50,8 @@
       },
       "open": true
     }
+  },
+  "NetworkTables View": {
+    "visible": false
   }
 }

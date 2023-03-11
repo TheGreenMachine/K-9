@@ -2,13 +2,12 @@ import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 plugins {
     id 'java'
-    id 'edu.wpi.first.GradleRIO' version '2022.4.1'
+    id 'edu.wpi.first.GradleRIO' version '2023.4.2'
     id 'org.jsonschema2dataclass' version '4.0.1'
-    id "com.diffplug.spotless" version "5.8.2"
 }
 
-sourceCompatibility = JavaVersion.VERSION_11
-targetCompatibility = JavaVersion.VERSION_11
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
 
 def ROBOT_MAIN_CLASS = "com.team1816.season.Main"
 
@@ -116,21 +115,6 @@ jsonSchema2Pojo {
         "${project.rootDir}/src/main/resources/double.solenoid.schema.json",
         "${project.rootDir}/src/main/resources/robotconfig.schema.json"
     )
-}
-spotless {
-    java {
-        target 'src/*/java/com/team1816/**/*.java'
-        importOrder()
-        removeUnusedImports()
-        prettier(['prettier': '2.2.1', 'prettier-plugin-java': '1.0.1'])
-            .config([
-                'parser': 'java',
-                'tabWidth': 4,
-                'printWidth': 90
-            ])
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
 }
 
 task runTank(type: JavaExec) {

@@ -2,7 +2,6 @@ package com.team1816.season.subsystems;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -34,30 +33,6 @@ public class Camera {
     public Camera() {
         networkTable = NetworkTableInstance.getDefault().getTable("SmartDashboard");
         usingVision = networkTable.getSubTable("Calibration").getEntry("VISION");
-        networkTable.addEntryListener(
-            "center_x",
-            (table, key, entry, value, flags) -> {
-                rawCenterX = value.getDouble();
-                if (value.getDouble() < 0) {
-                    // Reset deltaX to 0 if contour not detected
-                    deltaXAngle = 0;
-                    return;
-                }
-                var deltaXPixels = (value.getDouble() - (VIDEO_WIDTH / 2)); // Calculate deltaX from center of screen
-                this.deltaXAngle =
-                    Math.toDegrees(Math.atan2(deltaXPixels, CAMERA_FOCAL_LENGTH)) * 0.64;
-            },
-            EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
-        );
-
-        networkTable.addEntryListener(
-            "distance",
-            (table, key, entry, value, flags) -> {
-                // Use most recently available distance if distance not found
-                this.distance = value.getDouble();
-            },
-            EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
-        );
     }
 
     public double getDeltaXAngle() {

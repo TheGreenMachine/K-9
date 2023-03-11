@@ -1,6 +1,6 @@
 subsystems:
     drivetrain:
-        implemented: false
+        implemented: true
         talons:
             leftMain: 2
             leftSlaveOne: -1

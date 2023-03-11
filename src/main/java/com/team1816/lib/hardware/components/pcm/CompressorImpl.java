@@ -14,6 +14,16 @@ public class CompressorImpl extends Compressor implements ICompressor {
     }
 
     @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void stop() {
+
+    }
+
+    @Override
     public double getCompressorCurrent() {
         return 0;
     }

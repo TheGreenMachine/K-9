@@ -16,9 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public abstract class Drive
     extends Subsystem
@@ -346,33 +344,6 @@ public abstract class Drive
 
     @Override
     public void initSendable(SendableBuilder builder) {
-        builder.addStringProperty(
-            "Drive/ControlState",
-            () -> this.getDriveControlState().toString(),
-            null
-        );
-        SmartDashboard.putNumber("Drive/Vector Direction", 0);
-        SmartDashboard.putNumber("Drive/Robot Velocity", 0);
-        SmartDashboard.putNumber("Drive/OpenLoopRampRate", this.openLoopRampRate);
-        SmartDashboard
-            .getEntry("Drive/OpenLoopRampRate")
-            .addListener(
-                notification -> setOpenLoopRampRate(notification.value.getDouble()),
-                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
-            );
-
-        SmartDashboard.putBoolean("Drive/Zero Sensors", false);
-        SmartDashboard
-            .getEntry("Drive/Zero Sensors")
-            .addListener(
-                entryNotification -> {
-                    if (entryNotification.value.getBoolean()) {
-                        zeroSensors();
-                        entryNotification.getEntry().setBoolean(false);
-                    }
-                },
-                EntryListenerFlags.kNew | EntryListenerFlags.kUpdate
-            );
     }
 
     public synchronized double getTimestamp() {
