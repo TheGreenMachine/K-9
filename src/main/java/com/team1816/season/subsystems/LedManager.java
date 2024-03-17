@@ -48,7 +48,7 @@ public class LedManager extends Subsystem {
     public LedManager() {
         super(NAME);
         canifier = factory.getCanifier(NAME);
-        candle = new CANdle(10);
+        candle = new CANdle(10, "highspeed");
 
         configureCanifier(canifier);
         configureCandle();

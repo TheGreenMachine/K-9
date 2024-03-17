@@ -24,6 +24,11 @@ public class CompressorImpl extends Compressor implements ICompressor {
     }
 
     @Override
+    public boolean enabled() {
+        return false;
+    }
+
+    @Override
     public double getCompressorCurrent() {
         return 0;
     }

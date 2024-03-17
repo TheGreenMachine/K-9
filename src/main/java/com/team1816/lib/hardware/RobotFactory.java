@@ -2,25 +2,24 @@ package com.team1816.lib.hardware;
 
 import com.ctre.phoenix.CANifier;
 import com.ctre.phoenix.CANifierStatusFrame;
-import com.ctre.phoenix.led.CANdle;
-import com.ctre.phoenix.led.CANdleStatusFrame;
 import com.ctre.phoenix.motorcontrol.IMotorController;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.ctre.phoenix.motorcontrol.StatusFrame;
-import com.ctre.phoenix.sensors.CANCoder;
-import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 import com.ctre.phoenix.sensors.PigeonIMU;
 import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 import com.google.inject.Singleton;
 import com.team1816.lib.hardware.components.CanifierImpl;
 import com.team1816.lib.hardware.components.GhostCanifier;
 import com.team1816.lib.hardware.components.ICanifier;
+import com.team1816.lib.hardware.components.gyro.IPigeonIMU;
+import com.team1816.lib.hardware.components.gyro.Pigeon2Impl;
 import com.team1816.lib.hardware.components.pcm.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
-import java.util.Map;
+
 import javax.annotation.Nonnull;
+import java.util.Map;
 
 @Singleton
 public class RobotFactory {
@@ -289,6 +288,17 @@ public class RobotFactory {
         return getSubsystem(subsystemName).constants.get(name);
     }
 
+    public IPigeonIMU getPigeon() {
+        int id = config.subsystems.get("drivetrain").constants.get("pigeonId").intValue();
+        IPigeonIMU pigeon = new Pigeon2Impl(id, "highspeed");
+        if (getConstant("resetFactoryDefaults", 0) > 0) {
+            pigeon.configFactoryDefaults();
+            pigeon.set_StatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 100);
+            pigeon.set_StatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_6_Accel, 100);
+        }
+        return pigeon;
+    }
+
     public PIDSlotConfiguration getPidSlotConfig(String subsystemName, String slot) {
         if (
             !getSubsystem(subsystemName).implemented &&
@@ -364,11 +374,6 @@ public class RobotFactory {
         device.setStatusFramePeriod(PigeonIMU_StatusFrame.RawStatus_4_Mag, 100);
     }
 
-    private void setStatusFrame(CANCoder device){
-        device.setStatusFramePeriod(CANCoderStatusFrame.SensorData, canMaxStatus, 100);
-        device.setStatusFramePeriod(CANCoderStatusFrame.VbatAndFaults, canMaxStatus, 100);
-    }
-
     private void setStatusFrame(CANifier device){
         device.setStatusFramePeriod(CANifierStatusFrame.Status_1_General, canMaxStatus, 100);
         device.setStatusFramePeriod(CANifierStatusFrame.Status_2_General, canMaxStatus, 100);
@@ -378,18 +383,4 @@ public class RobotFactory {
         device.setStatusFramePeriod(CANifierStatusFrame.Status_6_PwmInputs3, canMaxStatus, 100);
         device.setStatusFramePeriod(CANifierStatusFrame.Status_8_Misc, canMaxStatus, 100);
     }
-
-    private void setStatusFrame(CANdle device){
-        device.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_1_General, canMaxStatus, 100);
-        device.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_2_Startup, canMaxStatus, 100);
-        device.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_3_FirmwareApiStatus, canMaxStatus, 100);
-        device.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_4_ControlTelem, canMaxStatus, 100);
-        device.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_5_PixelPulseTrain, canMaxStatus, 100);
-        device.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_6_BottomPixels, canMaxStatus, 100);
-        device.setStatusFramePeriod(CANdleStatusFrame.CANdleStatusFrame_Status_7_TopPixels, canMaxStatus, 100);
-    }
-
-
-
-
 }

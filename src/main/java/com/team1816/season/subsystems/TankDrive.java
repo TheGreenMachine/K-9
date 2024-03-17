@@ -1,9 +1,6 @@
 package com.team1816.season.subsystems;
 
-import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.*;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.sensors.PigeonIMU;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
@@ -123,31 +120,8 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
         setOpenLoopRampRate(Constants.kOpenLoopRampRate);
 
-        if (((int) factory.getConstant(NAME, "pigeonOnTalon")) == 1) {
-            var pigeonId = ((int) factory.getConstant(NAME, "pigeonId"));
-            System.out.println("Pigeon on Talon " + pigeonId);
-            IMotorController master = null;
-            if (pigeonId == mLeftSlaveA.getDeviceID()) {
-                master = mLeftSlaveA;
-            } else if (pigeonId == mLeftSlaveB.getDeviceID()) {
-                master = mLeftSlaveB;
-            } else if (pigeonId == mRightSlaveA.getDeviceID()) {
-                master = mRightSlaveA;
-            } else if (pigeonId == mRightSlaveB.getDeviceID()) {
-                master = mRightSlaveB;
-            }
-            if (master != null) {
-                mPigeon = new PigeonIMU((TalonSRX) master);
-            } else {
-                mPigeon =
-                    new PigeonIMU(
-                        new TalonSRX((int) factory.getConstant(NAME, "pigeonId"))
-                    );
-            }
-        } else {
-            mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId"));
-        }
-        mPigeon.configFactoryDefault();
+        mPigeon = factory.getPigeon();
+        mPigeon.configFactoryDefaults();
 
         setOpenLoop(DriveSignal.NEUTRAL);
 
@@ -200,7 +174,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
             mPeriodicIO.right_velocity_ticks_per_100ms =
                 mRightMaster.getSelectedSensorVelocity(0);
             mPeriodicIO.gyro_heading_no_offset =
-                Rotation2d.fromDegrees(mPigeon.getFusedHeading());
+                Rotation2d.fromDegrees(mPigeon.getYawValue());
         }
         mPeriodicIO.gyro_heading =
             mPeriodicIO.gyro_heading_no_offset.rotateBy(mGyroOffset);
@@ -345,7 +319,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
         mGyroOffset =
             heading.rotateBy(
-                Rotation2d.fromDegrees(mPigeon.getFusedHeading()).unaryMinus()
+                Rotation2d.fromDegrees(mPigeon.getYawValue()).unaryMinus()
             );
         System.out.println("gyro offset: " + mGyroOffset.getDegrees());
 
@@ -402,7 +376,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         resetPigeon();
         setHeading(Constants.EmptyRotation);
         resetEncoders();
-        if (mPigeon.getLastError() != ErrorCode.OK) {
+        if (!mPigeon.isReady()) {
             // BadLog.createValue("PigeonErrorDetected", "true");
             System.out.println(
                 "Error detected with Pigeon IMU - check if the sensor is present and plugged in!"

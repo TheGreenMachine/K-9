@@ -1,9 +1,9 @@
 package com.team1816.season.subsystems;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.lib.hardware.PIDSlotConfiguration;
+import com.team1816.lib.hardware.components.gyro.IPigeonIMU;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.PidProvider;
@@ -38,7 +38,7 @@ public abstract class Drive
     @Inject
     protected static LedManager ledManager;
 
-    protected PigeonIMU mPigeon;
+    protected IPigeonIMU mPigeon;
 
     // control states
     protected DriveControlState mDriveControlState = DriveControlState.OPEN_LOOP;
@@ -75,8 +75,8 @@ public abstract class Drive
         super(NAME);
         mPeriodicIO = new PeriodicIO();
         openLoopRampRate = Constants.kOpenLoopRampRate;
-        mPigeon = new PigeonIMU((int) factory.getConstant(NAME, "pigeonId", -1));
-        mPigeon.configFactoryDefault();
+        mPigeon = factory.getPigeon();
+        mPigeon.configFactoryDefaults();
     }
 
     @Override
@@ -304,7 +304,7 @@ public abstract class Drive
 
         mGyroOffset =
             heading.rotateBy(
-                Rotation2d.fromDegrees(mPigeon.getFusedHeading()).unaryMinus()
+                Rotation2d.fromDegrees(mPigeon.getYawValue()).unaryMinus()
             );
         System.out.println("gyro offset: " + mGyroOffset.getDegrees());
 
@@ -312,9 +312,7 @@ public abstract class Drive
     }
 
     public synchronized void resetPigeon() {
-        mPigeon.setYaw(0);
-        mPigeon.setFusedHeading(0);
-        mPigeon.setAccumZAngle(0);
+        mPigeon.set_Yaw(0);
     }
 
     public DriveControlState getDriveControlState() {

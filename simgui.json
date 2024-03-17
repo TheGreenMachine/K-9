@@ -32,11 +32,17 @@
           "style": "Line",
           "weight": 1.0
         },
+        "bottom": 1476,
+        "height": 8.210550308227539,
         "image": "D:\\Source\\GreenMachine\\K-9\\season.png",
+        "left": 150,
+        "right": 2961,
+        "top": 79,
         "turret": {
           "arrowWeight": 3.0,
           "style": "Line"
         },
+        "width": 16.541748046875,
         "window": {
           "visible": true
         }
@@ -50,6 +56,9 @@
       },
       "open": true
     }
+  },
+  "NetworkTables Info": {
+    "visible": true
   },
   "NetworkTables View": {
     "visible": false
