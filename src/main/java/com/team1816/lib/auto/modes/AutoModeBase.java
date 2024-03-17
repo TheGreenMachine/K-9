@@ -4,6 +4,7 @@ import com.team1816.lib.auto.AutoModeEndedException;
 import com.team1816.lib.auto.actions.Action;
 import com.team1816.lib.auto.actions.NoopAction;
 import com.team1816.lib.auto.actions.TrajectoryAction;
+import com.team1816.lib.util.logUtil.GreenLogger;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 
@@ -38,7 +39,7 @@ public abstract class AutoModeBase {
     }
 
     public void done() {
-        System.out.println("Auto mode done");
+        GreenLogger.log("Auto mode done");
     }
 
     public void stop() {
@@ -65,12 +66,12 @@ public abstract class AutoModeBase {
     }
 
     public void interrupt() {
-        System.out.println("** Auto mode interrrupted!");
+        GreenLogger.log("** Auto mode interrrupted!");
         mIsInterrupted = true;
     }
 
     public void resume() {
-        System.out.println("** Auto mode resumed!");
+        GreenLogger.log("** Auto mode resumed!");
         mIsInterrupted = false;
     }
 

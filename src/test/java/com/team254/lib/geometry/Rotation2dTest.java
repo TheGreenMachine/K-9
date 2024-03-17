@@ -13,8 +13,8 @@ public class Rotation2dTest {
         var b = Rotation2d.fromDegrees(30);
         var result = Rotation2d.fromRadians(b.distance(a));
         var result2 = Rotation2d.fromDegrees(a.getDegrees() - b.getDegrees());
-        System.out.println(result.getDegrees());
-        System.out.println(result2.getDegrees());
+        GreenLogger.log(result.getDegrees());
+        GreenLogger.log(result2.getDegrees());
     }
 
     @Test

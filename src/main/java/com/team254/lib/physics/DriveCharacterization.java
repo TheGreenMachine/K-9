@@ -1,5 +1,6 @@
 package com.team254.lib.physics;
 
+import com.team1816.lib.util.logUtil.GreenLogger;
 import com.team254.lib.util.PolynomialRegression;
 import com.team254.lib.util.Util;
 
@@ -51,7 +52,7 @@ public class DriveCharacterization {
             return constants;
         }
         PolynomialRegression p = new PolynomialRegression(points, 1);
-        System.out.println("r^2: " + p.R2());
+        GreenLogger.log("r^2: " + p.R2());
         constants.ks = p.beta(0);
         constants.kv = p.beta(1);
         return constants;
@@ -89,14 +90,14 @@ public class DriveCharacterization {
             return velocityCharacterization;
         }
         double avg_accel = (last_valid_measurement.velocity - first_valid_measurement.velocity) / (last_valid_measurement.time - first_valid_measurement.time);
-        System.out.println("Average accel " + avg_accel + " over " + (last_valid_measurement.time - first_valid_measurement.time) + " seconds");
+        GreenLogger.log("Average accel " + avg_accel + " over " + (last_valid_measurement.time - first_valid_measurement.time) + " seconds");
         double avg_accel_v = 0.0;
         for (Double v : accel_voltages) {
             avg_accel_v += v;
         }
         avg_accel_v = avg_accel_v / accel_voltages.size();
         velocityCharacterization.ka = avg_accel_v / avg_accel;
-        System.out.println("ka: " + velocityCharacterization.ka);
+        GreenLogger.log("ka: " + velocityCharacterization.ka);
         return velocityCharacterization;
     }
 

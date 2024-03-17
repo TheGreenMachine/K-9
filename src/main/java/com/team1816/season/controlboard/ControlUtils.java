@@ -4,8 +4,10 @@ import com.team1816.lib.controlboard.Controller;
 import com.team1816.lib.controlboard.LogitechController;
 import com.team1816.lib.controlboard.WasdController;
 import com.team1816.lib.controlboard.XboxController;
+import com.team1816.lib.util.logUtil.GreenLogger;
 import com.team254.lib.util.LatchedBoolean;
 import edu.wpi.first.wpilibj.Joystick;
+
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
@@ -33,13 +35,13 @@ public class ControlUtils implements Controller.Factory {
         var hid = new Joystick(port);
         var axisCount = hid.getAxisCount();
         if (axisCount <= 3) {
-            System.out.println("Using Wasd Controller for port: " + port);
+            GreenLogger.log("Using Wasd Controller for port: " + port);
             return new WasdController(port);
         } else if (axisCount == 4) {
-            System.out.println("Using Logitech Controller for port: " + port);
+            GreenLogger.log("Using Logitech Controller for port: " + port);
             return new LogitechController(port);
         } else {
-            System.out.println("Using XboxController Controller for port: " + port);
+            GreenLogger.log("Using XboxController Controller for port: " + port);
             return new XboxController(port);
         }
     }

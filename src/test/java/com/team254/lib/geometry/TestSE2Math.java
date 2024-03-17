@@ -38,7 +38,7 @@ public class TestSE2Math {
         rot1 = Rotation2d.fromDegrees(270);
         Assert.assertEquals(0, rot1.cos(), kTestEpsilon);
         Assert.assertEquals(-1, rot1.sin(), kTestEpsilon);
-        System.out.println(rot1.tan());
+        GreenLogger.log(rot1.tan());
         Assert.assertTrue(-1 / kTestEpsilon > rot1.tan());
         Assert.assertEquals(-90, rot1.getDegrees(), kTestEpsilon);
         Assert.assertEquals(-Math.PI / 2, rot1.getRadians(), kTestEpsilon);

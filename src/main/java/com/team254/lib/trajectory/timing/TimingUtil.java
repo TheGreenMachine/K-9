@@ -1,5 +1,6 @@
 package com.team254.lib.trajectory.timing;
 
+import com.team1816.lib.util.logUtil.GreenLogger;
 import com.team254.lib.geometry.State;
 import com.team254.lib.trajectory.DistanceView;
 import com.team254.lib.trajectory.Trajectory;
@@ -17,7 +18,7 @@ public class TimingUtil {
             double end_velocity,
             double max_velocity,
             double max_abs_acceleration) {
-      System.out.println("################ IN TIMING UTIL: max_velocity: " + max_velocity + ", max_abs_acceleration: " + max_abs_acceleration);
+      GreenLogger.log("################ IN TIMING UTIL: max_velocity: " + max_velocity + ", max_abs_acceleration: " + max_abs_acceleration);
         final int num_states = (int) Math.ceil(distance_view.last_interpolant() / step_size + 1);
         List<S> states = new ArrayList<>(num_states);
         for (int i = 0; i < num_states; ++i) {
@@ -124,9 +125,9 @@ public class TimingUtil {
                     // pass.
                     break;
                 }
-                // System.out.println("(intermediate) i: " + i + ", " + constraint_state.toString());
+                // GreenLogger.log("(intermediate) i: " + i + ", " + constraint_state.toString());
             }
-            // System.out.println("i: " + i + ", " + constraint_state.toString());
+            // GreenLogger.log("i: " + i + ", " + constraint_state.toString());
             predecessor = constraint_state;
         }
 
@@ -221,7 +222,7 @@ public class TimingUtil {
             s = constrained_state.distance;
             timed_states.add(new TimedState<>(constrained_state.state, t, reverse ? -v : v, reverse ? -accel : accel));
         }
-      System.out.println("##################### END OF timeParameterizeTrajectory: velocity: " + max_velocity + ", max_abs_acceleration: " + max_abs_acceleration);
+      GreenLogger.log("##################### END OF timeParameterizeTrajectory: velocity: " + max_velocity + ", max_abs_acceleration: " + max_abs_acceleration);
       return new Trajectory<>(timed_states);
     }
 

@@ -1,6 +1,7 @@
 package com.team1816.lib.auto.actions;
 
 import com.google.inject.Inject;
+import com.team1816.lib.util.logUtil.GreenLogger;
 import com.team1816.season.Constants;
 import com.team1816.season.subsystems.Drive;
 import edu.wpi.first.math.controller.RamseteController;
@@ -46,12 +47,12 @@ public class TrajectoryAction implements Action {
     @Override
     public void done() {
         mCommand.end(false);
-        System.out.println("Trajectory finished");
+        GreenLogger.log("Trajectory finished");
     }
 
     @Override
     public void start() {
-        System.out.println(
+        GreenLogger.log(
             "Starting trajectory! (seconds=" + mTrajectory.getTotalTimeSeconds() + ")"
         );
         mDrive.startTrajectory(mTrajectory);

@@ -181,10 +181,10 @@ public class Path {
             maxStartSpeed += Math
                     .sqrt(maxStartSpeed * maxStartSpeed + 2 * Constants.kPathFollowingMaxAccel * segment.getLength());
             startSpeeds[i] = segment.getStartState().vel();
-            // System.out.println(maxStartSpeed + ", " + startSpeeds[i]);
+            // GreenLogger.log(maxStartSpeed + ", " + startSpeeds[i]);
             if (startSpeeds[i] > maxStartSpeed) {
                 startSpeeds[i] = maxStartSpeed;
-                // System.out.println("Segment starting speed is too high!");
+                // GreenLogger.log("Segment starting speed is too high!");
             }
             maxStartSpeed = startSpeeds[i];
         }

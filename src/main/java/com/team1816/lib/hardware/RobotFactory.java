@@ -14,6 +14,7 @@ import com.team1816.lib.hardware.components.ICanifier;
 import com.team1816.lib.hardware.components.gyro.IPigeonIMU;
 import com.team1816.lib.hardware.components.gyro.Pigeon2Impl;
 import com.team1816.lib.hardware.components.pcm.*;
+import com.team1816.lib.util.logUtil.GreenLogger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -44,7 +45,7 @@ public class RobotFactory {
                 false
             );
         }
-        System.out.println("Loading Config for " + robotName);
+        GreenLogger.log("Loading Config for " + robotName);
         try {
             config =
                 YamlConfig.loadFrom(
@@ -100,11 +101,11 @@ public class RobotFactory {
 
         // Motor configuration
         if (subsystem.implemented && subsystem.invertMotor.contains(name)) {
-            System.out.println("Inverting " + name + " with ID " + motor.getDeviceID());
+            GreenLogger.log("Inverting " + name + " with ID " + motor.getDeviceID());
             motor.setInverted(true);
         }
         if (subsystem.implemented && subsystem.invertSensorPhase.contains(name)) {
-            System.out.println(
+            GreenLogger.log(
                 "Inverting sensor phase of " + name + " with ID " + motor.getDeviceID()
             );
             motor.setSensorPhase(true);
@@ -253,7 +254,7 @@ public class RobotFactory {
             if (subsystem == null) {
                 subsystem = new SubsystemConfig();
                 subsystem.implemented = false;
-                System.out.println("Subsystem not defined: " + subsystemName);
+                GreenLogger.log("Subsystem not defined: " + subsystemName);
             }
             return subsystem;
         }
@@ -333,7 +334,7 @@ public class RobotFactory {
         String subsystemName,
         String componentName
     ) {
-        System.out.println(
+        GreenLogger.log(
             "  " +
             type +
             "  " +

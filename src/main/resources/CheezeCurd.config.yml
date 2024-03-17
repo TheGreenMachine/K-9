@@ -64,7 +64,8 @@ subsystems:
             rpmEpsilonCheck: 60
 constants:
     wheelDiameter: 4.058
-    trackWidth: 15.75
+    wheelbaseLength: 15.5
+    trackWidth: 13.5
     maxVel: 30
     maxTicks: 2000 # ticks per 100ms
     maxAccel: 50
@@ -76,6 +77,6 @@ constants:
     verbose: 0
     logAuto: 1
     logTeleOp: 1
-    badLogEnabled: 1
+    logRobot: 1
     useAutoAim: 1
     compressorEnabled: 0

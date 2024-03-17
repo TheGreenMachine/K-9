@@ -1,5 +1,7 @@
 package com.team254.lib.util;
 
+import com.team1816.lib.util.logUtil.GreenLogger;
+
 import java.util.ArrayList;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
@@ -43,7 +45,7 @@ public class StatFinder {
         boolean success = add(number);
 
         if (success) {
-            System.out.println("added: " + number);
+            GreenLogger.log("added: " + number);
         }
 
         return success;
@@ -67,11 +69,11 @@ public class StatFinder {
     }
 
     public void printStats() {
-        System.out.println("mean: " + getMean());
-        System.out.println("standard deviation: " + getStandardDeviation());
-        System.out.println("min: " + getStats().getMin());
-        System.out.println("max: " + getStats().getMax());
-        System.out.println("size: " + getSize());
+        GreenLogger.log("mean: " + getMean());
+        GreenLogger.log("standard deviation: " + getStandardDeviation());
+        GreenLogger.log("min: " + getStats().getMin());
+        GreenLogger.log("max: " + getStats().getMax());
+        GreenLogger.log("size: " + getSize());
     }
 
     public void stop() {

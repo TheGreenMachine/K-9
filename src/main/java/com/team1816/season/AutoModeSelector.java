@@ -2,14 +2,16 @@ package com.team1816.season;
 
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.auto.modes.DoNothingMode;
+import com.team1816.lib.util.logUtil.GreenLogger;
 import com.team1816.season.auto.modes.LivingRoomMode;
 import com.team1816.season.auto.modes.TuneDrivetrainMode;
 import com.team1816.season.auto.modes.TurretTestMode;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.Optional;
+
 import javax.inject.Singleton;
+import java.util.Optional;
 
 @Singleton
 public class AutoModeSelector {
@@ -59,7 +61,7 @@ public class AutoModeSelector {
     public void updateModeCreator() {
         DesiredMode desiredMode = mModeChooser.getSelected();
         if (mCachedDesiredMode != desiredMode) {
-            System.out.println(
+            GreenLogger.log(
                 "Auto selection changed, updating creator: desiredMode->" +
                 desiredMode.name()
             );

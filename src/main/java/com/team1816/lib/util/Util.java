@@ -1,5 +1,6 @@
 package com.team1816.lib.util;
 
+import com.team1816.lib.util.logUtil.GreenLogger;
 import edu.wpi.first.wpilibj.DataLogManager;
 
 import java.io.IOException;
@@ -84,7 +85,7 @@ public class Util {
                 })
                 .collect(Collectors.toSet());
             for (var file : files) {
-                System.out.println("Deleting: " + file);
+                GreenLogger.log("Deleting: " + file);
                 Files.delete(file);
             }
         } catch (IOException e) {

@@ -4,89 +4,37 @@ public class DrivetrainLogger {
 
     public static void init(TrackableDrivetrain drivetrain) {
         var subsystem = (Subsystem) drivetrain;
-        subsystem.CreateBadLogTopic(
-            "Drivetrain/LeftActVel",
-            "NativeUnits",
-            drivetrain::getLeftVelocityNativeUnits,
-            "hide",
-            "join:Drivetrain/Velocities"
+        subsystem.CreateSubSystemLog(
+            "LeftActVel",
+            drivetrain::getLeftVelocityNativeUnits
         );
-        subsystem.CreateBadLogTopic(
-            "Drivetrain/RightActVel",
-            "NativeUnits",
-            drivetrain::getRightVelocityNativeUnits,
-            "hide",
-            "join:Drivetrain/Velocities"
+        subsystem.CreateSubSystemLog(
+            "RightActVel",
+            drivetrain::getRightVelocityNativeUnits
         );
-        subsystem.CreateBadLogTopic(
-            "Drivetrain/LeftVel",
-            "NativeUnits",
-            drivetrain::getLeftVelocityDemand,
-            "hide",
-            "join:Drivetrain/Velocities"
+        subsystem.CreateSubSystemLog(
+            "LeftVel",
+            drivetrain::getLeftVelocityDemand
         );
-        subsystem.CreateBadLogTopic(
-            "Drivetrain/RightVel",
-            "NativeUnits",
-            drivetrain::getRightVelocityDemand,
-            "hide",
-            "join:Drivetrain/Velocities"
+        subsystem.CreateSubSystemLog(
+            "RightVel",
+            drivetrain::getRightVelocityDemand
         );
-        subsystem.CreateBadLogTopic(
-            "Drivetrain/LeftError",
-            "NativeUnits",
-            drivetrain::getLeftVelocityError,
-            "hide",
-            "join:Drivetrain/VelocityError"
+        subsystem.CreateSubSystemLog(
+            "LeftError",
+            drivetrain::getLeftVelocityError
         );
-        subsystem.CreateBadLogTopic(
-            "Drivetrain/RightError",
-            "NativeUnits",
-            drivetrain::getRightVelocityError,
-            "hide",
-            "join:Drivetrain/VelocityError"
+        subsystem.CreateSubSystemLog(
+            "RightError",
+            drivetrain::getRightVelocityError
         );
-        subsystem.CreateBadLogTopic(
-            "Drivetrain/X Desired",
-            "Inches",
-            drivetrain::getFieldDesiredXDistance,
-            "hide",
-            "join:Drivetrain/Distance"
+        subsystem.CreateSubSystemLog(
+            "ActualHeading",
+            drivetrain::getHeadingDegrees
         );
-        subsystem.CreateBadLogTopic(
-            "Drivetrain/Y Desired",
-            "Inches",
-            drivetrain::getFieldYDesiredYDistance,
-            "hide",
-            "join:Drivetrain/Distance"
-        );
-        subsystem.CreateBadLogTopic(
-            "Drivetrain/X Actual",
-            "Inches",
-            drivetrain::getFieldXDistance,
-            "hide",
-            "join:Drivetrain/Distance"
-        );
-        subsystem.CreateBadLogTopic(
-            "Drivetrain/Y Actual",
-            "Inches",
-            drivetrain::getFieldYDistance,
-            "hide",
-            "join:Drivetrain/Distance"
-        );
-        subsystem.CreateBadLogTopic(
-            "Drivetrain/ActualHeading",
-            "Angle",
-            drivetrain::getHeadingDegrees,
-            "hide",
-            "join:Drivetrain/Heading"
-        );
-        subsystem.CreateBadLogTopic(
-            "Drivetrain/Heading",
-            "Angle",
-            drivetrain::getDesiredHeading,
-            "hide",
-            "join:Drivetrain/Heading"
+        subsystem.CreateSubSystemLog(
+            "Heading",
+            drivetrain::getDesiredHeading
         );
     }
 }

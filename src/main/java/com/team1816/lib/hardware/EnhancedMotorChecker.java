@@ -3,9 +3,11 @@ package com.team1816.lib.hardware;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.IMotorControllerEnhanced;
 import com.team1816.lib.subsystems.Subsystem;
+import com.team1816.lib.util.logUtil.GreenLogger;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
@@ -60,8 +62,8 @@ public class EnhancedMotorChecker {
         NamedMotor... motorsToCheck
     ) {
         boolean failure = false;
-        System.out.println("////////////////////////////////////////////////");
-        System.out.println(
+        GreenLogger.log("////////////////////////////////////////////////");
+        GreenLogger.log(
             "Checking subsystem " +
             subsystem.getClass() +
             " for " +
@@ -85,10 +87,10 @@ public class EnhancedMotorChecker {
         }
 
         for (NamedMotor config : motorsToCheck) {
-            System.out.println("Checking: " + config.name);
+            GreenLogger.log("Checking: " + config.name);
 
             if (config.motor.getDeviceID() < 0) {
-                System.out.println("Motor Disabled, Checks Skipped!!");
+                GreenLogger.log("Motor Disabled, Checks Skipped!!");
                 continue;
             }
 

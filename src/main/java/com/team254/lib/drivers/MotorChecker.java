@@ -1,6 +1,7 @@
 package com.team254.lib.drivers;
 
 import com.team1816.lib.subsystems.Subsystem;
+import com.team1816.lib.util.logUtil.GreenLogger;
 import com.team254.lib.util.Util;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -45,8 +46,8 @@ public abstract class MotorChecker<T> {
                                       ArrayList<MotorConfig<T>> motorsToCheck,
                                       CheckerConfig checkerConfig) {
         boolean failure = false;
-        System.out.println("////////////////////////////////////////////////");
-        System.out.println("Checking subsystem " + subsystem.getClass()
+        GreenLogger.log("////////////////////////////////////////////////");
+        GreenLogger.log("Checking subsystem " + subsystem.getClass()
                 + " for " + motorsToCheck.size() + " motors.");
 
         ArrayList<Double> currents = new ArrayList<>();
@@ -60,7 +61,7 @@ public abstract class MotorChecker<T> {
         }
 
         for (MotorConfig<T> config : motorsToCheck) {
-            System.out.println("Checking: " + config.mName);
+            GreenLogger.log("Checking: " + config.mName);
 
             setMotorOutput(config.mMotor, checkerConfig.mRunOutputPercentage);
             Timer.delay(checkerConfig.mRunTimeSec);
@@ -82,13 +83,13 @@ public abstract class MotorChecker<T> {
 
             // perform checks
             if (current < checkerConfig.mCurrentFloor) {
-                System.out.println(config.mName + " has failed current floor check vs " +
+                GreenLogger.log(config.mName + " has failed current floor check vs " +
                         checkerConfig.mCurrentFloor + "!!");
                 failure = true;
             }
             if (checkerConfig.mRPMSupplier != null) {
                 if (rpm < checkerConfig.mRPMFloor) {
-                    System.out.println(config.mName + " has failed rpm floor check vs " +
+                    GreenLogger.log(config.mName + " has failed rpm floor check vs " +
                             checkerConfig.mRPMFloor + "!!");
                     failure = true;
                 }
@@ -103,7 +104,7 @@ public abstract class MotorChecker<T> {
             double average = currents.stream().mapToDouble(val -> val).average().getAsDouble();
 
             if (!Util.allCloseTo(currents, average, checkerConfig.mCurrentEpsilon)) {
-                System.out.println("Currents varied!!!!!!!!!!!");
+                GreenLogger.log("Currents varied!!!!!!!!!!!");
                 failure = true;
             }
         }
@@ -112,7 +113,7 @@ public abstract class MotorChecker<T> {
             double average = rpms.stream().mapToDouble(val -> val).average().getAsDouble();
 
             if (!Util.allCloseTo(rpms, average, checkerConfig.mRPMEpsilon)) {
-                System.out.println("RPMs varied!!!!!!!!");
+                GreenLogger.log("RPMs varied!!!!!!!!");
                 failure = true;
             }
         }

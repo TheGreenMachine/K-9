@@ -1,7 +1,6 @@
 package com.team1816.lib.loops;
 
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
+import com.team1816.lib.util.logUtil.GreenLogger;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -19,7 +18,6 @@ public class Looper implements ILooper {
     private final Object mTaskRunningLock = new Object();
     private double mTimestamp = 0;
     private double mDT = 0;
-    private final DoubleLogEntry mLoopLogger = new DoubleLogEntry(DataLogManager.getLog(),"Timings/Looper");
 
     public Looper(TimedRobot robot) {
         Runnable runnable_ = new Runnable() {
@@ -55,7 +53,7 @@ public class Looper implements ILooper {
     public synchronized void start() {
         synchronized (mTaskRunningLock) {
             if (!mRunning) {
-                System.out.println("Starting loops");
+                GreenLogger.log("Starting loops");
                 mTimestamp = Timer.getFPGATimestamp();
                 for (Loop loop : mLoops) {
                     loop.onStart(mTimestamp);
@@ -68,7 +66,7 @@ public class Looper implements ILooper {
     public synchronized void stop() {
         synchronized (mTaskRunningLock) {
             if (mRunning) {
-                System.out.println("Stopping loops");
+                GreenLogger.log("Stopping loops");
                 mRunning = false;
                 mTimestamp = Timer.getFPGATimestamp();
                 for (Loop loop : mLoops) {
@@ -81,7 +79,6 @@ public class Looper implements ILooper {
     public double getLastLoop() {
         var dur=0.0;
         if(mRunning) dur = mDT * 1000; // Convert to ms
-        mLoopLogger.append(dur);
         return dur;
     }
 }

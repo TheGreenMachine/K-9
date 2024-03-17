@@ -1,7 +1,8 @@
 package com.team254.lib.control;
 
-import com.team1816.season.Constants;
 import com.team1816.lib.hardware.RobotFactory;
+import com.team1816.lib.util.logUtil.GreenLogger;
+import com.team1816.season.Constants;
 import com.team254.lib.geometry.Rotation2d;
 import com.team254.lib.geometry.Translation2d;
 import com.team254.lib.motion.*;
@@ -114,7 +115,7 @@ public class PathSegment {
                 Constants.kPathFollowingMaxAccel);
         MotionProfileGoal goal_state = new MotionProfileGoal(getLength(), end_speed);
         speedController = MotionProfileGenerator.generateProfile(motionConstraints, goal_state, start_state);
-        if(RobotFactory.isVerbose())  System.out.println(speedController);
+        if(RobotFactory.isVerbose())  GreenLogger.log(speedController.toString());
     }
 
     /**
@@ -234,7 +235,7 @@ public class PathSegment {
         if (state.isPresent()) {
             return state.get().vel();
         } else {
-            System.out.println("Velocity does not exist at that position!");
+            GreenLogger.log("Velocity does not exist at that position!");
             return 0.0;
         }
     }

@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.BaseTalon;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorVelocityMeasPeriod;
+import com.team1816.lib.util.logUtil.GreenLogger;
 
 public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
 
@@ -217,7 +218,7 @@ public class GhostMotorControllerEnhanced implements IMotorControllerEnhanced {
     public double getSelectedSensorVelocity(int pidIdx) {
         var output = mDemand[pidIdx];
         if (mControlMode == ControlMode.PercentOutput) {
-            if (Math.abs(output) > 1.1) System.out.println(
+            if (Math.abs(output) > 1.1) GreenLogger.log(
                 "Motor % output should be between -1.0 to 1.0 value:" + output
             );
             return output * mMaxTicks;

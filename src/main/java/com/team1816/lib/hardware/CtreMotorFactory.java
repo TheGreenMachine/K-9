@@ -7,7 +7,9 @@ import com.team1816.lib.hardware.components.motor.GhostMotorControllerEnhanced;
 import com.team1816.lib.hardware.components.motor.IConfigurableMotorController;
 import com.team1816.lib.hardware.components.motor.LazyTalonFX;
 import com.team1816.lib.hardware.components.motor.LazyTalonSRX;
+import com.team1816.lib.util.logUtil.GreenLogger;
 import edu.wpi.first.wpilibj.RobotBase;
+
 import java.util.Map;
 
 /**
@@ -100,7 +102,7 @@ public class CtreMotorFactory {
             subsystem,
             pidConfigList
         );
-        System.out.println(
+        GreenLogger.log(
             "Slaving talon on " + id + " to talon on " + master.getDeviceID()
         );
         talon.follow(master);
@@ -136,7 +138,7 @@ public class CtreMotorFactory {
         IMotorController master
     ) {
         final IMotorController victor = createVictor(id, kSlaveConfiguration);
-        System.out.println(
+        GreenLogger.log(
             "Slaving victor on " + id + " to talon on " + master.getDeviceID()
         );
         victor.follow(master);

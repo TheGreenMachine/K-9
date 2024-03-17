@@ -8,6 +8,7 @@ import com.team1816.lib.hardware.components.ICanifier;
 import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.Subsystem;
+import com.team1816.lib.util.logUtil.GreenLogger;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -214,7 +215,7 @@ public class LedManager extends Subsystem {
 
     @Override
     public boolean checkSystem() {
-        System.out.println("Warning: checking LED systems");
+        GreenLogger.log("Warning: checking LED systems");
         writeLedHardware(MAX, 0, 0);
         Timer.delay(2);
         setCameraLed(true);

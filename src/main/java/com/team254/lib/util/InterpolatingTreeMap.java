@@ -1,5 +1,7 @@
 package com.team254.lib.util;
 
+import com.team1816.lib.util.logUtil.GreenLogger;
+
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -46,7 +48,7 @@ public class InterpolatingTreeMap<K extends InverseInterpolable<K> & Comparable<
 
     @Override
     public void putAll(Map<? extends K, ? extends V> map) {
-        System.out.println("Unimplemented Method");
+        GreenLogger.log("Unimplemented Method");
     }
 
     /**

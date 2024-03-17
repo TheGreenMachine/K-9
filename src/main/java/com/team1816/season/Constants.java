@@ -84,22 +84,7 @@ public class Constants {
     public static final double kMinLookAheadSpeed = 12.0; // inches per second
     public static final double kMaxLookAhead = 48.0; // inches
     public static final double kMaxLookAheadSpeed = factory.getConstant("maxVel"); // inches per second
-    public static final double kDeltaLookAhead = kMaxLookAhead - kMinLookAhead;
-    public static final double kDeltaLookAheadSpeed =
-        kMaxLookAheadSpeed - kMinLookAheadSpeed;
-    public static final double kInertiaSteeringGain = 0.0; // angular velocity command is multiplied by this gain * our speed in inches per sec
-    public static final double kPathFollowingProfileKp = factory.getConstant(
-        "drivetrain",
-        "kP"
-    );
-    public static final double kPathFollowingProfileKi = factory.getConstant(
-        "drivetrain",
-        "kI"
-    );
 
-    public static final double kPathFollowingGoalPosTolerance = 1.0;
-    public static final double kPathFollowingGoalVelTolerance = 12.0;
-    public static final double kPathStopSteeringDistance = 12.0;
     public static double kCameraFrameRate = 30;
     public static final double kPathFollowingMaxAccel = factory.getConstant("maxAccel");
     public static final double kPathFollowingMaxVel = factory.getConstant("maxVel");
@@ -125,12 +110,7 @@ public class Constants {
     public static final double kPathFollowingProfileKs = factory.getConstant("pathKs");
 
     // % throttle required to break static friction
-    public static final boolean kIsBadlogEnabled =
-        factory.getConstant("badLogEnabled") > 0;
-    public static final boolean kIsLoggingTeleOp =
-        kIsBadlogEnabled && factory.getConstant("logTeleOp") > 0;
-    public static final boolean kIsLoggingAutonomous =
-        kIsBadlogEnabled && factory.getConstant("logAuto") > 0;
+    public static final boolean kLoggingRobot = factory.getConstant("logRobot", 1) > 0;
 
     public static final boolean kUseAutoAim = factory.getConstant("useAutoAim") > 0;
     // Do not change anything after this line unless you rewire the robot and

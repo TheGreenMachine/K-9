@@ -9,6 +9,7 @@ import com.team1816.lib.loops.Loop;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
 import com.team1816.lib.subsystems.TrackableDrivetrain;
+import com.team1816.lib.util.logUtil.GreenLogger;
 import com.team1816.season.Constants;
 import com.team1816.season.RobotState;
 import com.team254.lib.util.DriveSignal;
@@ -77,6 +78,7 @@ public abstract class Drive
         openLoopRampRate = Constants.kOpenLoopRampRate;
         mPigeon = factory.getPigeon();
         mPigeon.configFactoryDefaults();
+        GreenLogger.log("Drivetrain PID: "+ pidToString());
     }
 
     @Override
@@ -86,22 +88,6 @@ public abstract class Drive
 
     @Override
     public abstract double getDesiredHeading();
-
-    @Override
-    public double getFieldDesiredXDistance() {
-        if (mPeriodicIO.desired_pose.getX() == 0) return 0;
-        return Units.metersToInches(
-            mPeriodicIO.desired_pose.getX() - Constants.StartingPose.getX()
-        );
-    }
-
-    @Override
-    public double getFieldYDesiredYDistance() {
-        if (mPeriodicIO.desired_pose.getY() == 0) return 0;
-        return Units.metersToInches(
-            mPeriodicIO.desired_pose.getY() - Constants.StartingPose.getY()
-        );
-    }
 
     @Override
     public double getKP() {
@@ -210,7 +196,7 @@ public abstract class Drive
                                 updateTrajectoryPeriodic(timestamp);
                                 break;
                             default:
-                                System.out.println(
+                                GreenLogger.log(
                                     "unexpected drive control state: " +
                                     mDriveControlState
                                 );
@@ -300,13 +286,13 @@ public abstract class Drive
     }
 
     public synchronized void setHeading(Rotation2d heading) {
-        System.out.println("set heading: " + heading.getDegrees());
+        GreenLogger.log("set heading: " + heading.getDegrees());
 
         mGyroOffset =
             heading.rotateBy(
                 Rotation2d.fromDegrees(mPigeon.getYawValue()).unaryMinus()
             );
-        System.out.println("gyro offset: " + mGyroOffset.getDegrees());
+        GreenLogger.log("gyro offset: " + mGyroOffset.getDegrees());
 
         mPeriodicIO.desired_heading = heading;
     }
@@ -329,16 +315,6 @@ public abstract class Drive
 
     @Override
     public abstract boolean checkSystem();
-
-    @Override
-    public double getFieldXDistance() {
-        return Units.metersToInches(getPose().getX() - Constants.StartingPose.getX());
-    }
-
-    @Override
-    public double getFieldYDistance() {
-        return Units.metersToInches(getPose().getY() - Constants.StartingPose.getY());
-    }
 
     @Override
     public void initSendable(SendableBuilder builder) {

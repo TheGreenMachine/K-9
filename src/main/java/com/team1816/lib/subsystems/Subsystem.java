@@ -1,12 +1,14 @@
 package com.team1816.lib.subsystems;
 
-import badlog.lib.BadLog;
 import com.team1816.lib.hardware.RobotFactory;
 import com.team1816.lib.loops.ILooper;
+import com.team1816.lib.util.logUtil.GreenLogger;
 import com.team1816.season.Robot;
+import edu.wpi.first.util.datalog.*;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj.DataLogManager;
 
 import java.util.function.Supplier;
 
@@ -24,6 +26,7 @@ public abstract class Subsystem implements Sendable {
 
     private final String name;
     public static RobotFactory factory = Robot.getFactory();
+    private final DataLog log = DataLogManager.getLog();
 
     protected Subsystem(String name) {
         this.name = name;
@@ -44,20 +47,22 @@ public abstract class Subsystem implements Sendable {
 
     public abstract boolean checkSystem();
 
-    public void CreateBadLogTopic(
+    public void CreateSubSystemLog(
         String topicName,
-        String unit,
-        Supplier<Double> supplier,
-        String... attrs
+        Supplier<?> supplier
     ) {
         if (factory.getSubsystem(name).implemented) {
-            BadLog.createTopic(topicName, unit, supplier, attrs);
-        }
-    }
-
-    public void CreateBadLogValue(String badLogName, String value) {
-        if (factory.getSubsystem(name).implemented) {
-            BadLog.createValue(badLogName, value);
+            var logName = name.substring(0, 1).toUpperCase() + name.substring(1) + "/" + topicName;
+            var cls = supplier.get().getClass();
+            if( cls == Double.class) {
+                GreenLogger.AddPeriodicLog(new DoubleLogEntry(log, logName), supplier);
+            } else if (cls == Integer.class ) {
+                GreenLogger.AddPeriodicLog(new IntegerLogEntry(log, logName), supplier);
+            } else if (cls == String.class) {
+                GreenLogger.AddPeriodicLog(new StringLogEntry(log, logName), supplier);
+            } else if (cls == Boolean.class) {
+                GreenLogger.AddPeriodicLog(new BooleanLogEntry(log, logName), supplier);
+            }
         }
     }
 

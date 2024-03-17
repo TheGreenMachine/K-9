@@ -8,9 +8,11 @@ import com.google.inject.Singleton;
 import com.team1816.lib.hardware.PIDSlotConfiguration;
 import com.team1816.lib.subsystems.PidProvider;
 import com.team1816.lib.subsystems.Subsystem;
+import com.team1816.lib.util.logUtil.GreenLogger;
 import com.team1816.season.Constants;
 import com.team1816.season.RobotState;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -80,6 +82,11 @@ public class Turret extends Subsystem implements PidProvider {
         this.kI = pidConfig.kI;
         this.kD = pidConfig.kD;
         this.kF = pidConfig.kF;
+        var log = DataLogManager.getLog();
+        CreateSubSystemLog("Actual", this::getActualTurretPositionTicks);
+        CreateSubSystemLog("Target",this::getTargetPosition);
+        CreateSubSystemLog("Error",this::getPositionError);
+        GreenLogger.log("Turret PID: "+ pidToString());
         synchronized (this) {
             this.zeroSensors();
 
@@ -148,7 +155,7 @@ public class Turret extends Subsystem implements PidProvider {
             var sensorVal = (int) (sensors.getPulseWidthPosition() * TURRET_ENC_RATIO) &
             TURRET_ENCODER_MASK;
             sensors.setQuadraturePosition(sensorVal, Constants.kLongCANTimeoutMs);
-            System.out.println("zeroing turret at " + sensorVal);
+            GreenLogger.log("zeroing turret at " + sensorVal);
         }
     }
 
@@ -336,13 +343,13 @@ public class Turret extends Subsystem implements PidProvider {
         Timer.delay(2);
         var ticks = getActualTurretPositionTicks();
         var diff = Math.abs(ticks - TURRET_LIMIT_FORWARD);
-        System.out.println(" + TICKS: " + ticks + "  ERROR: " + diff);
+        GreenLogger.log(" + TICKS: " + ticks + "  ERROR: " + diff);
         passed = diff <= 50;
         turret.set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, -.2);
         Timer.delay(2);
         ticks = getActualTurretPositionTicks();
         diff = Math.abs(ticks - TURRET_LIMIT_REVERSE);
-        System.out.println(" - TICKS: " + ticks + "  ERROR: " + diff);
+        GreenLogger.log(" - TICKS: " + ticks + "  ERROR: " + diff);
         passed = passed & diff <= 50;
         turret.set(com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput, 0);
         return passed;

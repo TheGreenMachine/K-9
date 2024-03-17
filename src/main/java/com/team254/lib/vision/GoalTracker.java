@@ -112,7 +112,7 @@ public class GoalTracker {
             }
             if (!hasUpdatedTrack) {
                 // Add a new track.
-                // System.out.println("Created new track");
+                // GreenLogger.log("Created new track");
                 mCurrentTracks.add(GoalTrack.makeNewTrack(timestamp, target, mNextId));
                 ++mNextId;
             }

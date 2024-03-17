@@ -1,6 +1,7 @@
 package com.team254.lib.motion;
 
 import com.team1816.lib.hardware.RobotFactory;
+import com.team1816.lib.util.logUtil.GreenLogger;
 
 import java.util.Optional;
 
@@ -66,7 +67,7 @@ public class SetpointGenerator {
             mConstraints = constraints;
             mGoal = goal;
             mProfile = MotionProfileGenerator.generateProfile(constraints, goal, prev_state);
-            if(RobotFactory.isVerbose()) System.out.println("Regenerating profile: " + mProfile);
+            if(RobotFactory.isVerbose()) GreenLogger.log("Regenerating profile: " + mProfile);
         }
 
         // Sample the profile at time t.

@@ -5,6 +5,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.team1816.lib.hardware.EnhancedMotorChecker;
 import com.team1816.lib.subsystems.DifferentialDrivetrain;
+import com.team1816.lib.subsystems.DrivetrainLogger;
+import com.team1816.lib.util.logUtil.GreenLogger;
 import com.team1816.season.AutoModeSelector;
 import com.team1816.season.Constants;
 import com.team254.lib.util.CheesyDriveHelper;
@@ -14,15 +16,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.datalog.DoubleLogEntry;
-import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.RobotBase;
 
 @Singleton
 public class TankDrive extends Drive implements DifferentialDrivetrain {
 
-    private final DoubleLogEntry mLeftActLogger = new DoubleLogEntry(DataLogManager.getLog(),"Drivetrain/LeftAct");
-    private final DoubleLogEntry mLeftDemmandLogger = new DoubleLogEntry(DataLogManager.getLog(),"Drivetrain/LeftDemand");
     private final CheesyDriveHelper cheesyDriveHelper = new CheesyDriveHelper();
 
     private static final String NAME = "drivetrain";
@@ -32,7 +30,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     // hardware
     private final IMotorControllerEnhanced mLeftMaster, mRightMaster;
-    private final IMotorController mLeftSlaveA, mRightSlaveA, mLeftSlaveB, mRightSlaveB;
+    private final IMotorController mLeftSlaveA, mRightSlaveA;
 
     // hardware states
 
@@ -82,10 +80,12 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
         // start all Talons in open loop mode
         mLeftMaster = factory.getMotor(NAME, "leftMain");
         mLeftSlaveA = factory.getMotor(NAME, "leftFollower", mLeftMaster);
-        mLeftSlaveB = factory.getMotor(NAME, "leftFollowerTwo", mLeftMaster);
         mRightMaster = factory.getMotor(NAME, "rightMain");
         mRightSlaveA = factory.getMotor(NAME, "rightFollower", mRightMaster);
-        mRightSlaveB = factory.getMotor(NAME, "rightFollowerTwo", mRightMaster);
+
+        if(Constants.kLoggingRobot){
+            DrivetrainLogger.init(this);
+        }
 
         var currentLimitConfig = new SupplyCurrentLimitConfiguration(
             true,
@@ -101,10 +101,6 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
                 currentLimitConfig,
                 Constants.kLongCANTimeoutMs
             );
-        ((IMotorControllerEnhanced) mLeftSlaveB).configSupplyCurrentLimit(
-                currentLimitConfig,
-                Constants.kLongCANTimeoutMs
-            );
         mRightMaster.configSupplyCurrentLimit(
             currentLimitConfig,
             Constants.kLongCANTimeoutMs
@@ -113,11 +109,6 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
                 currentLimitConfig,
                 Constants.kLongCANTimeoutMs
             );
-        ((IMotorControllerEnhanced) mRightSlaveB).configSupplyCurrentLimit(
-                currentLimitConfig,
-                Constants.kLongCANTimeoutMs
-            );
-
         setOpenLoopRampRate(Constants.kOpenLoopRampRate);
 
         mPigeon = factory.getPigeon();
@@ -233,8 +224,8 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     public synchronized void setOpenLoop(DriveSignal signal) {
         if (mDriveControlState != DriveControlState.OPEN_LOOP) {
             setBrakeMode(false);
-            System.out.println("switching to open loop");
-            System.out.println(signal);
+            GreenLogger.log("switching to open loop");
+            GreenLogger.log(signal.toString());
             mDriveControlState = DriveControlState.OPEN_LOOP;
         }
         setBrakeMode(signal.getBrakeMode());
@@ -284,7 +275,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     public synchronized void setVelocity(DriveSignal signal, DriveSignal feedforward) {
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             setBrakeMode(false);
-            System.out.println("Switching to Velocity");
+            GreenLogger.log("Switching to Velocity");
             mLeftMaster.selectProfileSlot(0, 0);
             mRightMaster.selectProfileSlot(0, 0);
             mLeftMaster.configNeutralDeadband(0.0, 0);
@@ -300,28 +291,26 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     @Override
     public synchronized void setBrakeMode(boolean on) {
         if (mIsBrakeMode != on) {
-            System.out.println("setBrakeMode " + on);
+            GreenLogger.log("setBrakeMode " + on);
             mIsBrakeMode = on;
             NeutralMode mode = on ? NeutralMode.Brake : NeutralMode.Coast;
             mRightMaster.setNeutralMode(mode);
             mRightSlaveA.setNeutralMode(mode);
-            mRightSlaveB.setNeutralMode(mode);
 
             mLeftMaster.setNeutralMode(mode);
             mLeftSlaveA.setNeutralMode(mode);
-            mLeftSlaveB.setNeutralMode(mode);
         }
     }
 
     @Override
     public synchronized void setHeading(Rotation2d heading) {
-        System.out.println("set heading: " + heading.getDegrees());
+        GreenLogger.log("set heading: " + heading.getDegrees());
 
         mGyroOffset =
             heading.rotateBy(
                 Rotation2d.fromDegrees(mPigeon.getYawValue()).unaryMinus()
             );
-        System.out.println("gyro offset: " + mGyroOffset.getDegrees());
+        GreenLogger.log("gyro offset: " + mGyroOffset.getDegrees());
 
         mPeriodicIO.desired_heading = heading;
     }
@@ -366,22 +355,21 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     @Override
     public double getLeftVelocityNativeUnits() {
-        mLeftActLogger.append(mPeriodicIO.left_velocity_ticks_per_100ms);
         return mPeriodicIO.left_velocity_ticks_per_100ms;
     }
 
     @Override
     public void zeroSensors() {
-        System.out.println("Zeroing drive sensors!");
+        GreenLogger.log("Zeroing drive sensors!");
         resetPigeon();
         setHeading(Constants.EmptyRotation);
         resetEncoders();
         if (!mPigeon.isReady()) {
             // BadLog.createValue("PigeonErrorDetected", "true");
-            System.out.println(
+            GreenLogger.log(
                 "Error detected with Pigeon IMU - check if the sensor is present and plugged in!"
             );
-            System.out.println("Defaulting to drive straight mode");
+            GreenLogger.log("Defaulting to drive straight mode");
             autoModeSelector.setHardwareFailure(true);
         } else {
             autoModeSelector.setHardwareFailure(false);
@@ -412,7 +400,7 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
         boolean checkPigeon = mPigeon == null;
 
-        System.out.println(leftSide && rightSide && checkPigeon);
+        GreenLogger.log(leftSide && rightSide && checkPigeon);
         if (leftSide && rightSide && checkPigeon) {
             ledManager.indicateStatus(LedManager.RobotStatus.ENABLED);
         } else {
@@ -431,10 +419,8 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
     public double getLeftVelocityDemand() {
         if (mDriveControlState == DriveControlState.OPEN_LOOP) {
             var ticks = mPeriodicIO.left_demand * maxVelTicksPer100ms;
-            mLeftDemmandLogger.append(ticks);
             return ticks;
         }
-        mLeftDemmandLogger.append(mPeriodicIO.left_demand);
         return mPeriodicIO.left_demand;
 
     }
