@@ -287,7 +287,6 @@ public class Robot extends TimedRobot {
         try {
             mRobotState.outputToSmartDashboard();
             mAutoModeSelector.outputToSmartDashboard();
-            GreenLogger.UpdatePeriodicLogs();
         } catch (Throwable t) {
             faulted = true;
             t.printStackTrace();
@@ -353,6 +352,7 @@ public class Robot extends TimedRobot {
         if (mAutoModeExecutor.isInterrupted()) {
             manualControl();
         }
+        GreenLogger.UpdatePeriodicLogs();
     }
 
     @Override
@@ -361,6 +361,7 @@ public class Robot extends TimedRobot {
 
         try {
             manualControl();
+            GreenLogger.UpdatePeriodicLogs();
         } catch (Throwable t) {
             faulted = true;
             t.printStackTrace();
