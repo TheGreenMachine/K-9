@@ -39,6 +39,11 @@ public abstract class Subsystem implements Sendable {
     // Optional design pattern for caching periodic writes to avoid hammering the HAL/CAN.
     public void writeToHardware() {}
 
+    /**
+     * method that updates any simulated objects
+     */
+    public void updateSimulation() {};
+
     public void registerEnabledLoops(ILooper mEnabledLooper) {}
 
     public void zeroSensors() {}

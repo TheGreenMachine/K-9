@@ -4,6 +4,7 @@ import com.team1816.lib.loops.ILooper;
 import com.team1816.lib.loops.Loop;
 import com.team1816.lib.loops.Looper;
 import com.team1816.lib.util.logUtil.GreenLogger;
+import edu.wpi.first.wpilibj.RobotBase;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -66,7 +67,9 @@ public class SubsystemManager implements ILooper {
             mLoops.forEach(l -> l.onLoop(timestamp));
             mAllSubsystems.forEach((subsystem) -> {
                 if (subsystem.isImplemented()) subsystem.writeToHardware();
+                if(RobotBase.isSimulation()) subsystem.updateSimulation();
             });
+
         }
 
         @Override
