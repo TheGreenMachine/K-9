@@ -42,11 +42,11 @@ public class AutoModeSelector {
     public AutoModeSelector() {
         mModeChooser = new SendableChooser<>();
 
-        mModeChooser.addOption("Tune Drivetrain", DesiredMode.TUNE_DRIVETRAIN);
+        mModeChooser.setDefaultOption("Tune Drivetrain", DesiredMode.TUNE_DRIVETRAIN);
         mModeChooser.addOption("Do Nothing", DesiredMode.DO_NOTHING);
 
         // CheezeCurd
-        mModeChooser.setDefaultOption("Living Room", DesiredMode.LIVING_ROOM);
+        mModeChooser.addOption("Living Room", DesiredMode.LIVING_ROOM);
         mModeChooser.addOption("Turret Tuning", DesiredMode.TURRET_TEST);
 
         SmartDashboard.putData("Auto mode", mModeChooser);

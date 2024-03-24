@@ -3,6 +3,7 @@ package com.team1816.lib.auto.actions;
 import com.google.inject.Inject;
 import com.team1816.lib.util.logUtil.GreenLogger;
 import com.team1816.season.Constants;
+import com.team1816.season.RobotState;
 import com.team1816.season.subsystems.Drive;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
@@ -15,6 +16,9 @@ public class TrajectoryAction implements Action {
     @Inject
     private static Drive.Factory mDriveFactory;
 
+    @Inject
+    private static RobotState mRobotState;
+
     private final RamseteCommand mCommand;
     private final Trajectory mTrajectory;
     private final Drive mDrive;
@@ -22,6 +26,9 @@ public class TrajectoryAction implements Action {
     public TrajectoryAction(Trajectory trajectory) {
         mDrive = mDriveFactory.getInstance();
         mTrajectory = trajectory;
+        mRobotState.field
+            .getObject("Trajectory")
+            .setTrajectory(trajectory);
         mCommand =
             new RamseteCommand(
                 trajectory,

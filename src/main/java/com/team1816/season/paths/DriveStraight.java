@@ -1,9 +1,12 @@
 package com.team1816.season.paths;
 
+import com.google.inject.Inject;
 import com.team1816.lib.paths.PathContainer;
+import com.team1816.season.RobotState;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +14,9 @@ public class DriveStraight implements PathContainer {
 
     private final int driveDistance;
     private final double maxVel;
+
+    @Inject
+    protected static RobotState mRobotState;
 
     public DriveStraight(int driveDistance, double maxVel) {
         this.driveDistance = driveDistance;
@@ -24,14 +30,16 @@ public class DriveStraight implements PathContainer {
     @Override
     public List<Pose2d> buildWaypoints() {
         List<Pose2d> waypoints = new ArrayList<>();
-        waypoints.add(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0)));
+        var start = mRobotState.getLatestFieldToVehicle();
+        waypoints.add(start);
         waypoints.add(
             new Pose2d(
-                Units.inchesToMeters(driveDistance),
-                0.0,
+                start.getX() + Units.inchesToMeters(driveDistance),
+                start.getY(),
                 Rotation2d.fromDegrees(0)
             )
         );
+        System.out.println(waypoints);
         return waypoints;
     }
 

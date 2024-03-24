@@ -14,10 +14,17 @@
       "ypos": "986"
     }
   },
+  "Table": {
+    "0x965B9C9E,2": {
+      "Column 0  Width": "310",
+      "Column 1  Weight": "1.0000",
+      "RefScale": "31"
+    }
+  },
   "Window": {
     "###/SmartDashboard/Auto mode": {
       "Collapsed": "0",
-      "Pos": "9,238",
+      "Pos": "10,263",
       "Size": "576,90"
     },
     "###/SmartDashboard/Field": {
@@ -37,7 +44,7 @@
     },
     "###FMS": {
       "Collapsed": "0",
-      "Pos": "9,345",
+      "Pos": "11,358",
       "Size": "368,364"
     },
     "###Joysticks": {
@@ -47,18 +54,18 @@
     },
     "###NetworkTables": {
       "Collapsed": "0",
-      "Pos": "251,466",
-      "Size": "750,185"
+      "Pos": "1925,1677",
+      "Size": "899,425"
     },
     "###NetworkTables Info": {
       "Collapsed": "0",
-      "Pos": "2013,1738",
-      "Size": "750,145"
+      "Pos": "2032,1738",
+      "Size": "731,370"
     },
     "###Other Devices": {
       "Collapsed": "0",
-      "Pos": "329,629",
-      "Size": "258,558"
+      "Pos": "2843,1664",
+      "Size": "948,440"
     },
     "###System Joysticks": {
       "Collapsed": "0",
@@ -67,7 +74,7 @@
     },
     "###Timing": {
       "Collapsed": "0",
-      "Pos": "6,619",
+      "Pos": "7,903",
       "Size": "294,258"
     },
     "Debug##Default": {

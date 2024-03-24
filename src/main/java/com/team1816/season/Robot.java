@@ -322,9 +322,6 @@ public class Robot extends TimedRobot {
             ) {
                 var auto = autoMode.get();
                 GreenLogger.log("Set auto mode to: " + auto.getClass());
-                mRobotState.field
-                    .getObject("Trajectory")
-                    .setTrajectory(auto.getTrajectory());
                 mAutoModeExecutor.setAutoMode(auto);
             }
         } catch (Throwable t) {

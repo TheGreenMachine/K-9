@@ -1,13 +1,12 @@
 package com.team1816.lib.paths;
 
 import com.team1816.lib.hardware.RobotFactory;
-import com.team1816.season.Constants;
 import com.team254.lib.util.Units;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+
 import java.util.List;
 
 /**
@@ -35,12 +34,7 @@ public interface PathContainer {
     ) {
         TrajectoryConfig config = new TrajectoryConfig(kMaxVelocity, kMaxAccel);
         var baseTrajectory = TrajectoryGenerator.generateTrajectory(waypoints, config);
-        return baseTrajectory.transformBy(
-            new Transform2d(
-                Constants.StartingPose.getTranslation(),
-                Constants.StartingPose.getRotation()
-            )
-        );
+        return baseTrajectory;
     }
 
     boolean isReversed();
