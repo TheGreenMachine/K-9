@@ -1,5 +1,6 @@
 package com.team1816.season;
 
+import com.google.inject.Inject;
 import com.team1816.lib.auto.modes.AutoModeBase;
 import com.team1816.lib.auto.modes.DoNothingMode;
 import com.team1816.lib.util.logUtil.GreenLogger;
@@ -11,12 +12,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import javax.inject.Singleton;
+import java.util.HashMap;
 import java.util.Optional;
 
 @Singleton
 public class AutoModeSelector {
 
     private boolean hardwareFailure = false;
+
+    @Inject
+    private static RobotState mRobotState;
 
     enum StartingPosition {
         LEFT_HAB_2,
@@ -38,17 +43,17 @@ public class AutoModeSelector {
     private final SendableChooser<DesiredMode> mModeChooser;
 
     private Optional<AutoModeBase> mAutoMode = Optional.empty();
+    private HashMap<DesiredMode, AutoModeBase> mAutoModes = new HashMap<>();
 
     public AutoModeSelector() {
-        mModeChooser = new SendableChooser<>();
 
-        mModeChooser.addOption("Tune Drivetrain", DesiredMode.TUNE_DRIVETRAIN);
+        mModeChooser = new SendableChooser<>();
+        mModeChooser.setDefaultOption("Tune Drivetrain", DesiredMode.TUNE_DRIVETRAIN);
         mModeChooser.addOption("Do Nothing", DesiredMode.DO_NOTHING);
 
         // CheezeCurd
-        mModeChooser.setDefaultOption("Living Room", DesiredMode.LIVING_ROOM);
+        mModeChooser.addOption("Living Room", DesiredMode.LIVING_ROOM);
         mModeChooser.addOption("Turret Tuning", DesiredMode.TURRET_TEST);
-
         SmartDashboard.putData("Auto mode", mModeChooser);
     }
 
@@ -70,39 +75,47 @@ public class AutoModeSelector {
         mCachedDesiredMode = desiredMode;
     }
 
-    private boolean startingLeft(StartingPosition position) {
-        return (
-            position == StartingPosition.LEFT_HAB_1 ||
-            position == StartingPosition.LEFT_HAB_2
-        );
-    }
-
-    private boolean startingHab1(StartingPosition position) {
-        return (
-            position == StartingPosition.LEFT_HAB_1 ||
-            position == StartingPosition.RIGHT_HAB_1
-        );
+    private void UpdateFieldTrajectory(AutoModeBase autoMode){
+        mRobotState.field
+            .getObject("Trajectory")
+            .setTrajectory(autoMode.getTrajectory());
     }
 
     private Optional<AutoModeBase> getAutoModeForParams(DesiredMode mode) {
         if (hardwareFailure) {
             return Optional.of(new DoNothingMode());
         }
+        // if we have already generated the auto mode reuse it
+        if(mAutoModes.containsKey(mode)) {
+            var autoMode = mAutoModes.get(mode);
+            UpdateFieldTrajectory(autoMode);
+            return Optional.of(autoMode);
+        }
+        AutoModeBase modeInstance;
         switch (mode) {
             case DO_NOTHING:
-                return Optional.of(new DoNothingMode());
-            case TUNE_DRIVETRAIN:
-                return Optional.of(new TuneDrivetrainMode());
-            case TURRET_TEST:
-                return Optional.of(new TurretTestMode());
-            case LIVING_ROOM:
-                return (Optional.of(new LivingRoomMode()));
-            default:
+                modeInstance = new DoNothingMode();
                 break;
+            case TUNE_DRIVETRAIN:
+                modeInstance = new TuneDrivetrainMode();
+                break;
+            case TURRET_TEST:
+                modeInstance = new TurretTestMode();
+                break;
+            case LIVING_ROOM:
+                modeInstance = new LivingRoomMode();
+                break;
+            default:
+                modeInstance = null;
         }
 
-        System.err.println("No valid auto mode found for  " + mode);
-        return Optional.empty();
+        if(modeInstance == null) {
+            System.err.println("No valid auto mode found for  " + mode);
+            return Optional.empty();
+        }
+        mAutoModes.put(mode,modeInstance);
+        UpdateFieldTrajectory(modeInstance);
+        return Optional.of(modeInstance);
     }
 
     public void reset() {

@@ -22,7 +22,7 @@ public class Constants {
     public static final double kDriveWheelDiameterInches = factory.getConstant(
         "wheelDiameter"
     );
-    public static final Pose2d StartingPose = new Pose2d(.5, 3.5, EmptyRotation);
+    public static final Pose2d StartingPose = new Pose2d(.45, 2, EmptyRotation);
 
     public static double kTrackScrubFactor = factory.getConstant("kTrackScrubFactor");
     public static int kPCMId = factory.getPcmId();

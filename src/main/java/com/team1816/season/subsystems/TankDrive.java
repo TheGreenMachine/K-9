@@ -60,13 +60,13 @@ public class TankDrive extends Drive implements DifferentialDrivetrain {
 
     @Override
     public void startTrajectory(Trajectory trajectory) {
+        // first entry into auto reset pose
+        if(mTrajectory == null) {
+            var pose = trajectory.getInitialPose();
+            odometry.resetPosition(pose.getRotation(),0,0,pose);
+        }
         mTrajectory = trajectory;
         mTrajectoryStart = 0;
-        odometry.resetPosition(
-            trajectory.getInitialPose().getRotation(),
-            0,0,
-            trajectory.getInitialPose()
-        );
         updateRobotPose();
         mDriveControlState = DriveControlState.TRAJECTORY_FOLLOWING;
         setBrakeMode(true);

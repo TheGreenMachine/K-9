@@ -9,6 +9,7 @@ import com.team1816.season.auto.actions.TurretAction;
 import com.team1816.season.controlboard.ControlBoard;
 import com.team1816.season.controlboard.GamepadButtonControlBoard;
 import com.team1816.season.controlboard.GamepadDriveControlBoard;
+import com.team1816.season.paths.DriveStraight;
 import com.team1816.season.subsystems.Camera;
 import com.team1816.season.subsystems.Drive;
 import com.team1816.season.subsystems.TankDrive;
@@ -28,5 +29,7 @@ public class SeasonModule extends AbstractModule {
         requestStaticInjection(Turret.class);
         requestStaticInjection(TurretAction.class);
         requestStaticInjection(AutoAimAction.class);
+        requestStaticInjection(DriveStraight.class);
+        requestStaticInjection(AutoModeSelector.class);
     }
 }
