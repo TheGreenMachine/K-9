@@ -17,15 +17,15 @@ public class TuneDrivetrainMode extends AutoModeBase {
     @Override
     protected void routine() throws AutoModeEndedException {
         GreenLogger.log("Tune Drivetrain path");
-        runAction(new WaitAction(1));
+        runAction(new WaitAction(.5));
         runAction(trajectory);
         var ds = new DriveStraight(84).generateTrajectory();
         trajectory = new TrajectoryAction(ds);
-        runAction(new WaitAction(1));
+        runAction(new WaitAction(.5));
         runAction(trajectory);
         ds = new DriveStraight(84).generateTrajectory();
         trajectory = new TrajectoryAction(ds);
-        runAction(new WaitAction(1));
+        runAction(new WaitAction(.5));
         runAction(trajectory);
     }
 }

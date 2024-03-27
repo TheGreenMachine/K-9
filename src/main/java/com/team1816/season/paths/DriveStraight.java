@@ -2,6 +2,7 @@ package com.team1816.season.paths;
 
 import com.google.inject.Inject;
 import com.team1816.lib.paths.PathContainer;
+import com.team1816.lib.util.logUtil.GreenLogger;
 import com.team1816.season.RobotState;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -39,7 +40,7 @@ public class DriveStraight implements PathContainer {
                 Rotation2d.fromDegrees(0)
             )
         );
-        System.out.println(waypoints);
+        GreenLogger.log("Start:" + start + "Waypoints:" + waypoints.toString());
         return waypoints;
     }
 

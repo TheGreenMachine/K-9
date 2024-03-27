@@ -186,7 +186,6 @@ public class Robot extends TimedRobot {
             if (mAutoModeExecutor != null) {
                 mAutoModeExecutor.stop();
             }
-            mAutoModeSelector.reset();
             mAutoModeSelector.updateModeCreator();
             mAutoModeExecutor = new AutoModeExecutor();
 
@@ -209,6 +208,13 @@ public class Robot extends TimedRobot {
 
             // Robot starts forwards.
             mRobotState.reset();
+            Optional<AutoModeBase> autoMode = mAutoModeSelector.getAutoMode();
+            if(mHasBeenEnabled && autoMode.isPresent() && autoMode.get() == mAutoModeExecutor.getAutoMode() ){
+                // ensure auto is reset not normal in regular matches used when testing back to back autos
+                GreenLogger.log("Reset back to back auto");
+                mAutoModeExecutor.reset();
+                mAutoModeSelector.updateModeCreator();
+            }
             mDrive.setHeading(Constants.EmptyRotation);
 
             mHasBeenEnabled = true;
