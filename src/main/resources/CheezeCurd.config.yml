@@ -1,7 +1,7 @@
 subsystems:
     drivetrain:
         implemented: true
-        talons:
+        falcons:
             leftMain: 2
             leftSlaveOne: -1
             leftSlaveTwo: -1
@@ -27,6 +27,7 @@ subsystems:
             rpmFloorCheck: 250
             rpmEpsilonCheck: 60
             openLoopRampRate: 1
+            currentLimit: 20
     ledmanager:
         implemented: true
         canifier: 12
@@ -80,3 +81,4 @@ constants:
     logRobot: 1
     useAutoAim: 1
     compressorEnabled: 0
+    resetFactoryDefaults: 1
