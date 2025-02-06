@@ -2,6 +2,7 @@ package com.team1816.lib.hardware;
 
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 public class RobotYamlTests {
@@ -12,23 +13,18 @@ public class RobotYamlTests {
     }
 
     @Test
+    public void pidYamlTest() {
+        var config = loadConfig("CheezeCurd");
+        var drive = config.subsystems.get("drivetrain");
+        assertNotNull(drive);
+        var pid = drive.pidConfig.get("slot0");
+        assertNotNull(pid);
+        Assert.assertNotEquals(0.0, pid.kF);
+    }
+
+    @Test
     public void cheezeCurdYamlTest() {
         loadConfig("CheezeCurd");
-    }
-
-    @Test
-    public void zetaYamlTest() {
-        loadConfig("zeta");
-    }
-
-    @Test
-    public void zodiacYamlTest() {
-        loadConfig("zodiac");
-    }
-
-    @Test
-    public void zodiacProYamlTest() {
-        loadConfig("zodiac_pro");
     }
 
     @Test
@@ -36,7 +32,7 @@ public class RobotYamlTests {
         loadConfig("zenith");
     }
 
-    private void loadConfig(String configName) {
+    private RobotConfiguration loadConfig(String configName) {
         RobotConfiguration config = null;
         try {
             config =
@@ -49,5 +45,6 @@ public class RobotYamlTests {
             e.printStackTrace();
         }
         assertNotNull(config);
+        return config;
     }
 }

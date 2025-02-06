@@ -272,38 +272,6 @@ public class CtreMotorFactory {
         motor.setNeutralMode(config.NEUTRAL_MODE);
         motor.selectProfileSlot(0, 0);
 
-        motor.setControlFramePeriod(
-            ControlFrame.Control_3_General,
-            config.CONTROL_FRAME_PERIOD_MS
-        );
-
-        motor.setStatusFramePeriod(
-            StatusFrameEnhanced.Status_1_General,
-            config.GENERAL_STATUS_FRAME_RATE_MS,
-            kTimeoutMs
-        );
-        motor.setStatusFramePeriod(
-            StatusFrameEnhanced.Status_2_Feedback0,
-            config.FEEDBACK_STATUS_FRAME_RATE_MS,
-            kTimeoutMs
-        );
-
-        motor.setStatusFramePeriod(
-            StatusFrameEnhanced.Status_3_Quadrature,
-            config.QUAD_ENCODER_STATUS_FRAME_RATE_MS,
-            kTimeoutMs
-        );
-        motor.setStatusFramePeriod(
-            StatusFrameEnhanced.Status_4_AinTempVbat,
-            config.ANALOG_TEMP_VBAT_STATUS_FRAME_RATE_MS,
-            kTimeoutMs
-        );
-        motor.setStatusFramePeriod(
-            StatusFrameEnhanced.Status_8_PulseWidth,
-            config.PULSE_WIDTH_STATUS_FRAME_RATE_MS,
-            kTimeoutMs
-        );
-
         motor.configAllSettings(talonConfiguration, kTimeoutMs);
         motor.setInverted(subsystem.invertMotor.contains(name));
         motor.setSensorPhase(subsystem.invertSensorPhase.contains(name));

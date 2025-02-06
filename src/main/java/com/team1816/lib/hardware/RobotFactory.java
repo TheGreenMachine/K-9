@@ -241,7 +241,7 @@ public class RobotFactory {
     }
 
     public Double getConstant(String name) {
-        return getConstant(name, 0.0);
+        return getConstant(name, -42);
     }
 
     public Map<String, Double> getConstants() {
@@ -265,7 +265,10 @@ public class RobotFactory {
 
     public Double getConstant(String name, double defaultVal) {
         if (getConstants() == null || !getConstants().containsKey(name)) {
-            DriverStation.reportError("Yaml constants:" + name + " missing", false);
+            if(defaultVal == -42) {
+                DriverStation.reportError("Yaml constants:" + name + " missing", false);
+                defaultVal = 0;
+            }
             return defaultVal;
         }
         return getConstants().get(name);
@@ -343,45 +346,5 @@ public class RobotFactory {
             subsystemName +
             ", using ghost!"
         );
-    }
-
-    private final int canMaxStatus = 100;
-    private void setStatusFrame(IMotorControllerEnhanced device){
-        device.setStatusFramePeriod(StatusFrame.Status_1_General,canMaxStatus, 100);
-        device.setStatusFramePeriod(StatusFrame.Status_2_Feedback0,canMaxStatus, 100);
-        device.setStatusFramePeriod(StatusFrame.Status_4_AinTempVbat,canMaxStatus, 100);
-        device.setStatusFramePeriod(StatusFrame.Status_6_Misc,canMaxStatus, 100);
-        device.setStatusFramePeriod(StatusFrame.Status_7_CommStatus,canMaxStatus, 100);
-        device.setStatusFramePeriod(StatusFrame.Status_9_MotProfBuffer,canMaxStatus, 100);
-        device.setStatusFramePeriod(StatusFrame.Status_10_Targets,canMaxStatus, 100);
-        device.setStatusFramePeriod(StatusFrame.Status_12_Feedback1,canMaxStatus, 100);
-        device.setStatusFramePeriod(StatusFrame.Status_13_Base_PIDF0,canMaxStatus, 100);
-        device.setStatusFramePeriod(StatusFrame.Status_14_Turn_PIDF1,canMaxStatus, 100);
-        device.setStatusFramePeriod(StatusFrame.Status_15_FirmwareApiStatus,canMaxStatus, 100);
-        device.setStatusFramePeriod(StatusFrame.Status_17_Targets1,canMaxStatus, 100);
-    }
-
-    private void setStatusFrame(PigeonIMU device){
-        device.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_1_General, 100);
-        device.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 100);
-        device.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_2_GeneralCompass, 100);
-        device.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_3_GeneralAccel, 100);
-        device.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_4_Mag, 100);
-        device.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_6_Accel, 100);
-        device.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_6_SensorFusion, 100);
-        device.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_9_SixDeg_YPR, 100);
-        device.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_10_SixDeg_Quat, 100);
-        device.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_11_GyroAccum, 100);
-        device.setStatusFramePeriod(PigeonIMU_StatusFrame.RawStatus_4_Mag, 100);
-    }
-
-    private void setStatusFrame(CANifier device){
-        device.setStatusFramePeriod(CANifierStatusFrame.Status_1_General, canMaxStatus, 100);
-        device.setStatusFramePeriod(CANifierStatusFrame.Status_2_General, canMaxStatus, 100);
-        device.setStatusFramePeriod(CANifierStatusFrame.Status_3_PwmInputs0, canMaxStatus, 100);
-        device.setStatusFramePeriod(CANifierStatusFrame.Status_4_PwmInputs1, canMaxStatus, 100);
-        device.setStatusFramePeriod(CANifierStatusFrame.Status_5_PwmInputs2, canMaxStatus, 100);
-        device.setStatusFramePeriod(CANifierStatusFrame.Status_6_PwmInputs3, canMaxStatus, 100);
-        device.setStatusFramePeriod(CANifierStatusFrame.Status_8_Misc, canMaxStatus, 100);
     }
 }

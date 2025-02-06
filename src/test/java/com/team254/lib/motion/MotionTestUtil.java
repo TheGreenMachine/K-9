@@ -1,5 +1,7 @@
 package com.team254.lib.motion;
 
+import com.team1816.lib.util.logUtil.GreenLogger;
+
 public class MotionTestUtil {
 
     protected abstract static class Dynamics {

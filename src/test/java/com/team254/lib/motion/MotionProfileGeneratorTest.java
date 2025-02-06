@@ -1,5 +1,6 @@
 package com.team254.lib.motion;
 
+import com.team1816.lib.util.logUtil.GreenLogger;
 import com.team254.lib.motion.MotionProfileGoal.CompletionBehavior;
 import com.team254.lib.util.Util;
 
@@ -211,7 +212,7 @@ public class MotionProfileGeneratorTest {
     public void problematicCase1() {
         MotionProfile profile = MotionProfileGenerator.generateProfile(new MotionProfileConstraints(50.0, 25.0),
                 new MotionProfileGoal(200.0), new MotionState(0.0, 0.0, 0.0, 0.0));
-        GreenLogger.log(profile);
+        GreenLogger.log(profile.toString());
         assertTrue(profile.firstStateByPos(160.0).get().vel() > 0.0);
     }
 }

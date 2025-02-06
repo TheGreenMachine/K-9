@@ -1,5 +1,6 @@
 package com.team254.lib.motion;
 
+import com.team1816.lib.util.logUtil.GreenLogger;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
@@ -16,7 +17,7 @@ public class SetpointGeneratorTest {
         for (; i < max_iterations; ++i) {
             SetpointGenerator.Setpoint setpoint = spg.getSetpoint(constraints, goal, prev_state, prev_state.t() + dt);
             prev_state = setpoint.motion_state;
-            GreenLogger.log(prev_state);
+            GreenLogger.log(prev_state.toString());
             if (setpoint.final_setpoint) {
                 GreenLogger.log("Goal reached");
                 break;

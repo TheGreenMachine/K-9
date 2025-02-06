@@ -27,7 +27,11 @@ public class GreenLogger {
 
     private static final List<PeriodicLog> periodicLogs = new ArrayList<>();
 
-
+    public static void log(double d) {
+        if (Constants.kLoggingRobot) {
+            DataLogManager.log(String.valueOf(d));
+        }
+    }
     /**
      * Logs a string message
      *
