@@ -1,0 +1,31 @@
+{
+    "type": "object",
+    "title": "Infrastructure Config",
+    "additionalProperties": false,
+    "properties": {
+        "pcmId": {
+            "type": "integer"
+        },
+        "compressorEnabled": {
+            "type": "boolean"
+        },
+        "pdIsRev": {
+            "type": "boolean"
+        },
+        "pdId": {
+            "type": "integer"
+        },
+        "proximitySensors": {
+            "$ref": "int.map.schema.json"
+        }
+    },
+    "anyOf": [
+        {
+            "required": [
+                "pcmId",
+                "canivoreBusName"
+            ]
+        }
+    ]
+}
+

@@ -1,0 +1,75 @@
+{
+    "type": "object",
+    "title": "Device Configuration",
+    "properties": {
+        "deviceType": {
+            "type" : "enum",
+            "default": "0",
+            "existingJavaType" : "com.team1816.lib.hardware.components.ICTREDevice.DeviceType"
+        },
+        "name": {
+            "default": null,
+            "type" : "string"
+        },
+        "id": {
+            "default": "-1",
+            "type" : "integer"
+        },
+        "motorType": {
+            "type": "enum",
+            "default": null,
+            "existingJavaType": "com.ctre.phoenix6.signals.MotorArrangementValue"
+        },
+        "remoteSensor": {
+            "type": "enum",
+            "default": null,
+            "existingJavaType": "com.ctre.phoenix6.signals.ExternalFeedbackSensorSourceValue"
+        },
+        "remoteOffest": {
+            "type" : "number",
+            "default": null
+        },
+        "remoteSensorId": {
+            "type": "integer",
+            "default": null
+        },
+        "forwardSoftLimit": {
+            "default": null,
+            "type": "number"
+        },
+        "reverseSoftLimit": {
+            "default": null,
+            "type": "number"
+        },
+        "statorCurrentLimit": {
+            "default": null,
+            "type": "number"
+        },
+        "supplyCurrentLimit" : {
+            "default": null,
+            "type" : "number"
+        },
+        "supplyCurrentLowerLimit" : {
+            "default": null,
+            "type" : "number"
+        },
+        "supplyCurrentLowerTime" : {
+            "default": null,
+            "type" : "number"
+        },
+        "motorRotation" : {
+            "default": null,
+            "type": "enum",
+            "existingJavaType": "com.ctre.phoenix6.signals.InvertedValue"
+        },
+        "neutralMode": {
+            "default": null,
+            "type": "enum",
+            "existingJavaType": "com.ctre.phoenix6.signals.NeutralModeValue"
+        },
+        "motionMagic" :  {
+            "default": null,
+            "$ref": "motionmagicconfig.schema.json"
+        }
+    }
+}

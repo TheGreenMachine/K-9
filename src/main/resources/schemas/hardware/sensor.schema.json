@@ -1,0 +1,11 @@
+{
+    "type": "object",
+    "title": "Sensor Configuration",
+        "digitalInputs": {
+            "$ref": "int.map.schema.json"
+        },
+        "analogInputs": {
+            "$ref": "int.map.schema.json"
+        }
+    }
+}

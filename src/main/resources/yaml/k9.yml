@@ -1,0 +1,52 @@
+subsystems:
+    turret:
+        devices:
+            spiny:
+                id: 5
+                deviceType: TalonFXS
+                motorType: Brushed_DC
+                neutralMode: Brake
+                motorRotation: Clockwise_Positive
+                statorCurrentLimit: 20
+                remoteSensor: PulseWidth
+                remoteOffest: .484
+                forwardSoftLimit: .33
+                reversSoftLimit: -.33
+        pidConfig:
+            slot0:
+                kP: 48.046920
+                kI: 0
+                kD: 0.240234
+    ledManager:
+        devices:
+            argb:
+                id: 12
+                deviceType: Canifier
+            drgb:
+                id: 10
+                deviceType: Candle
+        constants:
+            maxLevel: 96
+            ledCount: 66
+    drivetrain:
+        devices:
+            rightMain:
+                deviceType: TalonFX
+                neutralMode: Brake
+                id: 2
+            leftMain:
+                deviceType: TalonFX
+                neutralMode: Brake
+                id: 1
+            gyro:
+                deviceType: Pigeon2
+                id: 13
+        pidConfig:
+            slot0:
+                kP: 0.1
+                kI: 0.0001
+                kD: 4.0
+                kV: 0.0475813
+        constants:
+            wheelbaseLength: .66 # meters
+            wheelbaseWidth: .33 # meters

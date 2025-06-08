@@ -1,35 +1,24 @@
 package com.team1816.lib.hardware;
 
-import static org.junit.Assert.assertNotNull;
-
-import org.junit.Assert;
-import org.junit.Test;
+import com.team1816.lib.hardware.factory.YamlConfig;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RobotYamlTests {
 
     @Test
-    public void defaultYamlTest() {
-        loadConfig("default");
-    }
-
-    @Test
     public void pidYamlTest() {
-        var config = loadConfig("CheezeCurd");
+        var config = loadConfig("K9");
         var drive = config.subsystems.get("drivetrain");
         assertNotNull(drive);
         var pid = drive.pidConfig.get("slot0");
         assertNotNull(pid);
-        Assert.assertNotEquals(0.0, pid.kF);
+        assertNotEquals(0.0, pid.kS);
     }
 
     @Test
-    public void cheezeCurdYamlTest() {
-        loadConfig("CheezeCurd");
-    }
-
-    @Test
-    public void zenithYamlTest() {
-        loadConfig("zenith");
+    public void K9LoadTest() {
+        loadConfig("K9");
     }
 
     private RobotConfiguration loadConfig(String configName) {
@@ -39,7 +28,7 @@ public class RobotYamlTests {
                 YamlConfig.loadFrom(
                     this.getClass()
                         .getClassLoader()
-                        .getResourceAsStream(configName + ".config.yml")
+                        .getResourceAsStream("yaml/"+ configName + ".yml")
                 );
         } catch (Exception e) {
             e.printStackTrace();

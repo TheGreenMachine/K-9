@@ -1,0 +1,40 @@
+{
+    "type": "object",
+    "title": "PID Slot Configuration",
+    "properties": {
+        "kP": {
+            "default": null,
+            "type": "number"
+        },
+        "kI": {
+            "default": null,
+            "type": "number"
+        },
+        "kD": {
+            "default": null,
+            "type": "number"
+        },
+        "kV": {
+            "default": null,
+            "type": "number"
+        },
+        "kS": {
+            "default": null,
+            "type": "number"
+        },
+        "kA": {
+            "default": null,
+            "type": "number"
+        },
+        "kG": {
+            "default": null,
+            "type": "number"
+        },
+        "gravityType": {
+            "default": null,
+            "type": "enum",
+            "existingJavaType": "com.ctre.phoenix6.signals.GravityTypeValue"
+        }
+    }
+}
+

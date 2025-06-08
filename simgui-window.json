@@ -4,14 +4,15 @@
   },
   "MainWindow": {
     "GLOBAL": {
+      "font": "Proggy Dotted",
       "fps": "120",
       "height": "2224",
       "maximized": "0",
       "style": "0",
       "userScale": "2",
       "width": "3840",
-      "xpos": "-467",
-      "ypos": "986"
+      "xpos": "16",
+      "ypos": "160"
     }
   },
   "Table": {
@@ -75,7 +76,7 @@
     "###Timing": {
       "Collapsed": "0",
       "Pos": "7,903",
-      "Size": "294,258"
+      "Size": "294,217"
     },
     "Debug##Default": {
       "Collapsed": "0",
@@ -85,7 +86,7 @@
     "Robot State": {
       "Collapsed": "0",
       "Pos": "12,43",
-      "Size": "196,224"
+      "Size": "213,224"
     }
   }
 }

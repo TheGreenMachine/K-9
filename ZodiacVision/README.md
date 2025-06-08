@@ -1,6 +1,0 @@
-- python3 -m pip install --upgrade pip
-- pip3 install opencv-python
-- pip3 install pyyaml
-- pip3 install pynetworktables
-- pip3 install setuptools-rust
-- pip3 install flask-opencv-streamer

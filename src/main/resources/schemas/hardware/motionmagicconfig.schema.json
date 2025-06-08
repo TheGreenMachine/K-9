@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "title": "Motion Magic Slot Configuration",
+  "properties": {
+    "cruiseVelocity": {
+      "type": "number"
+    },
+    "acceleration": {
+      "type": "number"
+    },
+    "jerk": {
+      "type": "number"
+    },
+    "expoKV": {
+      "type": "number"
+    },
+    "expoKA": {
+      "type": "number"
+    }
+  }
+}
+

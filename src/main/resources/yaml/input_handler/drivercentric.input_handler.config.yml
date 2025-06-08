@@ -1,0 +1,43 @@
+driver:
+  controllerType: Xbox
+  rumble: true
+  joysticks:
+    left:
+      horizontal: strafe
+      vertical: throttle
+    right:
+      horizontal: rotation
+  buttonpad:
+    a: activationDeepHanger
+#    a: patriotPathToCoralSide1
+    b: feeder
+    x: outtakeCoral
+    y: rampClimbPosition
+  axes:
+    rightTrigger: L3
+    leftTrigger: L4
+  buttons:
+    start:
+    back: zeroPose
+    leftBumper: L2
+    rightBumper: slowMode
+  dpad:
+    right: robotcentricRight
+    down: robotcentricDown
+    left: robotcentricLeft
+    up: robotcentricUp
+operator:
+  controllerType: Xbox
+  rumble: true
+  buttonpad:
+    y:
+buttonboard:
+  upLeft: increaseRampPivotOffset
+  upRight: decreaseCoralArmPivotOffset
+  up: increaseElevatorPivotOffset
+  center: decreaseElevatorPivotOffset
+  left: decreaseRampPivotOffset
+  right: increaseCoralArmPivotOffset
+  downLeft:
+  down: dislodgeCoral
+demoMode: false

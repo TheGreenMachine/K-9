@@ -1,0 +1,41 @@
+driver:
+  controllerType: Xbox
+  rumble: true
+  joysticks:
+    left:
+      horizontal: strafe
+      vertical: throttle
+    right:
+      horizontal: rotation
+  buttonpad:
+    a: feeder
+    b: ejectCoral
+    x: robotcentricLeft
+    y: robotcentricUp
+  axes:
+    rightTrigger:
+    leftTrigger:
+  buttons:
+    start: zeroPose
+    back: hardZeroPose
+    leftBumper:
+    rightBumper: 
+  dpad:
+    up:
+    down:
+    left:
+    right:
+operator:
+  controllerType: Xbox
+  rumble: true
+  buttonpad:
+    y:
+buttonboard:
+  upLeft:
+  upRight:
+  up:
+  center:
+  left:
+  downLeft:
+  down:
+demoMode: false

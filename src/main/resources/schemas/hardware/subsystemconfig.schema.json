@@ -1,0 +1,78 @@
+{
+    "type": "object",
+    "title": "Subsystem Config",
+    "additionalProperties": false,
+    "properties": {
+        "implemented": {
+            "default": true,
+            "type": "boolean"
+        },
+        "canBusName": {
+            "default": "highspeed",
+            "type": "string"
+        },
+        "devices": {
+            "default": null,
+            "type": "object",
+            "existingJavaType": "java.util.Map<String,DeviceConfiguration>"
+        },
+        "constants": {
+            "default": null,
+            "$ref": "double.map.schema.json"
+        },
+        "canCoders": {
+            "default": null,
+            "$ref": "int.map.schema.json"
+        },
+        "sensors": {
+            "default": null,
+            "$ref": "sensorconfig.schema.json"
+        },
+        "swerveModules": {
+            "default": null,
+            "$ref": "swervemoduleconfig.schema.json"
+        },
+        "solenoids": {
+            "default": null,
+            "$ref": "int.map.schema.json"
+        },
+        "doubleSolenoids": {
+            "default": null,
+            "existingJavaType": "java.util.Map<String,DoubleSolenoidConfig>"
+        },
+        "invertMotor": {
+            "default": null,
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "invertSensorPhase": {
+            "default": null,
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "string"
+            }
+        },
+        "pidConfig": {
+            "default": null,
+            "type": "object",
+            "existingJavaType": "java.util.Map<String, PIDSlotConfiguration>",
+            "additionalProperties": false
+        },
+        "name": {
+            "default": null,
+            "type": "string"
+        }
+    },
+    "anyOf": [
+        {
+            "required": [
+                "implemented"
+            ]
+        }
+    ]
+}
+

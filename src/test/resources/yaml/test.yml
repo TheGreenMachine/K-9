@@ -1,0 +1,37 @@
+subsystems:
+    turret:
+        devices:
+            turret:
+                id: 5
+                deviceType: TalonFXS
+                motorType: Brushed_DC
+                motorRotation: Clockwise_Positive
+    drivetrain:
+        canBusName: "super"
+        devices:
+            range:
+                deviceType: CanRange
+            leftMain:
+                deviceType: TalonFX
+                id: 1
+                neutralMode: Brake
+            imu:
+                deviceType: Pigeon2
+                id: 6
+        pidConfig:
+            slot0:
+                kP: 0.1 # 0.18
+                kI: 0.0001 # 0.018
+                kD: 4.0 # 3.6
+                kV: 0.0475813
+    ledManager:
+        devices:
+            argb:
+                id: 3
+                deviceType: Canifier
+            drgb:
+                id: 4
+                deviceType: Candle
+
+constants:
+    foo: 3

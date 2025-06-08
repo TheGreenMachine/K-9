@@ -1,60 +1,141 @@
 package com.team1816.lib.hardware;
 
-import com.team1816.lib.hardware.components.motor.GhostMotorControllerEnhanced;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import com.team1816.lib.Singleton;
+import com.team1816.lib.hardware.components.GhostDevice;
+import com.team1816.lib.hardware.components.gyro.Pigeon2Impl;
+import com.team1816.lib.hardware.components.led.CANdleImpl;
+import com.team1816.lib.hardware.components.led.CANifierImpl;
+import com.team1816.lib.hardware.components.motor.TalonFXImpl;
+import com.team1816.lib.hardware.components.motor.TalonFXSImpl;
+import com.team1816.lib.hardware.components.sensor.CanRangeImpl;
+import com.team1816.lib.hardware.factory.RobotFactory;
+import com.team1816.lib.subsystems.LedManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class RobotFactoryTest {
 
     private RobotFactory factory;
 
-    @Before
+    @BeforeEach
     public void testInit() {
-        factory = RobotFactory.getInstance();
+        factory = Singleton.get(RobotFactory.class);
+        factory.RobotIsReal = false;
     }
 
     @Test
-    public void testGetInstance() {
-        Assert.assertNotNull(RobotFactory.getInstance());
-    }
-
-    @Test
-    public void testGetMotor() {
-        Assert.assertTrue(
-            factory.getMotor("fooDrive", "left") instanceof GhostMotorControllerEnhanced
-        );
-    }
-
-    public void testGetSolenoid() {}
-
-    public void testGetDoubleSolenoid() {}
-
-    @Test
-    public void testGetCanifier() {
-        Assert.assertNull(factory.getCanifier("foo"));
+    public void testFactoryLoad() {
+        assertNotNull(factory);
     }
 
     @Test
     public void testGetConstant() {
-        Assert.assertEquals(0, factory.getConstant("foo"), 0);
-        Assert.assertEquals(2, factory.getConstant("foo", 2), 0);
-        Assert.assertEquals(0, factory.getConstant("subFoo", "foo"), 0);
-        Assert.assertEquals(3, factory.getConstant("subFoo", "foo", 3), 0);
-    }
-
-    @Test
-    public void testGetPcmId() {
-        Assert.assertEquals(-1, factory.getPcmId());
+        assertEquals(3, factory.getConstant("foo", 2), 0);
+        assertEquals(3, factory.getConstant("subFoo", "foo", 3), 0);
     }
 
     @Test
     public void testGetSubsystem() {
-        Assert.assertFalse(factory.getSubsystem("foo").implemented);
+        //non-existent subsystems should always be un implemented
+        var subsystem = factory.getSubsystemConfig("foo");
+        assertFalse(subsystem.implemented);
+        // name should be set when getting subsystem
+        assertEquals("foo", subsystem.name);
     }
 
     @Test
-    public void testIsVerbose() {
-        Assert.assertTrue(RobotFactory.isVerbose());
+    public void testGetGhostDevice() {
+        var device = factory.getDevice("drivetrain", "leftMain");
+        assertNotNull(device);
+        assertEquals(GhostDevice.class, device.getClass());
     }
+
+    @Test
+    public void testGetTalonFXlDevice() {
+        factory.RobotIsReal = true;
+        var device = factory.getDevice("drivetrain", "leftMain");
+        assertNotNull(device);
+        assertEquals(TalonFXImpl.class, device.getClass());
+    }
+
+    @Test
+    public void testGetTalonFXSlDevice() {
+        factory.RobotIsReal = true;
+        var device = factory.getDevice("turret", "turret");
+        assertNotNull(device);
+        assertEquals(TalonFXSImpl.class, device.getClass());
+    }
+
+    @Test
+    public void testGetCANifierDevice() {
+        factory.RobotIsReal = true;
+        var device = factory.getDevice("ledManager", "argb");
+        assertNotNull(device);
+        assertEquals(CANifierImpl.class, device.getClass());
+    }
+
+    @Test
+    public void testGetCANdleDevice() {
+        factory.RobotIsReal = true;
+        var device = factory.getDevice("ledManager", "drgb");
+        assertNotNull(device);
+        assertEquals(CANdleImpl.class, device.getClass());
+    }
+
+    @Test
+    public void testCreateSubsystem() {
+        Singleton.CreateSubSystem (LedManager.class);
+        assertTrue(Singleton.subSystems.containsKey(LedManager.class));
+        assertThrows(RuntimeException.class, () -> Singleton.CreateSubSystem(LedManager.class));
+    }
+
+    @Test
+    public void testGetCANRangeDevice() {
+        factory.RobotIsReal = true;
+        var device = factory.getDevice("drivetrain", "range");
+        assertNotNull(device);
+        assertEquals(CanRangeImpl.class, device.getClass());
+    }
+
+    @Test
+    public void testGetPigeonDevice() {
+        factory.RobotIsReal = true;
+        var device = factory.getDevice("drivetrain", "imu");
+        assertNotNull(device);
+        assertEquals(Pigeon2Impl.class, device.getClass());
+    }
+
+    @Test
+    public void testDefaults() throws IllegalAccessException {
+        ValidateFieldDefaults(new DeviceConfiguration());
+        ValidateFieldDefaults(new SubsystemConfig());
+        ValidateFieldDefaults(new PIDSlotConfiguration());
+        ValidateFieldDefaults(new RobotConfiguration());
+    }
+
+    private void ValidateFieldDefaults(Object inst) throws IllegalAccessException {
+        var clazz = inst.getClass();
+        var fields = clazz.getFields();
+        for (var field : fields) {
+            switch (field.getName()) {
+                case "canBusName" -> assertEquals("highspeed", field.get(inst));
+                case "implemented" -> assertEquals(true, field.get(inst));
+                case "id" -> assertEquals(-1, field.get(inst));
+                default -> assertNull(field.get(inst), clazz.getSimpleName() + ":" + field.getName());
+            }
+        }
+    }
+
+    @Test
+    public void testGetBadDevice() {
+        assertThrows(IllegalArgumentException.class, () -> factory.getDevice("drivetrain", "foo"));
+    }
+
+    @Test
+    public void testGetBadSubsystem() {
+        assertThrows(IllegalArgumentException.class, () -> factory.getDevice("foo", "foo"));
+    }
+
 }

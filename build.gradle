@@ -1,34 +1,75 @@
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 plugins {
-    id 'java'
-    id 'edu.wpi.first.GradleRIO' version '2024.3.2'
+    id "java"
+    id "edu.wpi.first.GradleRIO" version "2025.3.2"
     id 'org.jsonschema2dataclass' version '4.0.1'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
 
 def ROBOT_MAIN_CLASS = "com.team1816.season.Main"
+
+def getGitHash() {
+    return ext.githash='git log --pretty=format:\" %cs, Hash: %h\" -1'.execute().text.trim()
+}
+
+def getGitBranchName() {
+    def value = ext.githash="git rev-parse --abbrev-ref HEAD".execute().text.trim()
+
+    return value
+}
+
+def writeGitHashToFile() {
+    def directory = "build/resources/main"
+    def fileName = "git_hash"
+
+    // The delete is necessary to ensure that the contents of the file is reset.
+
+    def gitHashStr = getGitHash()
+
+    def gitHashStrLines = gitHashStr.split(",\\[]");
+
+    def gitHashFolder = file("$directory")
+
+    if (gitHashFolder.exists()) {
+        delete "$directory/$fileName"
+
+        file("$directory/$fileName") << getGitBranchName() << "    \n"
+
+        for (String line : gitHashStrLines) {
+            file("$directory/$fileName") << line.trim() << "    \n"
+        }
+    }
+}
+
+def yellAtConsole(String message) {
+    String RED_TEXT = "\u001B[31m";
+    String RESET_TEXT = "\u001B[0m"
+    println(RED_TEXT + message + RESET_TEXT)
+}
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
 deploy {
+    writeGitHashToFile()
     targets {
         roborio(getTargetTypeClass('RoboRIO')) {
             // Team number is loaded either from the .wpilib/wpilib_preferences.json
             // or from command line. If not found an exception will be thrown.
             // You can use getTeamOrDefault(team) instead of getTeamNumber if you
             // want to store a team number in this file.
-            team = project.frc.getTeamNumber()
+            team = 1816
             debug = project.frc.getDebugOrDefault(false)
             checkImage = false
             artifacts {
                 // First part is artifact name, 2nd is artifact type
                 // getTargetTypeClass is a shortcut to get the class type using a string
 
-                frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
-                }
+                frcJava(getArtifactTypeClass('FRCJavaArtifact')) {}
 
                 // Static files artifact
                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
@@ -55,10 +96,11 @@ repositories {
 }
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
-// Also defines JUnit 4.
+// Also defines JUnit 5.
 dependencies {
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
+    implementation 'org.jetbrains:annotations:24.0.1'
 
     roborioDebug wpi.java.deps.wpilibJniDebug(wpi.platforms.roborio)
     roborioDebug wpi.java.vendor.jniDebug(wpi.platforms.roborio)
@@ -74,71 +116,111 @@ dependencies {
     nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
     simulationRelease wpi.sim.enableRelease()
 
-    implementation 'org.yaml:snakeyaml:1.29'
-    implementation 'gov.nist.math:jama:1.0.3'
-    implementation 'com.google.inject:guice:5.1.0'
-    implementation 'com.google.inject.extensions:guice-assistedinject:5.1.0'
+    implementation 'org.yaml:snakeyaml:2.2'
 
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.mockito:mockito-core:4.3.1'
+    testImplementation platform("org.junit:junit-bom:5.11.4")
+    testImplementation "org.junit.jupiter:junit-jupiter-api"
+    testImplementation "org.junit.jupiter:junit-jupiter-params"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
+    testImplementation 'org.mockito:mockito-inline:5.2.0'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
+}
+
+test{
+    useJUnitPlatform()
+    systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }
 
 // Simulation configuration (e.g. environment variables).
-wpi.sim.addGui().defaultEnabled = true
+wpi.sim.addGui().defaultEnabled.set(true)
 wpi.sim.addDriverstation()
+
+//TODO add test function definition
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
 // in order to make them all available at runtime. Also adding the manifest so WPILib
 // knows where to look for our Robot Class.
 jar {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    from sourceSets.main.allSource
     manifest edu.wpi.first.gradlerio.GradleRIOPlugin.javaManifest(ROBOT_MAIN_CLASS)
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
 }
 
-// see https://github.com/joelittlejohn/jsonschema2pojo/tree/master/jsonschema2pojo-gradle-plugin#usage
 jsonSchema2Pojo {
-    targetPackage = 'com.team1816.lib.hardware'
+    targetPackage = 'com.team1816.lib'
     useTitleAsClassname = true
     includeGetters = false
     includeSetters = false
     removeOldOutput = true
     includeAdditionalProperties = false
-    includeToString = false
+    includeToString = true
     includeHashcodeAndEquals = false
     source.setFrom files(
-        "${project.rootDir}/src/main/resources/subsystemconfig.schema.json",
-        "${project.rootDir}/src/main/resources/pidconfig.schema.json",
-        "${project.rootDir}/src/main/resources/swervemoduleconfig.schema.json",
-        "${project.rootDir}/src/main/resources/moduleconfig.schema.json",
-        "${project.rootDir}/src/main/resources/double.solenoid.schema.json",
-        "${project.rootDir}/src/main/resources/robotconfig.schema.json"
+        "${project.rootDir}/src/main/resources/schemas"
     )
 }
 
-task runTank(type: JavaExec) {
+task robotCADToAdvantageScope (type: Copy) {
+    String currUserName = System.getProperty("user.name");
+    boolean isWindows = DefaultNativePlatform.currentOperatingSystem.isWindows();
+    String robotCADFolder = "Robot_${projectDir.getName()}"
+    String customAssetFolder = "AdvantageScope${isWindows ? "\\" : "/"}userAssets"; //don't need the ternary for execution but keeping for the warning
+
+    String baseOutputDir; //For checking that AdvantageScope is on the system
+
+    if (isWindows) {
+        baseOutputDir = "C:\\Users\\${currUserName}\\AppData\\Roaming\\${customAssetFolder}"
+    } else { //Mac
+        baseOutputDir = "/Users/${currUserName}/Library/Application Support/${customAssetFolder}"
+    } //Could add Debian linux if anyone wants to take a crack at it
+
+    String outputDir = baseOutputDir + (isWindows ? "\\" : "/") + robotCADFolder;
+
+    if (new File(baseOutputDir).exists()) {
+        copy {
+            from "${project.rootDir}/${robotCADFolder}"
+            into outputDir
+        }
+    } else {
+        yellAtConsole("${baseOutputDir} could not be found! Please ensure you have AdvantageScope properly downloaded.")
+    }
+}
+
+task runK9(type: JavaExec) {
     String jniDir = "${project.buildDir}/jni/release"
     environment "PATH", jniDir
-    String hal = fileTree(dir: "${project.buildDir}/jni/release", include: 'halsim_*.*').asPath
+    String hal = fileTree(dir: "${project.buildDir}/jni/release", include: '*halsim_*.*').asPath
     if (!DefaultNativePlatform.currentOperatingSystem.isWindows()) {
         environment "LD_LIBRARY_PATH", jniDir
         environment "DYLD_FALLBACK_LIBRARY_PATH", jniDir
         environment "DYLD_LIBRARY_PATH", jniDir
+        jvmArgs "-XstartOnFirstThread"
     }
     environment "HALSIM_EXTENSIONS", hal
-    environment "ROBOT_NAME", "CheezeCurd"
+    environment "ROBOT_NAME", "K9"
     dependsOn(jar, simulateExternalJavaRelease)
     classpath = files(jar)
     jvmArgs "-Djava.library.path=${jniDir}"
 }
 
 processResources {
-    include '**/*.config.yml'
-    eachFile { fileCopyDetails ->
+    include 'yaml/**/*.yml'
+    eachFile {
+        fileCopyDetails ->
     }
+}
+
+wrapper {
+    gradleVersion = '8.4'
 }
 
 // Configure jar and deploy tasks
 deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
+
+compileJava {
+    //dependsOn tasks.named("spotlessApply")
+}
