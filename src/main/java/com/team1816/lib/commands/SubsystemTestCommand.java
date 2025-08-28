@@ -2,7 +2,7 @@ package com.team1816.lib.commands;
 
 import com.team1816.lib.Singleton;
 import com.team1816.lib.events.PubSubConsumer;
-import com.team1816.lib.subsystems.GreenSubsystem;
+import com.team1816.lib.subsystems.ITestableSubsystem;
 import com.team1816.lib.subsystems.LedManager;
 import com.team1816.lib.util.GreenLogger;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -29,8 +29,8 @@ public class SubsystemTestCommand extends GreenCommand {
             robotStateEvent.Publish(LedManager.LEDControlState.SOLID);
         }));
         // add all the substem tests to a sequential group
-        for (Object sys : Singleton.subSystems.values()) {
-            var cmd = ((GreenSubsystem) sys).TestSubsystem();
+        for (ITestableSubsystem sys : Singleton.getSubSystems()) {
+            var cmd = sys.TestSubsystem();
             // if a subsystem has a command add it
             if(cmd != null) group.addCommands(cmd);
         }

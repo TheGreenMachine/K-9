@@ -10,7 +10,7 @@ subsystems:
         canBusName: "super"
         devices:
             range:
-                deviceType: CanRange
+                deviceType: CANrange
             leftMain:
                 deviceType: TalonFX
                 id: 1
@@ -28,10 +28,10 @@ subsystems:
         devices:
             argb:
                 id: 3
-                deviceType: Canifier
+                deviceType: CANifier
             drgb:
                 id: 4
-                deviceType: Candle
+                deviceType: CANdle
 
 constants:
     foo: 3

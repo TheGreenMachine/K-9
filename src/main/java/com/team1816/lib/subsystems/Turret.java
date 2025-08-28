@@ -11,7 +11,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
-public class Turret extends GreenSubsystem {
+import static com.team1816.lib.Singleton.factory;
+import static com.team1816.lib.Singleton.pubsub;
+
+public class Turret implements ITestableSubsystem {
 
     public static final String NAME = "turret";
     private final IMotor turret = (IMotor)factory.getDevice(NAME, "spiny");

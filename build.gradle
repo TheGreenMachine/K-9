@@ -75,6 +75,7 @@ deploy {
                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
                     files = project.fileTree('src/main/deploy')
                     directory = '/home/lvuser/deploy'
+                    deleteOldFiles = true // if we don't do this old commands hang around
                 }
             }
         }
@@ -122,7 +123,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api"
     testImplementation "org.junit.jupiter:junit-jupiter-params"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine"
-    testImplementation 'org.mockito:mockito-inline:5.2.0'
+    testImplementation 'org.mockito:mockito-core:5.+'
     testImplementation 'org.hamcrest:hamcrest:2.2'
 }
 
@@ -204,6 +205,24 @@ task runK9(type: JavaExec) {
     classpath = files(jar)
     jvmArgs "-Djava.library.path=${jniDir}"
 }
+
+task runZone(type: JavaExec) {
+    String jniDir = "${project.buildDir}/jni/release"
+    environment "PATH", jniDir
+    String hal = fileTree(dir: "${project.buildDir}/jni/release", include: '*halsim_*.*').asPath
+    if (!DefaultNativePlatform.currentOperatingSystem.isWindows()) {
+        environment "LD_LIBRARY_PATH", jniDir
+        environment "DYLD_FALLBACK_LIBRARY_PATH", jniDir
+        environment "DYLD_LIBRARY_PATH", jniDir
+        jvmArgs "-XstartOnFirstThread"
+    }
+    environment "HALSIM_EXTENSIONS", hal
+    environment "ROBOT_NAME", "zone"
+    dependsOn(jar, simulateExternalJavaRelease)
+    classpath = files(jar)
+    jvmArgs "-Djava.library.path=${jniDir}"
+}
+
 
 processResources {
     include 'yaml/**/*.yml'

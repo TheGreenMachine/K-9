@@ -16,6 +16,10 @@
             "type": "object",
             "existingJavaType": "java.util.Map<String,DeviceConfiguration>"
         },
+        "kinematics": {
+            "default": null,
+            "$ref": "kinematics.schema.json"
+        },
         "constants": {
             "default": null,
             "$ref": "double.map.schema.json"
@@ -28,9 +32,23 @@
             "default": null,
             "$ref": "sensorconfig.schema.json"
         },
-        "swerveModules": {
-            "default": null,
-            "$ref": "swervemoduleconfig.schema.json"
+        "modules": {
+            "existingJavaType": "java.util.Map<String, ModuleConfiguration>"
+        },
+        "azimuthPID": {
+            "type": "object",
+            "existingJavaType": "java.util.Map<String, PIDSlotConfiguration>",
+            "additionalProperties": false
+        },
+        "drivePID": {
+            "type": "object",
+            "existingJavaType": "java.util.Map<String, PIDSlotConfiguration>",
+            "additionalProperties": false
+        },
+        "pathPID": {
+            "type": "object",
+            "existingJavaType": "java.util.Map<String, PIDSlotConfiguration>",
+            "additionalProperties": false
         },
         "solenoids": {
             "default": null,

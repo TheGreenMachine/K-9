@@ -1,7 +1,6 @@
 package com.team1816.lib.hardware;
 
 import com.team1816.lib.Singleton;
-import com.team1816.lib.hardware.components.GhostDevice;
 import com.team1816.lib.hardware.components.gyro.Pigeon2Impl;
 import com.team1816.lib.hardware.components.led.CANdleImpl;
 import com.team1816.lib.hardware.components.led.CANifierImpl;
@@ -46,13 +45,6 @@ public class RobotFactoryTest {
     }
 
     @Test
-    public void testGetGhostDevice() {
-        var device = factory.getDevice("drivetrain", "leftMain");
-        assertNotNull(device);
-        assertEquals(GhostDevice.class, device.getClass());
-    }
-
-    @Test
     public void testGetTalonFXlDevice() {
         factory.RobotIsReal = true;
         var device = factory.getDevice("drivetrain", "leftMain");
@@ -87,7 +79,7 @@ public class RobotFactoryTest {
     @Test
     public void testCreateSubsystem() {
         Singleton.CreateSubSystem (LedManager.class);
-        assertTrue(Singleton.subSystems.containsKey(LedManager.class));
+        // verify that subsystems can only be created once
         assertThrows(RuntimeException.class, () -> Singleton.CreateSubSystem(LedManager.class));
     }
 
@@ -123,6 +115,8 @@ public class RobotFactoryTest {
                 case "canBusName" -> assertEquals("highspeed", field.get(inst));
                 case "implemented" -> assertEquals(true, field.get(inst));
                 case "id" -> assertEquals(-1, field.get(inst));
+                case "invertSensor"-> assertEquals(false, field.get(inst));
+                case "defaultAuto" -> assertEquals("", field.get(inst));
                 default -> assertNull(field.get(inst), clazz.getSimpleName() + ":" + field.getName());
             }
         }
@@ -135,7 +129,8 @@ public class RobotFactoryTest {
 
     @Test
     public void testGetBadSubsystem() {
-        assertThrows(IllegalArgumentException.class, () -> factory.getDevice("foo", "foo"));
+        var subsys = factory.getSubsystemConfig("foo");
+        assertFalse(subsys.implemented);
     }
 
 }

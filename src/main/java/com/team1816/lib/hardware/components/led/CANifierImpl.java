@@ -17,13 +17,19 @@ public class CANifierImpl extends CANifier implements IPhoenix6 {
     }
 
     @Override
-    public StatusCode applyConfiguration(ParentConfiguration config, String logPath) {
+    public StatusCode applyConfiguration(ParentConfiguration config, String logPath, boolean logging) {
         return StatusCode.OK;
     }
 
     @Override
     public boolean isConnected() {
         return true;
+    }
+
+    @Override
+    public StatusCode setSimSupplyVoltage(double volts) {
+        // does not support sim
+        return StatusCode.OK;
     }
 
 }

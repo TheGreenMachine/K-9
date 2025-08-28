@@ -25,6 +25,10 @@
             "default": null,
             "existingJavaType": "com.ctre.phoenix6.signals.ExternalFeedbackSensorSourceValue"
         },
+        "invertSensor": {
+            "type": "boolean",
+            "default": false
+        },
         "remoteOffest": {
             "type" : "number",
             "default": null

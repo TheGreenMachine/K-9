@@ -9,12 +9,15 @@ import com.team1816.lib.events.PubSubConsumer;
 import com.team1816.lib.hardware.components.IPhoenix6;
 import com.team1816.lib.hardware.components.led.CANifierImpl;
 import com.team1816.lib.util.GreenLogger;
-import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
-public class LedManager extends GreenSubsystem {
+import static com.team1816.lib.Singleton.factory;
+import static com.team1816.lib.Singleton.pubsub;
+
+public class LedManager extends SubsystemBase implements ITestableSubsystem {
 
     public static class RobotLEDStatusEvent extends PubSubConsumer<RobotLEDStatus>{}
     public static class RobotLEDStateEvent extends PubSubConsumer<LEDControlState>{}
@@ -149,15 +152,6 @@ public class LedManager extends GreenSubsystem {
             GreenLogger.log("Testing " + NAME + " passed: " + ref.passed);
         }));
         return group;
-    }
-
-    /**
-     * Initializes SendableBuilder for SmartDashboard
-     *
-     * @param builder SendableBuilder
-     */
-    @Override
-    public void initSendable(SendableBuilder builder) {
     }
 
     /**

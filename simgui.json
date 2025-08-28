@@ -1,48 +1,48 @@
 {
+  "HALProvider": {
+    "Other Devices": {
+      "Talon FX (v6)[4]": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX (v6)[4]/Rotor Sensor": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX (v6)[6]": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX (v6)[6]/Rotor Sensor": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
-      "/SmartDashboard/Auto mode": "String Chooser",
-      "/SmartDashboard/Field": "Field2d",
-      "/SmartDashboard/Starting Position": "String Chooser",
-      "/SmartDashboard/Turret Sim": "Mechanism2d"
+      "/Field": "Field2d",
+      "/SmartDashboard/Auto Mode": "String Chooser",
+      "/SmartDashboard/PathPlanner": "Alerts"
     },
     "windows": {
-      "/SmartDashboard/Auto mode": {
+      "/Field": {
+        "bottom": 1638,
+        "height": 8.051901817321777,
+        "left": 534,
+        "right": 3466,
+        "top": 291,
+        "width": 17.54825210571289,
         "window": {
           "visible": true
         }
       },
-      "/SmartDashboard/Field": {
-        "Robot": {
-          "arrowColor": [
-            0.5980392098426819,
-            0.5247501134872437,
-            0.5247501134872437,
-            255.0
-          ],
-          "arrowWeight": 2.0,
-          "style": "Box/Image",
-          "weight": 2.0
-        },
-        "Trajectory": {
-          "arrows": false,
-          "selectable": false,
-          "style": "Line",
-          "weight": 1.0
-        },
-        "bottom": 1638,
-        "height": 8.051901817321777,
-        "image": "D:\\Source\\GreenMachine\\K-9\\season.png",
-        "left": 534,
-        "right": 3466,
-        "top": 291,
-        "turret": {
-          "arrowWeight": 3.0,
-          "style": "Line"
-        },
-        "width": 17.54825210571289,
+      "/SmartDashboard/Auto Mode": {
         "window": {
           "visible": true
         }
@@ -50,14 +50,31 @@
     }
   },
   "NetworkTables": {
+    "Retained Values": {
+      "open": false
+    },
     "SmartDashboard": {
       "Field": {
         "open": true
       },
       "open": true
     },
+    "retained": {
+      "SmartDashboard": {
+        "Auto Mode": {
+          "open": true
+        },
+        "open": true
+      }
+    },
     "transitory": {
       "Elastic": {
+        "open": true
+      },
+      "Field": {
+        "Pose2d##v_/Field/Robot": {
+          "open": true
+        },
         "open": true
       },
       "GreenLogger": {

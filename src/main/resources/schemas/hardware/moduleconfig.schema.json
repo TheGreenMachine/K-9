@@ -7,18 +7,6 @@
         },
         "azimuth": {
             "type": "string"
-        },
-        "constants": {
-            "$ref": "double.map.schema.json"
-        },
-        "canCoder": {
-            "type": "string"
-        },
-        "xCoord": {
-            "type": "number"
-        },
-        "yCoord": {
-            "type": "number"
         }
     }
 }

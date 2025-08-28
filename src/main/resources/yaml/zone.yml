@@ -1,0 +1,112 @@
+defaultAuto: "Simple S"
+subsystems:
+    ledManager:
+        devices:
+            argb:
+                id: 12
+                deviceType: CANifier
+            drgb:
+                id: 10
+                deviceType: CANdle
+        constants:
+            maxLevel: 96
+            ledCount: 66
+    drivetrain:
+        devices:
+            flDr:
+                id: 6
+                deviceType: TalonFX
+                neutralMode: Brake
+            flAz:
+                id: 7
+                deviceType: TalonFX
+                neutralMode: Brake
+                remoteSensor: RemoteCANcoder # ExternalFeedbackSensorSourceValue
+                remoteSensorId: 8
+                remoteOffest: 0.1
+            flCoder:
+                id: 8
+                deviceType: CANcoder
+            frDr:
+                id: 4
+                deviceType: TalonFX
+                neutralMode: Brake
+            frAz:
+                id: 3
+                deviceType: TalonFX
+                neutralMode: Brake
+                remoteSensor: RemoteCANcoder # ExternalFeedbackSensorSourceValue
+                remoteSensorId: 5
+                remoteOffest: .9
+            frCoder:
+                id: 5
+                deviceType: CANcoder
+            blDr:
+                id: 9
+                deviceType: TalonFX
+                neutralMode: Brake
+            blAz:
+                id: 10
+                deviceType: TalonFX
+                neutralMode: Brake
+                remoteSensor: RemoteCANcoder # ExternalFeedbackSensorSourceValue
+                remoteSensorId: 11
+                remoteOffest: 0
+            blCoder:
+                id: 11
+                deviceType: CANcoder
+            brDr:
+                id: 0
+                deviceType: TalonFX
+                neutralMode: Brake
+            brAz:
+                id: 1
+                deviceType: TalonFX
+                neutralMode: Brake
+                remoteSensor: RemoteCANcoder # ExternalFeedbackSensorSourceValue
+                remoteSensorId: 2
+                remoteOffest: 0
+            brCoder:
+                id: 2
+                deviceType: CANcoder
+            gyro:
+                deviceType: Pigeon2
+                id: 5
+        modules:
+            fl:
+                drive: flDr
+                azimuth: flAz
+            fr:
+                drive: frDr
+                azimuth: frAz
+            bl:
+                drive: blDr
+                azimuth: blAz
+            br:
+                drive: brDr
+                azimuth: brAz
+        drivePID:
+            slot0:
+                kP: 0.1
+                kI: 0.0005
+                kD: 0.0015
+                kV: 0.1422
+        azimuthPID:
+            slot0:
+                kP: 50
+                kD: 0.5
+                kV: 2.66
+                kS: 0.1
+        kinematics:
+            driveGearing: 7.36
+            steerGearing: 15.42
+            wheelbaseLength: .60325 # meters
+            wheelbaseWidth: .60325 # meters
+            robotMass: 74.088 # kg
+            wheelRadius: 0.0508 # meters
+            maxDriveSpeed: 4.7 # measured max speed m/s
+            maxAngularRate: .75 # rad/sec
+            wheelCOF: 1.7
+        constants:
+            translationKp: 0
+            rotationKp: 0

@@ -14,8 +14,9 @@
         "constants": {
             "$ref": "double.map.schema.json"
         },
-        "inputHandler": {
-            "type": "string"
+        "defaultAuto": {
+            "type": "string",
+            "default": ""
         }
     },
     "additionalProperties": false,

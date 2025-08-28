@@ -5,10 +5,11 @@ public interface ICTREDevice extends IPhoenix6 {
         TalonFX, //Falcons and Krakens
         TalonFXS, //cims, bags, etc
         Pigeon2,
-        Candle,
-        Canifier,
-        CanRange
+        CANdle,
+        CANifier,
+        CANrange,
+        CANcoder
     }
-    double getDeviceTargetVelocity();
-    double getDeviceTargetPosition();
+    double getDeviceReference();
+    double getDeviceError();
 }
