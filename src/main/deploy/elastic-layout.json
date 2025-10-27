@@ -8,23 +8,16 @@
         "layouts": [],
         "containers": [
           {
-            "title": "Field",
-            "x": 256.0,
+            "title": "Auto Mode",
+            "x": 0.0,
             "y": 0.0,
-            "width": 1024.0,
-            "height": 512.0,
-            "type": "Field",
+            "width": 256.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
             "properties": {
-              "topic": "/SmartDashboard/Field",
+              "topic": "/SmartDashboard/Auto Mode",
               "period": 0.06,
-              "field_game": "Reefscape",
-              "robot_width": 0.85,
-              "robot_length": 0.85,
-              "show_other_objects": true,
-              "show_trajectories": true,
-              "field_rotation": 0.0,
-              "robot_color": 4294198070,
-              "trajectory_color": 4294967295
+              "sort_options": false
             }
           }
         ]
@@ -32,6 +25,13 @@
     },
     {
       "name": "Teleoperated",
+      "grid_layout": {
+        "layouts": [],
+        "containers": []
+      }
+    },
+    {
+      "name": "Simulation",
       "grid_layout": {
         "layouts": [],
         "containers": []
