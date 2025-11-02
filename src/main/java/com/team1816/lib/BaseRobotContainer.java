@@ -59,8 +59,8 @@ public class BaseRobotContainer {
             drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
                 drivetrain.applyRequest(() ->
-                    drive.withVelocityX(-controller.getLeftY() * kinematics.maxDriveSpeed) // Drive forward with negative Y (forward)
-                        .withVelocityY(-controller.getLeftX() * kinematics.maxDriveSpeed) // Drive left with negative X (left)
+                    drive.withVelocityX(-controller.getLeftY() * drivetrain.maxSpd) // Drive forward with negative Y (forward)
+                        .withVelocityY(-controller.getLeftX() * drivetrain.maxSpd) // Drive left with negative X (left)
                         .withRotationalRate(-controller.getRightX() * maxAngularRate) // Drive counterclockwise with negative X (left)
                 )
             );
@@ -69,8 +69,8 @@ public class BaseRobotContainer {
                 .withDriveRequestType(SwerveModule.DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
             drivetrain.setDefaultCommand(
                 drivetrain.applyRequest(() ->
-                    drive.withVelocityX(-controller.getLeftY() * kinematics.maxDriveSpeed) // Drive forward with negative Y (forward)
-                        .withVelocityY(-controller.getLeftX() * kinematics.maxDriveSpeed) // Drive left with negative X (left)
+                    drive.withVelocityX(-controller.getLeftY() * drivetrain.maxSpd) // Drive forward with negative Y (forward)
+                        .withVelocityY(-controller.getLeftX() * drivetrain.maxSpd) // Drive left with negative X (left)
                         .withRotationalRate(-controller.getRightX() * maxAngularRate) // Drive counterclockwise with negative X (left)
                 )
             );

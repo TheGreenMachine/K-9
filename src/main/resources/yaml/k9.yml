@@ -50,12 +50,12 @@ subsystems:
                 kI: 0.0005
                 kD: 0.0015
         kinematics:
-            driveGearing: 48
+            driveGearing: 27
             wheelbaseLength: .3937 # meters
             wheelbaseWidth: .36703 # meters
             robotMass: 11 # kg
             wheelRadius: 0.0508 # meters
-            maxDriveSpeed: .64 # measured max speed m/s
+            maxDriveRPS: 90 # measured motor max speed rps
             wheelCOF: 1.2
             maxAngularRate: .15 # rad/sec
         constants:

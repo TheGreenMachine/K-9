@@ -27,10 +27,10 @@
             "default": null,
             "description": "wheel radius in meters"
         },
-        "maxDriveSpeed": {
+        "maxDriveRPS": {
             "type" : "number",
             "default": null,
-            "description": "measured velocity at 100% output in m/s"
+            "description": "measured rps at 100% output"
         },
         "wheelCOF": {
             "type" : "number",

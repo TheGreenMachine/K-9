@@ -33,7 +33,7 @@ class DiffDrivetrainTest {
         KinematicsConfig mockKinematics = mock();
         mockKinematics.robotMass = 50.0;
         mockKinematics.wheelRadius = 0.0508;
-        mockKinematics.maxDriveSpeed = 1.0;
+        mockKinematics.maxDriveRPS = 151.0;
         mockKinematics.driveGearing = 48.0;
         mockKinematics.wheelCOF = 1.0;
         mockKinematics.wheelbaseWidth = 1.0;
@@ -80,10 +80,10 @@ class DiffDrivetrainTest {
 
     @Test
     void clampVelocity() {
-        assertEquals(1.0, target.clampVelocity(1.0));
-        assertEquals(-1.0, target.clampVelocity(-1.0));
-        assertEquals(1.0, target.clampVelocity(2.0));
-        assertEquals(-1.0, target.clampVelocity(-2.0));
-        assertEquals(-0.34, target.clampVelocity(-0.34));
+        assertEquals(1.0, target.clampVelocity(1.0), .01);
+        assertEquals(-1.0, target.clampVelocity(-1.0), .01);
+        assertEquals(1.0, target.clampVelocity(2.0), .01);
+        assertEquals(-1.0, target.clampVelocity(-2.0), .01);
+        assertEquals(-0.34, target.clampVelocity(-0.34), .01);
     }
 }

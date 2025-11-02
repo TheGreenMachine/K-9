@@ -104,7 +104,7 @@ subsystems:
             wheelbaseWidth: .60325 # meters
             robotMass: 74.088 # kg
             wheelRadius: 0.0508 # meters
-            maxDriveSpeed: 4.7 # measured max speed m/s
+            maxDriveRPS: 90 # measured motor max speed rps
             maxAngularRate: .75 # rad/sec
             wheelCOF: 1.7
         constants:

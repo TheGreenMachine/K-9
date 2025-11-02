@@ -18,7 +18,7 @@ public interface IDrivetrain extends ITestableSubsystem {
     SubsystemConfig config = factory.getSubsystemConfig(NAME);
     double massKG = config.kinematics.robotMass;
     double whlRad = config.kinematics.wheelRadius;
-    double maxSpd = config.kinematics.maxDriveSpeed;
+    double maxSpd = (config.kinematics.maxDriveRPS / config.kinematics.driveGearing) * 2 * Math.PI * config.kinematics.wheelRadius;;
     double cof = config.kinematics.wheelCOF;
     double gearing = config.kinematics.driveGearing;
     double wheelCircumference = 2 * Math.PI * whlRad;

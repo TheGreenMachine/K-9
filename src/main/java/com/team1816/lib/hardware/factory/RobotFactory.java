@@ -419,7 +419,7 @@ public class RobotFactory {
         return lastGhostId;
     }
 
-    public SwerveModuleConstants[] getSwerveModuleConstants(String subsystemName) {
+    public SwerveModuleConstants[] getSwerveModuleConstants(String subsystemName, double maxSpd) {
         var config = getSubsystemConfig(subsystemName);
         var kinematics = config.kinematics;
         verifyKinematics(subsystemName, kinematics);
@@ -437,7 +437,7 @@ public class RobotFactory {
         factory.WheelRadius = kinematics.wheelRadius;
         factory.DriveMotorGearRatio = kinematics.driveGearing;
         factory.SteerMotorGearRatio = kinematics.steerGearing;
-        factory.SpeedAt12Volts = kinematics.maxDriveSpeed;
+        factory.SpeedAt12Volts = maxSpd;
 
         for (var module : config.modules.values()) {
             var drive = config.devices.get(module.drive);
@@ -500,6 +500,7 @@ public class RobotFactory {
         return constants;
     }
 
+    // Logs missing values to kinematics yaml configuration
     private void verifyKinematics(String subsystemName, KinematicsConfig kinematics) {
         if (kinematics == null) {
             var message = subsystemName + " requires kinematics in yaml";
@@ -512,8 +513,8 @@ public class RobotFactory {
         if (kinematics.steerGearing == 0) {
             property = "steerGearing";
         }
-        if (kinematics.maxDriveSpeed == 0) {
-            property = "maxDriveSpeed";
+        if (kinematics.maxDriveRPS == 0) {
+            property = "maxDriveRPS";
         }
         if (kinematics.wheelbaseLength == 0) {
             property = "wheelbaseLength";

@@ -48,7 +48,7 @@ public class HoloDrivetrain extends SwerveDrivetrain<CommonTalon, CommonTalon, P
             (id, bus) -> (CommonTalon) factory.getDeviceById(NAME, id),
             (id, bus) -> (ParentDevice) factory.getDeviceById(NAME, id),
             factory.getSwerveDrivetrainConstant(NAME),
-            factory.getSwerveModuleConstants(NAME)
+            factory.getSwerveModuleConstants(NAME, maxSpd)
         );
         //default to filed centric
         fieldCentric = factory.getConstant(NAME, "fieldCentric", 1) == 1;
