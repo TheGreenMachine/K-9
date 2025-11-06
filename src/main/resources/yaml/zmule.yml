@@ -50,7 +50,7 @@ subsystems:
                 deviceType: TalonFX
                 neutralMode: Brake
                 remoteSensor: RemoteCANcoder # ExternalFeedbackSensorSourceValue
-                remoteSensorId: 11
+                remoteSensorId: 42
                 remoteOffest: 42
             blCoder:
                 id: 42
@@ -64,7 +64,7 @@ subsystems:
                 deviceType: TalonFX
                 neutralMode: Brake
                 remoteSensor: RemoteCANcoder # ExternalFeedbackSensorSourceValue
-                remoteSensorId: 2
+                remoteSensorId: 40
                 remoteOffest: 40
             brCoder:
                 id: 40
