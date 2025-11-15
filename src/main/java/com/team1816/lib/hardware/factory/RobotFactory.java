@@ -242,6 +242,7 @@ public class RobotFactory {
                 clazz.Slot2 = Slot2Configs.from(GetSlotConfigs(subsystemConfig.pidConfig, 2));
                 clazz.CurrentLimits = GetCurrentConfigs(deviceConfig);
                 clazz.SoftwareLimitSwitch = GetSoftLimitConfigs(deviceConfig);
+                clazz.Feedback = GetFeedbackConfigs(deviceConfig);
             }
             case TalonFXS -> {
                 var clazz = (TalonFXSConfiguration) parentConfig;
@@ -268,6 +269,28 @@ public class RobotFactory {
                 var clazz = (CANrangeConfiguration) parentConfig;
             }
         }
+    }
+
+    private FeedbackConfigs GetFeedbackConfigs(DeviceConfiguration deviceConfig) {
+        var config = new FeedbackConfigs();
+        // if we have settings defined in YAML use them otherwise use the CTRE defaults
+        if (deviceConfig.remoteSensor != null) {
+            switch (deviceConfig.remoteSensor) {
+                case RemoteCANcoder ->  config.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+            }
+        }
+        GreenLogger.log("  remoteSensor: " + config.FeedbackSensorSource);
+
+        if (deviceConfig.remoteSensorId != null) {
+            config.FeedbackRemoteSensorID = deviceConfig.remoteSensorId;
+            GreenLogger.log("  remoteSensorId: " + config.FeedbackRemoteSensorID);
+        }
+
+        if (deviceConfig.remoteOffest != null) {
+            config.FeedbackRotorOffset = deviceConfig.remoteOffest;
+            GreenLogger.log("  remoteOffest: " + config.FeedbackRotorOffset);
+        }
+        return config;
     }
 
     private ExternalFeedbackConfigs GetExternalFeedbackConfigs(DeviceConfiguration deviceConfig) {
@@ -431,6 +454,8 @@ public class RobotFactory {
         ParentConfiguration steerConf = null;
         Slot0Configs driveSlot = null;
         Slot0Configs steerSlot = null;
+
+        // use ctre swerve factory to create the constants
         var factory = new SwerveModuleConstantsFactory();
 
         // setup kinematics
@@ -442,21 +467,6 @@ public class RobotFactory {
         for (var module : config.modules.values()) {
             var drive = config.devices.get(module.drive);
             var azm = config.devices.get(module.azimuth);
-            // tank drives do not have azm so create a default motor to use
-            if (azm == null) {
-
-                azm = new DeviceConfiguration();
-                azm.id = getNextGhostId();
-                azm.deviceType = ICTREDevice.DeviceType.TalonFX;
-                azm.remoteOffest = 0d;
-                azm.remoteSensor = ExternalFeedbackSensorSourceValue.RemoteCANcoder;
-                azm.remoteSensorId = getNextGhostId();
-                config.devices.put("azm" + azm.id, azm);
-                var coder = new DeviceConfiguration();
-                coder.id = azm.remoteSensorId;
-                coder.deviceType = ICTREDevice.DeviceType.CANcoder;
-                config.devices.put("coder" + coder.id, coder);
-            }
             // pull module configs from the first module
             if (driveConf == null) {
                 GreenLogger.log("Module Drive Configuration");
@@ -493,7 +503,7 @@ public class RobotFactory {
                 azm.motorRotation == InvertedValue.Clockwise_Positive,
                 false
             );
-            GreenLogger.log("  " + getModuleName(i) + ": x:" + constant.LocationX + " y:" + constant.LocationY);
+            GreenLogger.log("  " + getModuleName(i) + ": x:" + constant.LocationX + " y:" + constant.LocationY + " remoteOffest:" + azm.remoteOffest);
             constants[i] = constant;
             i++;
         }

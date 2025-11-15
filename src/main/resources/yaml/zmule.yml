@@ -17,13 +17,14 @@ subsystems:
                 id: 34
                 deviceType: TalonFX
                 neutralMode: Brake
+                motorRotation: Clockwise_Positive
             flAz:
                 id: 30
                 deviceType: TalonFX
                 neutralMode: Brake
                 remoteSensor: RemoteCANcoder # ExternalFeedbackSensorSourceValue
                 remoteSensorId: 41
-                remoteOffest: 0.1
+                remoteOffest: 0.282959
             flCoder:
                 id: 41
                 deviceType: CANcoder
@@ -37,7 +38,7 @@ subsystems:
                 neutralMode: Brake
                 remoteSensor: RemoteCANcoder # ExternalFeedbackSensorSourceValue
                 remoteSensorId: 43
-                remoteOffest: -0.412109
+                remoteOffest: 0.172363
             frCoder:
                 id: 43
                 deviceType: CANcoder
@@ -51,7 +52,7 @@ subsystems:
                 neutralMode: Brake
                 remoteSensor: RemoteCANcoder # ExternalFeedbackSensorSourceValue
                 remoteSensorId: 42
-                remoteOffest: 42
+                remoteOffest: 0.173340 # -Absolute Position No Offset CanCoder
             blCoder:
                 id: 42
                 deviceType: CANcoder
@@ -65,7 +66,7 @@ subsystems:
                 neutralMode: Brake
                 remoteSensor: RemoteCANcoder # ExternalFeedbackSensorSourceValue
                 remoteSensorId: 40
-                remoteOffest: 40
+                remoteOffest: -0.297607
             brCoder:
                 id: 40
                 deviceType: CANcoder
@@ -99,7 +100,7 @@ subsystems:
                 kS: 0.1
         kinematics:
             driveGearing: 7.36
-            steerGearing: 15.42
+            steerGearing: 26.0909
             wheelbaseLength: .60325 # meters
             wheelbaseWidth: .60325 # meters
             robotMass: 74.088 # kg
