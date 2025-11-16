@@ -14,10 +14,9 @@ subsystems:
     drivetrain:
         devices:
             flDr:
-                id: 34
+                id: 35
                 deviceType: TalonFX
                 neutralMode: Brake
-                motorRotation: Clockwise_Positive
             flAz:
                 id: 30
                 deviceType: TalonFX
@@ -32,6 +31,7 @@ subsystems:
                 id: 34
                 deviceType: TalonFX
                 neutralMode: Brake
+                motorRotation: Clockwise_Positive
             frAz:
                 id: 31
                 deviceType: TalonFX
@@ -60,6 +60,7 @@ subsystems:
                 id: 36
                 deviceType: TalonFX
                 neutralMode: Brake
+                motorRotation: Clockwise_Positive
             brAz:
                 id: 32
                 deviceType: TalonFX
