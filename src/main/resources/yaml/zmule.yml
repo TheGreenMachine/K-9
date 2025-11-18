@@ -100,7 +100,7 @@ subsystems:
                 kV: 2.66
                 kS: 0.1
         kinematics:
-            driveGearing: 7.36
+            driveGearing: 6.03
             steerGearing: 26.0909
             wheelbaseLength: .60325 # meters
             wheelbaseWidth: .60325 # meters
