@@ -23,7 +23,7 @@ subsystems:
                 neutralMode: Brake
                 remoteSensor: RemoteCANcoder # ExternalFeedbackSensorSourceValue
                 remoteSensorId: 41
-                remoteOffest: 0.285645
+                remoteOffest: 0.284668
             flCoder:
                 id: 41
                 deviceType: CANcoder
@@ -52,7 +52,7 @@ subsystems:
                 neutralMode: Brake
                 remoteSensor: RemoteCANcoder # ExternalFeedbackSensorSourceValue
                 remoteSensorId: 42
-                remoteOffest: 0.176270 # -Absolute Position No Offset CanCoder
+                remoteOffest: 0.177490 # -Absolute Position No Offset CanCoder
             blCoder:
                 id: 42
                 deviceType: CANcoder
@@ -67,7 +67,7 @@ subsystems:
                 neutralMode: Brake
                 remoteSensor: RemoteCANcoder # ExternalFeedbackSensorSourceValue
                 remoteSensorId: 40
-                remoteOffest: -0.291992
+                remoteOffest: -0.291016
             brCoder:
                 id: 40
                 deviceType: CANcoder
@@ -89,13 +89,13 @@ subsystems:
                 azimuth: brAz
         drivePID:
             slot0:
-                kP: 0.1
-                kI: 0.0005
-                kD: 0.0015
-                kV: 0.1422
+                kP: 0.4
+                kI: 0
+                kD: 0.0008
+                kV: 0.115
         azimuthPID:
             slot0:
-                kP: 50
+                kP: 75
                 kD: 0.5
                 kV: 2.66
                 kS: 0.1
@@ -105,10 +105,10 @@ subsystems:
             wheelbaseLength: .60325 # meters
             wheelbaseWidth: .60325 # meters
             robotMass: 74.088 # kg
-            wheelRadius: 0.0508 # meters
+            wheelRadius: 0.05012 # meters
             maxDriveRPS: 90 # measured motor max speed rps
             maxAngularRate: .75 # rad/sec
             wheelCOF: 1.7
         constants:
-            translationKp: 0
-            rotationKp: 0
+            translationKp: 10
+            rotationKp: 7
