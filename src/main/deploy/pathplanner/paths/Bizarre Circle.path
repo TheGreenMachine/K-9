@@ -1,0 +1,102 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 0.4242640687119285,
+        "y": -0.4242640687119285
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.75,
+        "y": 0.0
+      },
+      "prevControl": {
+        "x": 1.3257359312880714,
+        "y": -0.42426406871192834
+      },
+      "nextControl": {
+        "x": 2.1742640687119286,
+        "y": 0.42426406871192834
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.75,
+        "y": 1.75
+      },
+      "prevControl": {
+        "x": 2.1742640687119286,
+        "y": 1.3257359312880717
+      },
+      "nextControl": {
+        "x": 1.3257359312880717,
+        "y": 2.1742640687119286
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.0,
+        "y": 1.75
+      },
+      "prevControl": {
+        "x": 0.4242640687119283,
+        "y": 2.1742640687119286
+      },
+      "nextControl": {
+        "x": -0.4242640687119283,
+        "y": 1.3257359312880712
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "prevControl": {
+        "x": -0.42426406871192845,
+        "y": 0.4242640687119285
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 1.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": false
+}

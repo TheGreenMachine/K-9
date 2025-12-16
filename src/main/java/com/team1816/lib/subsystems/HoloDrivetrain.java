@@ -112,7 +112,9 @@ public class HoloDrivetrain extends SwerveDrivetrain<CommonTalon, CommonTalon, P
             // PID constants for translation
             new PIDConstants(tranKp, 0, 0),
             // PID constants for rotation
-            new PIDConstants(rotKp, 0, 0)
+            new PIDConstants(rotKp, 0, 0),
+            // Period
+            .02
         );
 
         GreenLogger.log(robotConfig);
