@@ -1,5 +1,6 @@
 package com.team1816.lib.hardware.components.gyro;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.ParentConfiguration;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
@@ -16,7 +17,7 @@ public class Pigeon2Impl extends Pigeon2 implements IPhoenix6, IGyro {
 
     private Pigeon2SimState simState;
 
-    public Pigeon2Impl(int deviceId, String canbus) {
+    public Pigeon2Impl(int deviceId, CANBus canbus) {
         super(deviceId, canbus);
         if(Robot.isSimulation()){
             simState = getSimState();

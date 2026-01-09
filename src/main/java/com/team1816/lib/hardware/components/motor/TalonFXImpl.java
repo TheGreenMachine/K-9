@@ -1,5 +1,6 @@
 package com.team1816.lib.hardware.components.motor;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.ParentConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -10,17 +11,13 @@ import com.ctre.phoenix6.sim.TalonFXSimState;
 import com.team1816.lib.hardware.components.ICTREDevice;
 import com.team1816.lib.util.GreenLogger;
 import com.team1816.season.Robot;
-import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.Current;
-
-import static edu.wpi.first.units.Units.Amps;
 
 public class TalonFXImpl extends TalonFX implements ICTREDevice, IMotor {
 
     private TalonFXConfiguration config;
     private TalonFXSimState simState;
 
-    public TalonFXImpl(int deviceId, String canbus) {
+    public TalonFXImpl(int deviceId, CANBus canbus) {
         super(deviceId, canbus);
     }
 

@@ -1,5 +1,6 @@
 package com.team1816.lib.hardware.components.sensor;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.ParentConfiguration;
@@ -12,7 +13,7 @@ public class CANCoderImpl extends CANcoder implements IPhoenix6 {
 
     private CANcoderSimState simState;
 
-    public CANCoderImpl(int deviceId, String canbus) {
+    public CANCoderImpl(int deviceId, CANBus canbus) {
 
         super(deviceId, canbus);
         if(Robot.isSimulation()){

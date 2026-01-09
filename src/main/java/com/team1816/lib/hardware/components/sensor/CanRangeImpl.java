@@ -1,5 +1,6 @@
 package com.team1816.lib.hardware.components.sensor;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.CANrangeConfiguration;
 import com.ctre.phoenix6.configs.ParentConfiguration;
@@ -12,7 +13,7 @@ public class CanRangeImpl extends CANrange implements IPhoenix6 {
 
     private CANrangeSimState simState;
 
-    public CanRangeImpl(int deviceId, String canbus) {
+    public CanRangeImpl(int deviceId, CANBus canbus) {
         super(deviceId, canbus);
         if(Robot.isSimulation()){
             simState = getSimState();

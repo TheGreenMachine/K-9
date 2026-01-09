@@ -65,7 +65,7 @@ public class Robot extends TimedRobot {
             autonomousCommand = robotContainer.autoChooser.getSelected();
             // schedule the autonomous command
             if (autonomousCommand != null) {
-                autonomousCommand.schedule();
+                CommandScheduler.getInstance().schedule(autonomousCommand);
             }
             robotStatusEvent.Publish(LedManager.RobotLEDStatus.AUTONOMOUS);
         } catch (Throwable t) {

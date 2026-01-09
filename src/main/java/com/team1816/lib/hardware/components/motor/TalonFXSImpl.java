@@ -1,5 +1,6 @@
 package com.team1816.lib.hardware.components.motor;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.ParentConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
@@ -16,7 +17,7 @@ public class TalonFXSImpl extends TalonFXS implements ICTREDevice, IMotor {
     private TalonFXSSimState simState;
     private TalonFXSConfiguration config;
 
-    public TalonFXSImpl(int deviceId, String canbus) {
+    public TalonFXSImpl(int deviceId, CANBus canbus) {
         super(deviceId, canbus);
     }
 

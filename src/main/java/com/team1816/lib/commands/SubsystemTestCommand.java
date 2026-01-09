@@ -5,6 +5,7 @@ import com.team1816.lib.events.PubSubConsumer;
 import com.team1816.lib.subsystems.ITestableSubsystem;
 import com.team1816.lib.subsystems.LedManager;
 import com.team1816.lib.util.GreenLogger;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
@@ -44,7 +45,7 @@ public class SubsystemTestCommand extends GreenCommand {
                 robotStatusEvent.Publish(LedManager.RobotLEDStatus.ERROR);
             }
         }));
-        group.schedule();
+        CommandScheduler.getInstance().schedule(group);
     }
 
     private void TestResult(Boolean testPassed) {

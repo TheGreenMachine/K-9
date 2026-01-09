@@ -1,12 +1,12 @@
 package com.team1816.lib.hardware.factory;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.signals.*;
 import com.ctre.phoenix6.swerve.SwerveDrivetrainConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstantsFactory;
 import com.team1816.lib.hardware.*;
-import com.team1816.lib.hardware.components.ICTREDevice;
 import com.team1816.lib.hardware.components.IPhoenix6;
 import com.team1816.lib.hardware.components.gyro.Pigeon2Impl;
 import com.team1816.lib.hardware.components.led.CANdleImpl;
@@ -19,6 +19,7 @@ import com.team1816.lib.util.GreenLogger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.team1816.lib.Singleton.factory;
@@ -32,6 +33,7 @@ public class RobotFactory {
     public boolean RobotIsReal; // Use to detect real or simulation public to override for tests
     public final static int StartingGhostId = 50;
     private int lastGhostId = StartingGhostId;
+    private HashMap<String, CANBus> canBusMap = new HashMap<>();
 
     public RobotFactory() {
         RobotIsReal = RobotBase.isReal();
@@ -161,27 +163,35 @@ public class RobotFactory {
         GreenLogger.log("  id: " + deviceConfig.id);
         GreenLogger.log("  deviceType: " + deviceConfig.deviceType);
 
+        CANBus canbus;
+        if(!canBusMap.containsKey(bus)){
+            canbus = new CANBus(bus);
+            canBusMap.put(bus, canbus);
+        } else {
+            canbus = canBusMap.get(bus);
+        }
+
         switch (deviceConfig.deviceType) {
             case TalonFX -> {
-                if (devInst == null) devInst = new TalonFXImpl(deviceConfig.id, subsystemConfig.canBusName);
+                if (devInst == null) devInst = new TalonFXImpl(deviceConfig.id, canbus);
             }
             case TalonFXS -> {
-                devInst = new TalonFXSImpl(deviceConfig.id, bus);
+                devInst = new TalonFXSImpl(deviceConfig.id, canbus);
             }
             case Pigeon2 -> {
-                if (devInst == null) devInst = new Pigeon2Impl(deviceConfig.id, subsystemConfig.canBusName);
+                if (devInst == null) devInst = new Pigeon2Impl(deviceConfig.id, canbus);
             }
             case CANdle -> {
-                if (devInst == null) devInst = new CANdleImpl(deviceConfig.id, subsystemConfig.canBusName);
+                if (devInst == null) devInst = new CANdleImpl(deviceConfig.id, canbus);
             }
             case CANrange -> {
-                if (devInst == null) devInst = new CanRangeImpl(deviceConfig.id, subsystemConfig.canBusName);
+                if (devInst == null) devInst = new CanRangeImpl(deviceConfig.id, canbus);
             }
             case CANifier -> {
                 if (devInst == null) devInst = new CANifierImpl(deviceConfig.id);
             }
             case CANcoder -> {
-                if (devInst == null) devInst = new CANCoderImpl(deviceConfig.id, subsystemConfig.canBusName);
+                if (devInst == null) devInst = new CANCoderImpl(deviceConfig.id, canbus);
             }
             default -> {
                 GreenLogger.log("Device type " + deviceConfig.deviceType + " not implemented");
